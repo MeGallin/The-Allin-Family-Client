@@ -1,0 +1,244 @@
+.note-card {
+  --note-paper: var(--color-note-yellow);
+  /* Local semantic overrides keep shared text, links and feedback readable on paper. */
+  --color-text: var(--color-note-ink);
+  --color-text-muted: var(--color-note-ink-muted);
+  --color-link: var(--color-note-link);
+  --color-focus: var(--color-note-link);
+  --focus-ring: 0 0 0 4px var(--color-note-focus);
+  --note-edge: color-mix(in srgb, var(--note-paper), var(--color-note-ink) 12%);
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  padding: var(--space-7) var(--space-5) var(--space-4);
+  color: var(--color-note-ink);
+  border-radius: var(--note-paper-radius);
+  overflow-wrap: anywhere;
+}
+
+/* Separate paper and shadow layers keep the curled shadow behind the text surface. */
+.note-card::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(
+    175deg,
+    color-mix(in srgb, var(--note-paper), var(--color-note-highlight) 18%),
+    var(--note-paper) 22%,
+    var(--note-paper) 88%,
+    color-mix(in srgb, var(--note-paper), var(--color-note-ink) 5%)
+  );
+  border: 1px solid var(--note-edge);
+  border-radius: var(--note-paper-radius);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 100%,
+    var(--note-corner-curl-size) 100%,
+    0 calc(100% - var(--note-corner-curl-size))
+  );
+  box-shadow: var(--shadow-note-paper);
+  pointer-events: none;
+}
+
+/* The small turned corner exposes the lighter reverse of the same paper colour. */
+.note-card__curl {
+  --note-crease: color-mix(in srgb, var(--note-paper), var(--color-note-ink) 34%);
+  position: absolute;
+  inset: auto auto 0 0;
+  width: var(--note-corner-curl-size);
+  height: var(--note-corner-curl-size);
+  filter: drop-shadow(var(--shadow-note-corner));
+  pointer-events: none;
+}
+.note-card__curl::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-end-end-radius: var(--space-1);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--note-paper), var(--color-note-ink) 8%),
+    color-mix(in srgb, var(--note-paper), var(--color-note-highlight) 40%) 48%,
+    var(--note-paper) 72%,
+    color-mix(in srgb, var(--note-paper), var(--color-note-ink) 24%)
+  );
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 82% 91%, 54% 68%, 26% 37%);
+  box-shadow:
+    inset 0 1px 0 var(--note-crease),
+    inset -1px 0 0 var(--note-crease);
+}
+.note-card__curl::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 0;
+  /* The diagonal is the square corner's hypotenuse. */
+  width: calc(var(--note-corner-curl-size) * 1.414214);
+  height: 1px;
+  background: var(--note-crease);
+  box-shadow: 0 -1px 0 color-mix(in srgb, var(--note-paper), var(--color-note-highlight) 55%);
+  transform: rotate(45deg);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+/* The lower edge lifts away from the board; the paper itself stays unclipped. */
+.note-card::after {
+  content: '';
+  position: absolute;
+  z-index: -2;
+  inset: auto var(--space-3) var(--space-2) var(--space-3);
+  height: var(--space-6);
+  border-radius: 0 0 50% 50%;
+  box-shadow: var(--shadow-note-curl);
+  transform: rotate(-2deg);
+  pointer-events: none;
+}
+
+.note-card[data-paper='blue'] {
+  --note-paper: var(--color-note-blue);
+}
+.note-card[data-paper='purple'] {
+  --note-paper: var(--color-note-purple);
+}
+.note-card[data-paper='pink'] {
+  --note-paper: var(--color-note-pink);
+}
+.note-card[data-tilt='0'] {
+  --note-tilt: -1.8deg;
+  --note-pin-angle: -24deg;
+}
+.note-card[data-tilt='1'] {
+  --note-tilt: 2deg;
+  --note-pin-angle: 20deg;
+}
+.note-card[data-tilt='2'] {
+  --note-tilt: -1.4deg;
+  --note-pin-angle: -18deg;
+}
+.note-card[data-tilt='3'] {
+  --note-tilt: 2.2deg;
+  --note-pin-angle: 27deg;
+}
+
+.note-card h2 {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-3);
+  line-height: 1.3;
+}
+.note-card__date,
+.note-card__meta,
+.note-card__dates {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+.note-card__date {
+  margin-bottom: var(--space-2);
+  font-weight: 600;
+}
+.note-card__excerpt {
+  color: var(--color-note-ink);
+  font-size: var(--text-sm);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+}
+.note-card summary {
+  width: fit-content;
+  max-width: 100%;
+  min-height: var(--control-min-height);
+  padding-block: var(--space-3);
+  cursor: pointer;
+  color: var(--color-note-link);
+  font-weight: 600;
+}
+.note-card__reading > summary {
+  font-size: var(--text-sm);
+}
+.note-card :is(a, summary):focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--note-paper-radius);
+}
+.note-card :is(a, summary):hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.note-card__header,
+.note-card__body,
+.note-card__footer {
+  white-space: pre-wrap;
+  line-height: 1.65;
+}
+.note-card__header {
+  font-weight: 600;
+  color: var(--color-note-ink);
+}
+.note-card__footer {
+  border-top: 1px solid var(--note-edge);
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  color: var(--color-text-muted);
+}
+.note-card__meta {
+  margin: var(--space-3) 0 0;
+}
+.note-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--note-edge);
+  padding-top: var(--space-2);
+}
+.note-card__actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-min-height);
+  color: var(--color-note-link);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+@container family-content (max-width: 24rem) {
+  .note-card {
+    padding-inline: var(--space-4);
+  }
+}
+
+@container family-content (min-width: 48rem) {
+  .note-card {
+    transform: rotate(var(--note-tilt, 0deg));
+  }
+  .note-card:focus-within {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .note-card {
+    --color-text: CanvasText;
+    --color-text-muted: CanvasText;
+    --color-note-ink: CanvasText;
+    --color-note-ink-muted: CanvasText;
+    --color-note-link: LinkText;
+    --color-focus: Highlight;
+    --note-edge: CanvasText;
+    color: CanvasText;
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    transform: none;
+  }
+  .note-card::before,
+  .note-card::after,
+  .note-card__curl,
+  .note-card .note-pin {
+    display: none;
+  }
+}

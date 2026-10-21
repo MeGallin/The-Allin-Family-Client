@@ -55,13 +55,37 @@ Administration and Your profile, with a useful not-found page. Desktop navigatio
 labelled bottom navigation on phones. Administration currently provides a role
 guard, family nickname editing and placeholder information; other account tools and statistics are future work.
 
-Personal notes (`/notes`) is a placeholder for a future owner-only notebook. It
-has no editor, saved note data or API yet. Planned notes include title, header,
-body, footer, note date and creation/edit dates, with editing and deletion.
-When implemented, enforce ownership on every server read/write, including for
-administrators; client filtering alone is not a privacy boundary. Keep note data
-out of shared family feeds, queries and analytics, and clear private cached data
-on sign-out or account changes.
+Personal notes (`/notes`) is an owner-only notebook with a personalised heading
+and navigation label. New note opens a lazy editor for a title, note date, optional
+header/footer and a required body. Limits: title 120 characters, header/footer 500
+each and body 20,000. Cards show excerpts, expandable full content and friendly/
+exact creation/edit dates. Editing and confirmed deletion use version checks;
+failed saves preserve the draft and focus the error. Deletion hides the note and
+retains private history. All removals use the shared 30-second countdown and Undo
+described below. No post-delete restore screen is provided.
+
+The responsive pinboard uses four pastel paper colours, small stable tilts,
+CSS-built thumbtacks and a defined bottom-left curl. Palette/material tokens live
+in `styles/note-tokens.css`; NoteCard, NotePin and their CSS are colocated under
+`components/notes`. `note-appearance.ts` derives stationery from the saved note ID,
+so sorting and refreshing do not reshuffle colours. Phone cards remain straight;
+keyboard focus straightens desktop cards and forced-colour mode omits decoration.
+
+The API enforces session ownership on every note/history read and write, with no
+admin bypass. Notes and their history stay out of shared family queries/feeds and
+analytics. The dedicated history table stores full before/after data; the owner's
+activity list receives only title/action/time summaries, not repeated full bodies.
+Apply API migration 010. Notes are ordinary server-side database records protected
+by account access, not an end-to-end encrypted vault.
+
+`features/notes`, `services/notes-api.ts` and `notes-query.ts` separate private
+domain types, write state and server cache/transport. Queries are keyed by account
+ID and checked against the server's owner ID, and run only while Notes is open.
+Polling pauses during writes/unfocused tabs; focus/reconnect refreshes update the
+notebook. Session clear aborts requests and resets cached data/write feedback;
+late write results have a session-generation guard. Nothing is saved in browser
+storage. Search and sort use the shared ViewControls UI; private search text stays
+in component memory rather than URLs/browser history.
 
 ## Shared memories
 
@@ -280,3 +304,33 @@ SPA route fallback while leaving `/api` to the separately deployed API. Enable
 Apache rewrite support, or configure equivalent fallback rules on another host.
 
 Repository: https://github.com/MeGallin/The-Allin-Family-Client
+
+## Shared writes and delayed removal
+
+- All shopping, calendar, memories and personal-note writes use
+  `src/app/execute-write.ts`: one busy/session guard, request lifecycle,
+  conflict refresh and finally cleanup. Feature adapters handle typed cache updates
+  and their feedback. Private-note snapshots remain keyed and checked by owner.
+- `src/services/write-request.ts` sends JSON or multipart writes through the
+  existing authenticated request client and retries an expired CSRF token once.
+  Shopping, calendar, notes, memories and nickname updates use it.
+- Every record removal starts through `useRemovals(domain).remove(record)`.
+  `features/removals/removals-slice.ts` defines the only 30-second delay.
+  `removal-listener.ts` alone waits and submits the removal after expiry.
+  `removal-adapters.ts` maps each domain to its existing version-protected API.
+  Do not call a domain's raw remove write from a component.
+- `components/removals/PendingRemovals` owns the countdown/progress/Undo UI
+  above every family route. Confirmations share `RemovalConfirmation` where
+  applicable and all use `RemovalDelayHint`. Cards indicate pending removal.
+- Undo cancels an unsent request. Navigation within the family space keeps the
+  queue; refresh, sign-out, account changes and leaving the family area cancel
+  unsent removals. The queue is intentionally in memory, never local storage.
+- At expiry, writes wait for the feature's current save. A cached version change
+  cancels removal; the server's version check protects the final race. Errors
+  retain existing content or tell the user to refresh if the outcome is uncertain.
+  Once a request starts, Undo is disabled; this is not a post-delete restore UI.
+- Keep queues serializable and minimal: ID/title/version and scheduling/session
+  metadata only. Never store note bodies, files or controllers in the queue.
+
+To add another removable feature, supply a typed adapter and use the shared hook
+and UI; do not introduce another timer, countdown component or delay constant.

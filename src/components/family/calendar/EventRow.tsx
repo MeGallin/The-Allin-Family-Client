@@ -1,3 +1,5 @@
+import { useRemovals } from '../../../features/removals/useRemovals'
+import { RemovalNotice } from '../../removals/RemovalNotice'
 import type { FamilyEvent } from '../../../features/calendar/types'
 import './EventRow.css'
 import { eventDate } from '../../../lib/dates'
@@ -18,6 +20,8 @@ export function EventRow({
   day: string
   time: string
 }) {
+  const { removals } = useRemovals('calendar')
+  const removal = removals[event.id]
   const date = eventDate(event)
   return (
     <li className="event-row">
@@ -52,12 +56,14 @@ export function EventRow({
           {' · '}
           <FriendlyTime value={event.version > 1 ? event.updatedAt : event.createdAt} />
         </p>
+        <RemovalNotice removal={removal} />
         {onEdit && (
           <div className="event-row__controls">
             <button
               type="button"
+              id={'calendar-remove-' + event.id}
               className="button-link"
-              disabled={disabled}
+              disabled={disabled || !!removal}
               onClick={() => onEdit(event)}
               aria-label={'Edit ' + event.title}
             >

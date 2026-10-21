@@ -5,8 +5,10 @@ import family from '../features/family/family-slice'
 import shoppingUi from '../features/shopping/shopping-ui-slice'
 import calendarUi from '../features/calendar/calendar-ui-slice'
 import memoriesUi from '../features/memories/memories-ui-slice'
+import notesUi from '../features/notes/notes-ui-slice'
 import { shoppingApi } from '../services/shopping-query'
-import { removalListener } from '../features/shopping/removal-listener'
+import { removalListener } from '../features/removals/removal-listener'
+import removals from '../features/removals/removals-slice'
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +17,8 @@ export const store = configureStore({
     shoppingUi,
     calendarUi,
     memoriesUi,
+    notesUi,
+    removals,
     [shoppingApi.reducerPath]: shoppingApi.reducer,
   },
   middleware: (getDefault) =>

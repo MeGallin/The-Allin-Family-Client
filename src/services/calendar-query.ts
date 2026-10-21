@@ -17,9 +17,9 @@ export const calendarApi = shoppingApi.injectEndpoints({
       providesTags: ['Calendar'],
     }),
     changeCalendar: builder.mutation<CalendarSnapshot, CalendarWrite>({
-      async queryFn({ action, body }) {
+      async queryFn({ action, body }, { signal }) {
         try {
-          return { data: await changeCalendar(action, body) }
+          return { data: await changeCalendar(action, body, signal) }
         } catch (error) {
           return { error: serializableError(error) }
         }

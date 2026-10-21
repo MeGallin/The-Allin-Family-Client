@@ -1,0 +1,12 @@
+.note-composer fieldset {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.note-composer input,
+.note-composer textarea {
+  min-width: 0;
+}

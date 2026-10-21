@@ -1,0 +1,28 @@
+/* Personal stationery within Nimbus. Paper colours are decorative, never status. */
+:root {
+  --color-note-yellow: #f7e7a6;
+  --color-note-blue: #c5e6f3;
+  --color-note-purple: #dfd2f2;
+  --color-note-pink: #f3d1df;
+  --color-note-ink: #202b3b;
+  --color-note-ink-muted: #465367;
+  --color-note-link: #164760;
+  --color-note-highlight: #fffdf5;
+  --color-note-shadow: rgb(2 8 18 / 40%);
+  --color-note-focus: rgb(22 71 96 / 20%);
+  --color-pin-light: #9cecf4;
+  --color-pin-face: #36abc0;
+  --color-pin-side: #17647a;
+  --color-pin-dark: #12394d;
+  --color-pin-metal-light: #eef5f8;
+  --color-pin-metal-dark: #728694;
+  --note-paper-radius: 0.125rem;
+  --note-corner-curl-size: 1.5rem;
+  --note-card-min-width: 19rem;
+  --shadow-note-paper:
+    inset 0 1px 0 rgb(255 253 245 / 65%), 0 2px 3px rgb(2 8 18 / 16%),
+    0 14px 24px -12px var(--color-note-shadow);
+  --shadow-note-curl: 0 10px 14px var(--color-note-shadow);
+  --shadow-note-corner: -2px 3px 2px rgb(2 8 18 / 24%);
+  --shadow-note-pin: 3px 5px 3px rgb(2 8 18 / 32%);
+}

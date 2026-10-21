@@ -1,3 +1,4 @@
+import { useRemovals } from '../removals/useRemovals'
 import { useAppDispatch, useAppSelector, useAppStore } from '../../app/store-hooks'
 import { calendarApi } from '../../services/calendar-query'
 import { shoppingError } from '../../services/shopping-query'
@@ -6,6 +7,7 @@ import { calendarAdditionPrepared, calendarAdditionCleared } from './calendar-ui
 import type { EventDraft, FamilyEvent } from './types'
 
 export function useCalendar() {
+  const removal = useRemovals('calendar')
   const dispatch = useAppDispatch()
   const store = useAppStore()
   const query = calendarApi.endpoints.getCalendar.useQueryState(undefined)
@@ -52,7 +54,6 @@ export function useCalendar() {
     },
     edit: (event: FamilyEvent, draft: EventDraft) =>
       dispatch(executeCalendarWrite('edit', { ...draft, id: event.id, version: event.version })),
-    remove: (event: FamilyEvent) =>
-      dispatch(executeCalendarWrite('remove', { id: event.id, version: event.version })),
+    ...removal,
   }
 }

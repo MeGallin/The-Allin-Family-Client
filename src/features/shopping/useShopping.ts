@@ -1,11 +1,12 @@
+import { useRemovals } from '../removals/useRemovals'
 import { useAppDispatch, useAppSelector, useAppStore } from '../../app/store-hooks'
 import { shoppingApi, shoppingError, type ShoppingWrite } from '../../services/shopping-query'
 import { additionCleared, additionPrepared } from './shopping-ui-slice'
 import type { ShoppingItem } from './types'
 import { executeShoppingWrite } from './shopping-actions'
-import { removalScheduled, removalUndone, REMOVAL_DELAY_MS } from './shopping-ui-slice'
 
 export function useShopping() {
+  const removal = useRemovals('shopping')
   const dispatch = useAppDispatch()
   const store = useAppStore()
   const query = shoppingApi.endpoints.getShopping.useQueryState(undefined)
@@ -47,20 +48,6 @@ export function useShopping() {
       mutate('edit', { id: item.id, version: item.version, title, important }),
     check: (item: ShoppingItem) =>
       mutate('check', { id: item.id, version: item.version, checked: !item.checked }),
-    removals: ui.removals,
-    remove: (item: ShoppingItem) => {
-      if (store.getState().shoppingUi.busy || store.getState().shoppingUi.removals[item.id]) return
-      dispatch(
-        removalScheduled({
-          item,
-          token: crypto.randomUUID(),
-          deadline: Date.now() + REMOVAL_DELAY_MS,
-          sending: false,
-        }),
-      )
-    },
-    undoRemove: (id: string) => {
-      dispatch(removalUndone(id))
-    },
+    ...removal,
   }
 }

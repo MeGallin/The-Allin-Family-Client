@@ -1,5 +1,5 @@
-import { ApiError, apiUrl, request } from './api-client'
-import { getSession } from './auth-api'
+import { apiUrl, request } from './api-client'
+import { writeRequest } from './write-request'
 import type { FamilyMemory, MemoryAction, MemorySnapshot } from '../features/memories/types'
 
 export const getMemories = (signal?: AbortSignal) =>
@@ -23,13 +23,7 @@ export async function changeMemory(action: MemoryAction, body: object, photo?: F
   form.set('payload', JSON.stringify(body))
   if (photo) form.set('photo', photo)
   try {
-    try {
-      return await request<MemorySnapshot>('/memories/' + action, form, controller.signal)
-    } catch (error) {
-      if (!(error instanceof ApiError) || error.code !== 'csrf_failed') throw error
-      await getSession(controller.signal)
-      return await request<MemorySnapshot>('/memories/' + action, form, controller.signal)
-    }
+    return await writeRequest<MemorySnapshot>('/memories/' + action, form, controller.signal)
   } finally {
     uploads.delete(controller)
   }

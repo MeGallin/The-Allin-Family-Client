@@ -1,3 +1,4 @@
+import { RemovalDelayHint } from '../../removals/RemovalDelayHint'
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { useCalendar } from '../../../features/calendar/useCalendar'
 import type { FamilyEvent } from '../../../features/calendar/types'
@@ -255,6 +256,7 @@ export default function EventComposer({
       </form>
       {original && !stale && (
         <div className="event-composer__remove">
+          <RemovalDelayHint />
           {confirmRemove ? (
             <>
               <p>

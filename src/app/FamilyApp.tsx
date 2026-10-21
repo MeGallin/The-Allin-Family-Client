@@ -63,7 +63,10 @@ export default function FamilyApp({ onSessionExpired, ...layoutProps }: Props) {
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="memories" element={<MemoriesPage />} />
               <Route path="lists" element={<ListsPage />} />
-              <Route path="notes" element={<PersonalNotesPage />} />
+              <Route
+                path="notes"
+                element={<PersonalNotesPage onSessionExpired={onSessionExpired} />}
+              />
               <Route path="admin" element={<AdminPage />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="*" element={<NotFoundPage />} />

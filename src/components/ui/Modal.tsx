@@ -22,6 +22,11 @@ export function Modal({
     const previousFocus =
       document.activeElement instanceof HTMLElement ? document.activeElement : null
     const fallbackFocus = previousFocus?.closest<HTMLElement>('main') ?? null
+    const existingUndo = new Set(
+      Array.from(document.querySelectorAll<HTMLButtonElement>('button[data-removal]')).map(
+        (button) => button.dataset.removal,
+      ),
+    )
     dialog.showModal()
     dialog.querySelector<HTMLElement>('input, textarea')?.focus()
     const previousOverflow = document.body.style.overflow
@@ -29,7 +34,12 @@ export function Modal({
     return () => {
       dialog.close()
       document.body.style.overflow = previousOverflow
-      if (previousFocus?.isConnected) previousFocus.focus()
+      // A newly scheduled removal replaces its trigger with the shared Undo control.
+      const newUndo = Array.from(
+        document.querySelectorAll<HTMLButtonElement>('button[data-removal]'),
+      ).find((button) => !existingUndo.has(button.dataset.removal))
+      if (newUndo) newUndo.focus()
+      else if (previousFocus?.isConnected) previousFocus.focus()
       else if (fallbackFocus?.isConnected) fallbackFocus.focus({ preventScroll: true })
     }
   }, [])

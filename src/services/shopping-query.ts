@@ -21,7 +21,7 @@ export function shoppingError(error: unknown): ShoppingError | undefined {
 export const shoppingApi = createApi({
   reducerPath: 'shoppingApi',
   baseQuery: fakeBaseQuery<ShoppingError>(),
-  tagTypes: ['Shopping', 'Profiles', 'Calendar', 'Memories'],
+  tagTypes: ['Shopping', 'Profiles', 'Calendar', 'Memories', 'Notes'],
   refetchOnFocus: true,
   refetchOnReconnect: true,
   keepUnusedDataFor: 0,
@@ -37,9 +37,9 @@ export const shoppingApi = createApi({
       providesTags: ['Shopping'],
     }),
     changeShopping: builder.mutation<ShoppingSnapshot, ShoppingWrite>({
-      async queryFn({ action, body }) {
+      async queryFn({ action, body }, { signal }) {
         try {
-          return { data: await changeShopping(action, body) }
+          return { data: await changeShopping(action, body, signal) }
         } catch (error) {
           return { error: serializableError(error) }
         }

@@ -6,7 +6,7 @@ import { Icon } from '../ui/Icon'
 import { AccountMenu } from './AccountMenu'
 import { FamilyNavigation } from './FamilyNavigation'
 import { LoadingState } from '../ui/LoadingState'
-import { PendingShoppingRemovals } from '../family/shopping/PendingShoppingRemovals'
+import { PendingRemovals } from '../removals/PendingRemovals'
 import './FamilyLayout.css'
 
 type Props = {
@@ -63,7 +63,7 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
           </p>
         </div>
         <main id="family-content" className="family-layout__content" tabIndex={-1}>
-          <PendingShoppingRemovals />
+          <PendingRemovals />
           {error && (
             <p className="feedback feedback--error" role="alert">
               {error}

@@ -1,3 +1,4 @@
+import { RemovalNotice } from '../../removals/RemovalNotice'
 import { Link } from 'react-router'
 import { useEffect, useRef } from 'react'
 import { Heart, Pencil } from 'lucide-react'
@@ -19,7 +20,8 @@ export function MemoryCard({
   memory: FamilyMemory
   featured?: boolean
 }) {
-  const { react, pending, clearError } = useMemories()
+  const { react, pending, clearError, removals } = useMemories()
+  const removal = removals[memory.id]
   const reactionFocus = useRef<HTMLButtonElement | null>(null)
   useEffect(() => {
     if (!pending && reactionFocus.current?.isConnected) {
@@ -54,33 +56,36 @@ export function MemoryCard({
             </>
           )}
         </p>
-        <footer className="memory-card__footer">
-          <Link
-            className="memory-card__edit"
-            to={'/memories?edit=' + memory.id}
-            aria-label={'Edit ' + memory.title}
-            onClick={clearError}
-          >
-            <Icon icon={Pencil} />
-            Edit memory
-          </Link>
-          <button
-            type="button"
-            className="memory-card__reaction"
-            disabled={pending}
-            aria-label={(memory.liked ? 'Remove love from ' : 'Love ') + memory.title}
-            aria-pressed={memory.liked}
-            onClick={(event) => {
-              reactionFocus.current = event.currentTarget
-              void react(memory)
-            }}
-          >
-            <Icon icon={Heart} />
-            <span>
-              {memory.liked ? 'Loved' : 'Love this'} · {memory.reactions}
-            </span>
-          </button>
-        </footer>
+        <RemovalNotice removal={removal} />
+        {!removal && (
+          <footer className="memory-card__footer">
+            <Link
+              className="memory-card__edit"
+              to={'/memories?edit=' + memory.id}
+              aria-label={'Edit ' + memory.title}
+              onClick={clearError}
+            >
+              <Icon icon={Pencil} />
+              Edit memory
+            </Link>
+            <button
+              type="button"
+              className="memory-card__reaction"
+              disabled={pending}
+              aria-label={(memory.liked ? 'Remove love from ' : 'Love ') + memory.title}
+              aria-pressed={memory.liked}
+              onClick={(event) => {
+                reactionFocus.current = event.currentTarget
+                void react(memory)
+              }}
+            >
+              <Icon icon={Heart} />
+              <span>
+                {memory.liked ? 'Loved' : 'Love this'} · {memory.reactions}
+              </span>
+            </button>
+          </footer>
+        )}
         <details className="memory-card__details">
           <summary>Memory details</summary>
           {memory.photoKey && (
@@ -96,8 +101,9 @@ export function MemoryCard({
           <p>
             Last edited by {memory.updatedBy.displayName} on {exactDate(memory.updatedAt)}.
           </p>
-          {canRemove && (
+          {canRemove && !removal && (
             <Link
+              id={'memories-remove-' + memory.id}
               to={'/memories?remove=' + memory.id}
               onClick={clearError}
               aria-label={'Remove ' + memory.title}

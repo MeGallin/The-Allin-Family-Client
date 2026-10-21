@@ -2,7 +2,7 @@ import { useEffect, type ReactNode } from 'react'
 import { shoppingApi } from '../../services/shopping-query'
 import { useShopping } from './useShopping'
 import { useAppDispatch } from '../../app/store-hooks'
-import { waitingRemovalsCancelled } from './shopping-ui-slice'
+import { waitingRemovalsCancelled } from '../removals/removals-slice'
 import { useProfileSync } from '../auth/useProfileSync'
 export function ShoppingSync({
   children,

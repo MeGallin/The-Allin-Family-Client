@@ -1,13 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { LoaderCircle } from 'lucide-react'
-import { useShopping } from '../../../features/shopping/useShopping'
-import { REMOVAL_DELAY_MS } from '../../../features/shopping/shopping-ui-slice'
-import { Icon } from '../../ui/Icon'
-import './PendingShoppingRemovals.css'
+import { useAppDispatch, useAppSelector } from '../../app/store-hooks'
+import { removalUndone } from '../../features/removals/removals-slice'
+import { REMOVAL_DELAY_MS } from '../../features/removals/removals-slice'
+import { Icon } from '../ui/Icon'
+import './PendingRemovals.css'
 
-export function PendingShoppingRemovals() {
-  const { removals, undoRemove } = useShopping()
-  const entries = Object.values(removals)
+export function PendingRemovals() {
+  const dispatch = useAppDispatch()
+  const { entries: removals, feedback } = useAppSelector((state) => state.removals)
+  const auth = useAppSelector((state) => state.auth)
+  const entries = Object.values(removals).filter(
+    (entry) => entry.ownerId === auth.user?.id && entry.generation === auth.generation,
+  )
   const [now, setNow] = useState(Date.now)
   const section = useRef<HTMLElement>(null)
   const previous = useRef(new Set<string>())
@@ -21,8 +26,7 @@ export function PendingShoppingRemovals() {
     previous.current = new Set(current)
     if (undoFocusId.current) {
       const target =
-        document.getElementById('shopping-remove-' + undoFocusId.current) ??
-        document.getElementById('family-content')
+        document.getElementById(undoFocusId.current) ?? document.getElementById('family-content')
       target?.focus()
       undoFocusId.current = null
     }
@@ -33,13 +37,21 @@ export function PendingShoppingRemovals() {
     const interval = window.setInterval(() => setNow(Date.now()), 1000)
     return () => window.clearInterval(interval)
   }, [entries.length])
-  if (!entries.length) return null
+  if (!entries.length)
+    return feedback ? (
+      <p role="status" className="note">
+        {feedback}
+      </p>
+    ) : null
   return (
-    <section ref={section} className="pending-removals" aria-label="Pending shopping removals">
+    <section ref={section} className="pending-removals" aria-label="Pending removals">
       <h2>Changed your mind?</h2>
+      <p role="status" className="note">
+        {feedback}
+      </p>
       <p className="note">
-        Undo before the countdown ends to keep an item. Refreshing or signing out cancels pending
-        removals.
+        Undo before the countdown ends to keep your content. Refreshing or signing out cancels
+        pending removals.
       </p>
       <ul>
         {entries.map((entry) => {
@@ -50,6 +62,10 @@ export function PendingShoppingRemovals() {
                 <Icon icon={LoaderCircle} className="pending-removals__spinner" />
                 <div>
                   <strong>{entry.item.title}</strong>
+                  <span className="note">
+                    {' '}
+                    · {entry.domain === 'notes' ? 'Private note' : entry.domain}
+                  </span>
                   <p>
                     {entry.sending
                       ? 'Removing…'
@@ -65,8 +81,8 @@ export function PendingShoppingRemovals() {
                 className="secondary"
                 disabled={entry.sending}
                 onClick={() => {
-                  undoFocusId.current = entry.item.id
-                  undoRemove(entry.item.id)
+                  undoFocusId.current = entry.domain + '-remove-' + entry.item.id
+                  dispatch(removalUndone(entry.key))
                 }}
                 aria-label={'Undo removal of ' + entry.item.title}
               >
