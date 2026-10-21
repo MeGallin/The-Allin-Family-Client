@@ -1,0 +1,23 @@
+.upcoming-plans__next {
+  padding: var(--space-4);
+  margin-bottom: var(--space-5);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-control);
+  background: var(--color-accent-soft);
+  overflow-wrap: anywhere;
+}
+.upcoming-plans__next > p:first-child {
+  color: var(--color-accent);
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-2);
+}
+.upcoming-plans__next h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-xl);
+  line-height: 1.3;
+}
+.upcoming-plans__next p:last-child {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  margin: 0;
+}

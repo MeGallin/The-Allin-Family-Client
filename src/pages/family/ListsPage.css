@@ -1,0 +1,38 @@
+.lists-page > .panel {
+  max-width: 48rem;
+}
+.lists-page__count {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+.shopping-add {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+.shopping-add__controls {
+  display: grid;
+  gap: var(--space-3);
+}
+.shopping-add__controls input {
+  min-width: 0;
+}
+.shopping-add__controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+.lists-page__feedback {
+  min-height: 1.5rem;
+  color: var(--color-success);
+  font-size: var(--text-sm);
+  margin: var(--space-3) 0 0;
+  overflow-wrap: anywhere;
+}
+@container family-content (min-width: 32rem) {
+  .shopping-add__controls {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}

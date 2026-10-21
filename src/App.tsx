@@ -1,10 +1,15 @@
-import { useCallback, useEffect, useState } from 'react'
-import { getSession, signOut, type FamilySession } from './auth-api'
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
+import { getSession, signOut } from './services/auth-api'
+import type { FamilySession } from './types/auth'
 import { messageFor } from './lib/errors'
 import { LoginForm } from './components/auth/LoginForm'
-import { PasswordForm } from './components/auth/PasswordForm'
-import { PrivateHome } from './components/family/PrivateHome'
+import { LoadingState } from './components/ui/LoadingState'
 import './App.css'
+
+const FamilyApp = lazy(() => import('./app/FamilyApp'))
+const PasswordForm = lazy(() =>
+  import('./components/auth/PasswordForm').then((module) => ({ default: module.PasswordForm })),
+)
 
 export default function App() {
   const [session, setSession] = useState<FamilySession | null>(null)
@@ -60,6 +65,35 @@ export default function App() {
 
   const user = session?.user
 
+  useEffect(() => {
+    if (!user || user.mustChangePassword || changingPassword) {
+      document.title =
+        changingPassword || user?.mustChangePassword
+          ? 'Password settings · The Allin Family'
+          : 'The Allin Family'
+    }
+  }, [user, changingPassword])
+
+  if (!loading && user && !user.mustChangePassword && !changingPassword) {
+    return (
+      <Suspense
+        fallback={
+          <main className="app-shell">
+            <LoadingState />
+          </main>
+        }
+      >
+        <FamilyApp
+          onSessionExpired={handleSessionExpired}
+          onChangePassword={() => setChangingPassword(true)}
+          onLogout={logout}
+          loggingOut={loggingOut}
+          error={error}
+        />
+      </Suspense>
+    )
+  }
+
   return (
     <main className="app-shell">
       <p className="eyebrow">theallinfamily.co.uk</p>
@@ -67,37 +101,40 @@ export default function App() {
       <p className="intro">A place for all of us.</p>
 
       {loading ? (
-        <p className="app-status" role="status">Checking your session…</p>
+        <LoadingState label="Checking your session…" />
       ) : error && !session ? (
         <section className="surface-card app-error-card">
-          <p className="error" role="alert">{error}</p>
-          <button type="button" onClick={() => setReload((value) => value + 1)}>Try again</button>
+          <p className="error" role="alert">
+            {error}
+          </p>
+          <button type="button" onClick={() => setReload((value) => value + 1)}>
+            Try again
+          </button>
         </section>
       ) : !user ? (
         <LoginForm onSession={acceptSession} />
       ) : (
         <>
           <div className="account-bar">
-            <p>Signed in as <strong>{user.displayName}</strong></p>
+            <p>
+              Signed in as <strong>{user.displayName}</strong>
+            </p>
             <button type="button" className="secondary" onClick={logout} disabled={loggingOut}>
               {loggingOut ? 'Signing out…' : 'Sign out'}
             </button>
           </div>
-          {error && <p className="error app-inline-error" role="alert">{error}</p>}
-          {user.mustChangePassword || changingPassword ? (
+          {error && (
+            <p className="error app-inline-error" role="alert">
+              {error}
+            </p>
+          )}
+          <Suspense fallback={<LoadingState label="Opening password settings…" />}>
             <PasswordForm
               required={user.mustChangePassword}
               onSession={acceptSession}
               onCancel={() => setChangingPassword(false)}
             />
-          ) : (
-            <>
-              <PrivateHome onExpired={handleSessionExpired} />
-              <button type="button" className="text-button" onClick={() => setChangingPassword(true)}>
-                Change password
-              </button>
-            </>
-          )}
+          </Suspense>
         </>
       )}
     </main>

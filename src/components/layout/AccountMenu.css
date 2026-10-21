@@ -1,0 +1,84 @@
+.account-menu {
+  position: relative;
+}
+.account-menu summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-min-height);
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+}
+.account-menu summary::-webkit-details-marker {
+  display: none;
+}
+.account-menu summary:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+.account-menu__avatar {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font-weight: 600;
+}
+.account-menu__name {
+  display: none;
+}
+.account-menu__popover {
+  position: absolute;
+  z-index: 60;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  width: min(18rem, calc(100vw - 2.5rem));
+  padding: var(--space-2);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+.account-menu__identity {
+  padding: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+.account-menu__identity strong {
+  display: block;
+  color: var(--color-text);
+}
+.account-menu__popover a,
+.account-menu__popover button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3);
+  min-height: var(--control-min-height);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-text);
+  box-shadow: none;
+  text-decoration: none;
+  font-size: var(--text-sm);
+  text-align: left;
+  font-weight: 500;
+}
+.account-menu__popover a:hover,
+.account-menu__popover button:hover:not(:disabled) {
+  background: var(--color-accent-soft);
+}
+@media (min-width: 40rem) {
+  .account-menu__name {
+    display: inline;
+    max-width: 12rem;
+    overflow-wrap: anywhere;
+  }
+}

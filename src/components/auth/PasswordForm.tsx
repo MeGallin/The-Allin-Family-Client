@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
-import { changePassword, type FamilySession } from '../../auth-api'
+import { changePassword } from '../../services/auth-api'
+import type { FamilySession } from '../../types/auth'
 import { messageFor } from '../../lib/errors'
 import './PasswordForm.css'
 
@@ -38,14 +39,18 @@ export function PasswordForm({ required, onSession, onCancel }: PasswordFormProp
 
   return (
     <section className="surface-card password-card" aria-labelledby="change-password-title">
-      <h2 id="change-password-title">{required ? 'Choose your own password' : 'Change your password'}</h2>
+      <h2 id="change-password-title">
+        {required ? 'Choose your own password' : 'Change your password'}
+      </h2>
       <p className="password-intro">
         {required
           ? 'Replace your temporary password to enter the family space.'
           : 'Updating your password signs out your other sessions.'}
       </p>
       <form onSubmit={submit}>
-        <label htmlFor="current-password">{required ? 'Temporary password' : 'Current password'}</label>
+        <label htmlFor="current-password">
+          {required ? 'Temporary password' : 'Current password'}
+        </label>
         <input
           id="current-password"
           type="password"
@@ -67,7 +72,9 @@ export function PasswordForm({ required, onSession, onCancel }: PasswordFormProp
           value={newPassword}
           onChange={(event) => setNewPassword(event.target.value)}
         />
-        <p className="note password-help" id="password-help">Use a unique passphrase of at least 15 characters.</p>
+        <p className="note password-help" id="password-help">
+          Use a unique passphrase of at least 15 characters.
+        </p>
         <label htmlFor="confirm-password">Confirm new password</label>
         <input
           id="confirm-password"
@@ -79,10 +86,20 @@ export function PasswordForm({ required, onSession, onCancel }: PasswordFormProp
           value={confirmation}
           onChange={(event) => setConfirmation(event.target.value)}
         />
-        {error && <p className="error form-error" role="alert">{error}</p>}
+        {error && (
+          <p className="error form-error" role="alert">
+            {error}
+          </p>
+        )}
         <div className="actions">
-          <button type="submit" disabled={busy}>{busy ? 'Saving…' : 'Save password'}</button>
-          {!required && <button type="button" className="secondary" onClick={onCancel} disabled={busy}>Cancel</button>}
+          <button type="submit" disabled={busy}>
+            {busy ? 'Saving…' : 'Save password'}
+          </button>
+          {!required && (
+            <button type="button" className="secondary" onClick={onCancel} disabled={busy}>
+              Cancel
+            </button>
+          )}
         </div>
       </form>
     </section>

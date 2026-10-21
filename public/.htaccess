@@ -1,0 +1,9 @@
+# Production SPA routes. The PHP API keeps its own routing and access controls.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^api(?:/|$) - [L]
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+  RewriteRule ^ index.html [L]
+</IfModule>

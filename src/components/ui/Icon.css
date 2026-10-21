@@ -1,0 +1,5 @@
+.ui-icon {
+  width: var(--icon-size);
+  height: var(--icon-size);
+  flex: 0 0 auto;
+}

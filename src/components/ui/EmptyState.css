@@ -1,0 +1,18 @@
+.empty-state {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  text-align: center;
+  padding: var(--space-6) var(--space-4);
+  color: var(--color-text-muted);
+}
+.empty-state > .ui-icon {
+  color: var(--color-accent);
+}
+.empty-state h2 {
+  font-size: var(--text-lg);
+  margin: 0;
+}
+.empty-state p:last-child {
+  margin-bottom: 0;
+}

@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react'
-import { ApiError, getSession, signIn, type FamilySession } from '../../auth-api'
+import { ApiError } from '../../services/api-client'
+import { getSession, signIn } from '../../services/auth-api'
+import type { FamilySession } from '../../types/auth'
 import { messageFor } from '../../lib/errors'
 import './LoginForm.css'
 
@@ -59,10 +61,18 @@ export function LoginForm({ onSession }: LoginFormProps) {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
-        {error && <p className="error form-error" role="alert">{error}</p>}
-        <button type="submit" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
+        {error && (
+          <p className="error form-error" role="alert">
+            {error}
+          </p>
+        )}
+        <button type="submit" disabled={busy}>
+          {busy ? 'Signing in…' : 'Sign in'}
+        </button>
       </form>
-      <p className="note login-note">Accounts are provided by the family administrator. Public registration is closed.</p>
+      <p className="note login-note">
+        Accounts are provided by the family administrator. Public registration is closed.
+      </p>
     </section>
   )
 }

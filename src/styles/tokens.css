@@ -25,14 +25,17 @@
   --color-link: #67e8f9;
   --color-success: #6ee7b7;
   --color-error: #fda4af;
+  --color-error-soft: #351a2c;
+  --color-backdrop: rgb(3 8 16 / 78%);
   --color-focus: #67e8f9;
-  --background-page: radial-gradient(ellipse at 10% 0%, rgb(14 116 233 / 18%), transparent 48%),
+  --background-page:
+    radial-gradient(ellipse at 10% 0%, rgb(14 116 233 / 18%), transparent 48%),
     radial-gradient(ellipse at 100% 60%, rgb(34 211 238 / 7%), transparent 48%);
 
   /* Inter is self-hosted through fonts.css; no third-party font requests. */
-  --font-body: "Inter Variable", "Segoe UI", system-ui, sans-serif;
+  --font-body: 'Inter Variable', 'Segoe UI', system-ui, sans-serif;
   --font-display: var(--font-body);
-  --font-mono: "SFMono-Regular", Consolas, monospace;
+  --font-mono: 'SFMono-Regular', Consolas, monospace;
   --weight-heading: 650;
   --weight-display: 700;
 
@@ -43,6 +46,8 @@
   --text-lg: 1.125rem;
   --text-xl: 1.375rem;
   --text-2xl: 1.75rem;
+  --text-3xl: 2rem;
+  --text-page-title: clamp(1.75rem, 4vw, 2.5rem);
   --text-display: clamp(2.5rem, 6vw, 3.75rem);
 
   /* 8px spacing rhythm with a 4px half-step. */
@@ -65,10 +70,17 @@
   --shadow-raised: 0 24px 56px rgb(0 0 0 / 36%);
   --shadow-action: 0 4px 20px rgb(34 211 238 / 16%);
   --content-width: 45rem;
+  --dashboard-width: 82rem;
+  --sidebar-width: 14rem;
+  --mobile-nav-height: 5rem;
+  --panel-padding: clamp(1rem, 3vw, 1.5rem);
+  --icon-size: 1.25rem;
   --page-gutter: clamp(1.25rem, 5vw, 2rem);
   --control-min-height: 3rem;
   --focus-ring: 0 0 0 5px rgb(34 211 238 / 18%);
   --motion-fast: 150ms;
+  --motion-medium: 220ms;
+  --motion-loading: 900ms;
   --motion-ease: cubic-bezier(0.2, 0, 0, 1);
   --control-transition: var(--motion-fast) var(--motion-ease);
 }

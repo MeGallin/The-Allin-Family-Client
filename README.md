@@ -44,9 +44,36 @@ reduced-motion preference.
 ## Accounts
 
 The client now includes sign-in, mandatory first-login password change, a protected
-family starting page, password change and sign-out. Accounts are created by the
+family home, password change and sign-out. Accounts are created by the
 administrator through PHP CLI commands. There is no public registration screen
-or endpoint. Calendar, list and photo features have not been implemented yet.
+or endpoint.
+
+## Family home and source organisation
+
+The signed-in app has lazy routes for Home, Calendar, Memories, Lists and
+Administration, with a useful not-found page. Desktop navigation becomes a
+labelled bottom navigation on phones. Administration currently provides a role
+guard and placeholder information; account management and statistics are future work.
+
+The family content is explicitly labelled as a preview. Plans, shopping changes,
+photo previews, reactions and poll choices live in React state for this tab and
+reset on refresh or sign-out. Photos use local object URLs and are not uploaded.
+The PHP API currently supplies authentication and the protected family gate only;
+shared persistence still needs API endpoints and database migrations.
+
+- `src/app`: router and signed-in application composition.
+- `src/pages`: lazy route views with colocated styles.
+- `src/components`: reusable UI, layout, auth and family components with their CSS.
+- `src/features/family`: typed preview data, navigation and shared state.
+- `src/services`: shared HTTP client and feature API calls.
+- `src/hooks`, `src/types`, `src/lib`: hooks, authentication types and small helpers.
+
+Route and dialog bundles load on demand. Images reserve their dimensions;
+gallery images load lazily while the featured memory loads eagerly. Native
+dialogs provide keyboard focus handling and Escape dismissal. Loading, retry,
+empty and error states use shared components. Motion respects reduced motion.
+
+Run `npm run format` to format source or `npm run format:check` to check formatting.
 
 PHP verifies every private request. React receives only the signed-in user's
 public profile. The session ID stays in an HttpOnly cookie; CSRF tokens are held
@@ -88,6 +115,8 @@ dev for the integrated local app.
 
 The repository-root .htaccess prevents XAMPP Apache from serving client source
 or environment files. It is not included in dist. Do not deploy the source folder,
-Git metadata or .env. Future page routing rules will be added with those pages.
+Git metadata or .env. `public/.htaccess` is copied into dist and provides Apache
+SPA route fallback while leaving `/api` to the separately deployed API. Enable
+Apache rewrite support, or configure equivalent fallback rules on another host.
 
 Repository: https://github.com/MeGallin/The-Allin-Family-Client

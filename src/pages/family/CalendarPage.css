@@ -1,0 +1,6 @@
+.calendar-page > .panel {
+  max-width: 52rem;
+}
+.calendar-page .event-list {
+  gap: var(--space-5);
+}

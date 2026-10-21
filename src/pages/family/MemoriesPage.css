@@ -1,0 +1,10 @@
+.memories-grid {
+  display: grid;
+  gap: var(--space-5);
+  align-items: start;
+}
+@container family-content (min-width: 46rem) {
+  .memories-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

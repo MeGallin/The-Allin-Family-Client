@@ -1,0 +1,23 @@
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 12rem;
+  padding: var(--space-5);
+  color: var(--color-text-muted);
+}
+.loading-state__spinner {
+  color: var(--color-accent);
+  animation: loading-spin var(--motion-loading) linear infinite;
+}
+@keyframes loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading-state__spinner {
+    animation: none;
+  }
+}
