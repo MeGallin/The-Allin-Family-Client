@@ -14,8 +14,22 @@ export function serializableError(error: unknown): ShoppingError {
   }
 }
 export function shoppingError(error: unknown): ShoppingError | undefined {
-  if (error && typeof error === 'object' && 'status' in error && 'message' in error)
-    return error as ShoppingError
+  if (
+    error &&
+    typeof error === 'object' &&
+    'status' in error &&
+    typeof error.status === 'number' &&
+    'message' in error &&
+    typeof error.message === 'string'
+  ) {
+    // Direct service writes may throw ApiError instances. Project plain fields so
+    // the shared write lifecycle never dispatches an Error object into Redux.
+    return {
+      status: error.status,
+      code: 'code' in error && typeof error.code === 'string' ? error.code : '',
+      message: error.message,
+    }
+  }
   return undefined
 }
 export const shoppingApi = createApi({

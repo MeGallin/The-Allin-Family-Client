@@ -12,6 +12,16 @@ import type { FamilyUser } from '../types/auth'
 import type { RootState } from '../app/store'
 
 // Extend the existing API cache/middleware rather than creating a second API store.
+export const profileInvalidationTags = [
+  'Profiles',
+  'Shopping',
+  'Calendar',
+  'Memories',
+  'Polls',
+  'AdminActivity',
+  'AdminUsage',
+  'AdminInsights',
+] as const
 export const profileApi = shoppingApi.injectEndpoints({
   endpoints: (builder) => ({
     getProfile: builder.query<ProfileResponse, void>({
@@ -53,18 +63,7 @@ export const profileApi = shoppingApi.injectEndpoints({
           await dispatch(
             profileApi.util.upsertQueryData('getProfile', undefined, { profile: data.self }),
           )
-          dispatch(
-            profileApi.util.invalidateTags([
-              'Profiles',
-              'Shopping',
-              'Calendar',
-              'Memories',
-              'Polls',
-              'AdminActivity',
-              'AdminUsage',
-              'AdminInsights',
-            ]),
-          )
+          dispatch(profileApi.util.invalidateTags([...profileInvalidationTags]))
         } catch {
           /* The form displays the mutation error and retains the draft. */
         }

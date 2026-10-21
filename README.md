@@ -431,3 +431,38 @@ labelled as existing rather than a new login. Closing the browser is not a relia
 logout event: stale sessions display inactive and retain their last recorded
 section. Duration is an estimate of active time across sessions, not exact time
 between login and logout. No third-party analytics package or cookie is added.
+
+## Family account management
+
+Administration > Family members is a lazy, mobile-first directory with one shared
+create/edit form. Admins can manage full name, nickname, sign-in username, role and
+active/paused access, including restoring paused accounts. Account creation issues
+a generated temporary password. Password reset has a separate confirmation and
+issues a new temporary password; the member must choose their own at next sign-in.
+Use Change password in the account menu for your own account. Admins cannot pause
+or demote themselves. Pausing retains content and prevents sign-in immediately.
+
+The existing Redux store owns member request status and the RTK Query directory.
+Writes use executeWrite and writeRequest, sharing session-generation checks,
+CSRF handling, conflict refresh and cache invalidation with the other features.
+Profile invalidation tags are shared with nickname changes. Components and CSS
+are colocated under components/admin/members; typed domain state and transport
+live in features/members and services. The old nickname-only admin grid is replaced
+by the directory; self-service nickname editing remains on Profile.
+
+Temporary passwords are returned directly to the calling component and shown once.
+They never enter Redux actions, query/mutation caches, localStorage, URLs or audit
+history. Dismissing the credential panel or leaving the view clears its mounted
+state. Share the details privately before dismissing. If a response is lost, reload
+the directory before retrying; reset again if a new temporary credential is needed.
+
+Account changes and self-service password changes appear in Shared activity under
+Family accounts and in the overview chart. Nickname-only self edits keep their
+existing Nicknames category. Audit member filters include paused accounts. The
+API records actor, target, server time and public before/after fields, excluding
+passwords and hashes. No database migration or example accounts are required.
+
+Account-management browser verification also covers duplicate usernames, stale
+edits and loading the latest version. Loading the latest draft clears the old
+conflict error. The shared shoppingError adapter projects plain status/code/message
+fields even when a direct service throws ApiError, keeping Redux state serializable.

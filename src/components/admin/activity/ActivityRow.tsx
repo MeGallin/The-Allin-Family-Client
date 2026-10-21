@@ -8,6 +8,7 @@ const nouns: Record<string, string> = {
   memory: 'memory',
   poll: 'poll',
   user_profile: 'profile',
+  user_account: 'account',
 }
 const verbs: Record<string, string> = {
   created: 'added',
@@ -18,6 +19,8 @@ const verbs: Record<string, string> = {
   liked: 'liked',
   unliked: 'removed their like from',
   nickname_changed: 'changed the nickname on',
+  password_reset: 'reset the password for',
+  password_changed: 'changed the password for',
   voted: 'voted on',
   vote_changed: 'changed their vote on',
   vote_withdrawn: 'withdrew their vote from',

@@ -11,6 +11,7 @@ export const featureNames: Record<string, string> = {
   memory: 'Memories',
   poll: 'Polls',
   user_profile: 'Nicknames',
+  user_account: 'Family accounts',
 }
 export function chartDate(day: string, full = false) {
   return format(parseISO(day), full ? 'EEEE, d MMM yyyy' : 'd MMM')

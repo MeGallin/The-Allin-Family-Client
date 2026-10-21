@@ -1,19 +1,64 @@
-.admin-roadmap {
+.admin-members {
   display: grid;
   gap: var(--space-5);
+  min-width: 0;
 }
-.admin-roadmap .surface-card > .ui-icon {
-  color: var(--color-accent);
-  margin-bottom: var(--space-4);
+.admin-members__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
 }
-.admin-roadmap h2 {
+.admin-members__header h2 {
   font-size: var(--text-xl);
 }
-.admin-roadmap p {
-  color: var(--color-text-muted);
+.admin-members__grid {
+  display: grid;
+  gap: var(--space-4);
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
-@container family-content (min-width: 46rem) {
-  .admin-roadmap {
+.admin-members__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.admin-members__card h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  font-size: var(--text-lg);
+}
+.admin-members__card > button {
+  margin-top: auto;
+}
+.admin-members__you {
+  font-size: var(--text-xs);
+  color: var(--color-accent);
+  font-weight: 500;
+}
+.admin-members__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+@container family-content (min-width: 40rem) {
+  .admin-members__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin-members__header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+@container family-content (min-width: 64rem) {
+  .admin-members__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

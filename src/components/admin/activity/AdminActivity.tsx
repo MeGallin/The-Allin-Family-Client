@@ -1,7 +1,7 @@
 import { useId } from 'react'
 import { useAdminFilters } from '../../../features/admin/useAdminFilters'
 import { activityApi } from '../../../services/activity-query'
-import { profileApi } from '../../../services/profile-query'
+import { membersApi } from '../../../services/members-query'
 import { shoppingError } from '../../../services/shopping-query'
 import { LoadingState } from '../../ui/LoadingState'
 import { ActivityRow } from './ActivityRow'
@@ -17,7 +17,7 @@ export default function AdminActivity() {
     { type, actor, before },
     { pollingInterval: before ? 0 : 15000, skipPollingIfUnfocused: true },
   )
-  const users = profileApi.useGetAdminUsersQuery(undefined)
+  const users = membersApi.useGetAdminMembersQuery(undefined)
   // currentData avoids briefly showing another filter/page's rows while a request loads.
   const data = query.currentData
   return (
@@ -46,6 +46,7 @@ export default function AdminActivity() {
               ['memory', 'Memories and likes'],
               ['poll', 'Polls and votes'],
               ['user_profile', 'Nicknames'],
+              ['user_account', 'Family accounts'],
             ].map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
@@ -63,7 +64,7 @@ export default function AdminActivity() {
             }}
           >
             <option value="">Everyone</option>
-            {users.data?.users.map((user) => (
+            {users.data?.members.map((user) => (
               <option value={user.id} key={user.id}>
                 {user.familyName}
               </option>

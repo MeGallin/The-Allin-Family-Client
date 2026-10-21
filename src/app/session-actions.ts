@@ -8,6 +8,7 @@ import { pollsUiReset } from '../features/polls/polls-ui-slice'
 import { abortMemoryWrites } from '../services/memories-api'
 import { memoriesUiReset } from '../features/memories/memories-ui-slice'
 import { notesUiReset } from '../features/notes/notes-ui-slice'
+import { membersUiReset } from '../features/members/members-ui-slice'
 
 export function clearPrivateState(dispatch: AppDispatch) {
   dispatch(removalsReset())
@@ -19,6 +20,7 @@ export function clearPrivateState(dispatch: AppDispatch) {
   dispatch(calendarUiReset())
   dispatch(memoriesUiReset())
   dispatch(notesUiReset())
+  dispatch(membersUiReset())
   dispatch(pollsUiReset())
   dispatch(userReceived(null))
 }
