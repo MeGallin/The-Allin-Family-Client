@@ -19,3 +19,13 @@ button { font: inherit; padding: 10px 16px; border: 0; border-radius: 4px; backg
 button:disabled { opacity: .6; cursor: wait; }
 button:focus-visible { outline: 3px solid #a56223; outline-offset: 3px; }
 .note { margin-top: 24px; color: #59635d; font-size: .875rem; line-height: 1.6; }
+form { display: grid; gap: 12px; margin-top: 24px; }
+label { font-weight: 600; }
+input { width: 100%; font: inherit; padding: 12px; border: 1px solid #aab8ad; border-radius: 4px; background: #fff; color: #23362e; margin-bottom: 8px; }
+input:focus-visible { outline: 3px solid #a56223; outline-offset: 2px; }
+form .note { margin: -8px 0 8px; }
+.actions, .account-bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.account-bar { justify-content: space-between; margin-top: 24px; }
+.account-bar + section { margin-top: 16px; }
+.secondary { background: #e6ece7; color: #23362e; }
+.text-button { background: transparent; color: #294c3b; padding: 8px 0; margin-top: 12px; text-decoration: underline; }
