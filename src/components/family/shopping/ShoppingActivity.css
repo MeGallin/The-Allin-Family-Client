@@ -1,0 +1,25 @@
+.shopping-activity {
+  margin-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-3);
+}
+.shopping-activity summary {
+  cursor: pointer;
+  min-height: var(--control-min-height);
+  padding-block: var(--space-3);
+  font-weight: 600;
+}
+.shopping-activity ol {
+  padding-left: var(--space-5);
+}
+.shopping-activity li {
+  margin-bottom: var(--space-4);
+  overflow-wrap: anywhere;
+}
+.shopping-activity p {
+  margin-bottom: var(--space-1);
+}
+.shopping-activity time {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}

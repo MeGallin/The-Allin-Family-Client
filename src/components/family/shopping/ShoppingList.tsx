@@ -1,6 +1,7 @@
-import { Trash2, ShoppingBasket } from 'lucide-react'
-import { useFamilyData } from '../../../features/family/useFamilyData'
-import { Icon } from '../../ui/Icon'
+import { ShoppingBasket } from 'lucide-react'
+import { useShopping } from '../../../features/shopping/useShopping'
+import { LoadingState } from '../../ui/LoadingState'
+import { ShoppingRow } from './ShoppingRow'
 import { EmptyState } from '../../ui/EmptyState'
 import './ShoppingList.css'
 
@@ -11,7 +12,19 @@ export function ShoppingList({
   limit?: number
   removable?: boolean
 }) {
-  const { shopping, toggleShoppingItem, removeShoppingItem } = useFamilyData()
+  const { items: shopping, loading, error, pending, refresh } = useShopping()
+  if (loading) return <LoadingState label="Loading the shared list…" />
+  if (error && shopping.length === 0)
+    return (
+      <div>
+        <p className="error" role="alert">
+          {error}
+        </p>
+        <button type="button" className="secondary" onClick={refresh}>
+          Try again
+        </button>
+      </div>
+    )
   if (shopping.length === 0)
     return (
       <EmptyState icon={ShoppingBasket} title="Nothing on the list">
@@ -21,26 +34,7 @@ export function ShoppingList({
   return (
     <ul className="shopping-list">
       {shopping.slice(0, limit).map((item) => (
-        <li key={item.id}>
-          <label>
-            <input
-              type="checkbox"
-              checked={item.checked}
-              onChange={() => toggleShoppingItem(item.id)}
-            />
-            <span>{item.title}</span>
-          </label>
-          {removable && (
-            <button
-              type="button"
-              className="icon-button"
-              aria-label={'Remove ' + item.title}
-              onClick={() => removeShoppingItem(item.id)}
-            >
-              <Icon icon={Trash2} />
-            </button>
-          )}
-        </li>
+        <ShoppingRow key={item.id} item={item} editable={removable} disabled={pending} />
       ))}
     </ul>
   )

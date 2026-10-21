@@ -6,6 +6,7 @@ import { Icon } from '../ui/Icon'
 import { AccountMenu } from './AccountMenu'
 import { FamilyNavigation } from './FamilyNavigation'
 import { LoadingState } from '../ui/LoadingState'
+import { PendingShoppingRemovals } from '../family/shopping/PendingShoppingRemovals'
 import './FamilyLayout.css'
 
 type Props = {
@@ -57,11 +58,12 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
         <div className="family-layout__notice">
           <Icon icon={FlaskConical} />
           <p>
-            <strong>Home preview</strong> You’re trying sample content. Changes stay in this tab and
-            reset on refresh.
+            <strong>Family space</strong> Shopping is shared and saved. Memories, plans and polls
+            are still sample previews that reset on refresh.
           </p>
         </div>
         <main id="family-content" className="family-layout__content" tabIndex={-1}>
+          <PendingShoppingRemovals />
           {error && (
             <p className="feedback feedback--error" role="alert">
               {error}

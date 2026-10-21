@@ -12,7 +12,8 @@ export function MemoryCard({
   memory: FamilyMemory
   featured?: boolean
 }) {
-  const { toggleReaction } = useFamilyData()
+  const { toggleReaction, user } = useFamilyData()
+  const author = memory.authorId === user.id ? user.familyName : memory.author
   return (
     <article className={'memory-card' + (featured ? ' memory-card--featured' : '')}>
       <FamilyImage
@@ -29,8 +30,8 @@ export function MemoryCard({
         <p className="memory-card__caption">{memory.caption}</p>
         <footer className="memory-card__footer">
           <div className="memory-card__author">
-            <span aria-hidden="true">{Array.from(memory.author)[0]?.toUpperCase()}</span>
-            <span>{memory.author}</span>
+            <span aria-hidden="true">{Array.from(author)[0]?.toUpperCase()}</span>
+            <span>{author}</span>
           </div>
           <button
             type="button"

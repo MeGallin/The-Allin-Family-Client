@@ -14,7 +14,7 @@ import './FamilyHomePage.css'
 export default function FamilyHomePage() {
   const { user, memories } = useFamilyData()
   const location = useLocation()
-  const firstName = user.displayName.trim().split(/\s+/)[0]
+  const firstName = user.familyName
   useEffect(() => {
     if (location.hash === '#family-poll') {
       document.getElementById('family-poll')?.scrollIntoView({

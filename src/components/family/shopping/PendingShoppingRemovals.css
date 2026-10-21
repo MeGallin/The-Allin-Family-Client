@@ -1,0 +1,79 @@
+.pending-removals {
+  margin-bottom: var(--space-5);
+  padding: var(--panel-padding);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+}
+.pending-removals h2 {
+  font-size: var(--text-lg);
+  margin: 0 0 var(--space-2);
+}
+.pending-removals ul {
+  display: grid;
+  gap: var(--space-4);
+  list-style: none;
+  padding: 0;
+  margin: var(--space-4) 0 0;
+}
+.pending-removals li {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.pending-removals__description {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.pending-removals__description p {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.pending-removals__spinner {
+  color: var(--color-accent);
+  flex-shrink: 0;
+  animation: pending-removal-spin var(--motion-loading, 900ms) linear infinite;
+}
+.pending-removals__progress {
+  appearance: none;
+  width: 100%;
+  height: 0.25rem;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: var(--color-surface-raised);
+  accent-color: var(--color-accent);
+}
+.pending-removals__progress::-webkit-progress-bar {
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-control);
+}
+.pending-removals__progress::-webkit-progress-value {
+  background: var(--color-accent);
+  border-radius: var(--radius-control);
+}
+.pending-removals__progress::-moz-progress-bar {
+  background: var(--color-accent);
+}
+@container family-content (min-width: 32rem) {
+  .pending-removals li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+  .pending-removals__progress {
+    grid-column: 1 / -1;
+  }
+}
+@keyframes pending-removal-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pending-removals__spinner {
+    animation: none;
+  }
+}

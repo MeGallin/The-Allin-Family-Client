@@ -4,6 +4,7 @@ import { useFamilyData } from '../../features/family/useFamilyData'
 import { Icon } from '../../components/ui/Icon'
 import { PageHeader } from '../../components/ui/PageHeader'
 import './AdminPage.css'
+import { UserNicknames } from '../../components/admin/UserNicknames'
 
 export default function AdminPage() {
   const { user } = useFamilyData()
@@ -11,6 +12,7 @@ export default function AdminPage() {
   return (
     <div className="page-stack page-enter">
       <PageHeader title="Administration" description="A place to look after the family space." />
+      <UserNicknames />
       <div className="admin-roadmap">
         <section className="surface-card">
           <Icon icon={KeyRound} />
@@ -27,7 +29,8 @@ export default function AdminPage() {
       </div>
       <p className="admin-roadmap__note">
         <Icon icon={ShieldCheck} />
-        Signed in with administrator access. No account or site changes can be made here yet.
+        Signed in with administrator access. Nicknames can be updated above. Other account and site
+        tools are coming later.
       </p>
     </div>
   )

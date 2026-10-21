@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { KeyRound, LogOut, ShieldCheck } from 'lucide-react'
+import { KeyRound, LogOut, ShieldCheck, UserRound } from 'lucide-react'
 import { Link } from 'react-router'
 import type { FamilyUser } from '../../types/auth'
 import { Icon } from '../ui/Icon'
@@ -37,16 +37,20 @@ export function AccountMenu({ user, onChangePassword, onLogout, loggingOut }: Pr
   }
   return (
     <details className="account-menu" ref={ref}>
-      <summary aria-label={'Account options for ' + user.displayName}>
+      <summary aria-label={'Account options for ' + user.familyName}>
         <span className="account-menu__avatar">
-          {Array.from(user.displayName)[0]?.toUpperCase() || 'A'}
+          {Array.from(user.familyName)[0]?.toUpperCase() || 'A'}
         </span>
-        <span className="account-menu__name">{user.displayName}</span>
+        <span className="account-menu__name">{user.familyName}</span>
       </summary>
       <div className="account-menu__popover">
         <p className="account-menu__identity">
-          Signed in as <strong>{user.displayName}</strong>
+          Signed in as <strong>{user.familyName}</strong>
         </p>
+        <Link to="/profile" onClick={close}>
+          <Icon icon={UserRound} />
+          Your profile
+        </Link>
         {user.role === 'admin' && (
           <Link to="/admin" onClick={close}>
             <Icon icon={ShieldCheck} />

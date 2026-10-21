@@ -1,5 +1,5 @@
 import coastalIllustration from '../../../assets/coastal-memory.svg'
-import type { FamilyEvent, FamilyMemory, ShoppingItem } from '../types'
+import type { FamilyEvent, FamilyMemory } from '../types'
 
 function inDays(days: number, hour: number, minute = 0): string {
   const date = new Date()
@@ -12,7 +12,6 @@ function inDays(days: number, hour: number, minute = 0): string {
 export function createSampleFamilyData(): {
   memories: FamilyMemory[]
   events: FamilyEvent[]
-  shopping: ShoppingItem[]
 } {
   return {
     memories: [
@@ -48,11 +47,6 @@ export function createSampleFamilyData(): {
         startsAt: inDays(4, 12, 30),
         detail: 'Bring something to share',
       },
-    ],
-    shopping: [
-      { id: 'sample-milk', title: 'Milk', checked: false },
-      { id: 'sample-bread', title: 'Bread', checked: false },
-      { id: 'sample-sunday', title: 'Something for lunch', checked: false },
     ],
   }
 }

@@ -7,13 +7,16 @@
   margin-bottom: var(--space-3);
 }
 .shopping-add {
-  margin-top: var(--space-5);
-  padding-top: var(--space-5);
-  border-top: 1px solid var(--color-border);
+  margin: 0 0 var(--space-4);
+  gap: var(--space-2);
+}
+.shopping-add > label {
+  font-size: var(--text-sm);
 }
 .shopping-add__controls {
   display: grid;
-  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-2);
 }
 .shopping-add__controls input {
   min-width: 0;
@@ -23,6 +26,9 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
+  padding-inline: var(--space-3);
+  font-size: var(--text-sm);
+  white-space: nowrap;
 }
 .lists-page__feedback {
   min-height: 1.5rem;

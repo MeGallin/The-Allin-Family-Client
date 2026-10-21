@@ -5,6 +5,7 @@ export type FamilyMemory = {
   imageUrl: string
   imageAlt: string
   author: string
+  authorId?: number
   sample: boolean
   reactions: number
   liked: boolean
@@ -17,7 +18,6 @@ export type FamilyEvent = {
   detail: string
 }
 
-export type ShoppingItem = { id: string; title: string; checked: boolean }
 export type PollChoice = 'Picnic' | 'Games night'
 export type MemoryDraft = { title: string; caption: string; image: File }
 export type EventDraft = Omit<FamilyEvent, 'id'>

@@ -5,6 +5,9 @@ import { messageFor } from './lib/errors'
 import { LoginForm } from './components/auth/LoginForm'
 import { LoadingState } from './components/ui/LoadingState'
 import './App.css'
+import { useAppDispatch, useAppSelector } from './app/store-hooks'
+import { userReceived } from './features/auth/auth-slice'
+import { clearPrivateState } from './app/session-actions'
 
 const FamilyApp = lazy(() => import('./app/FamilyApp'))
 const PasswordForm = lazy(() =>
@@ -12,7 +15,8 @@ const PasswordForm = lazy(() =>
 )
 
 export default function App() {
-  const [session, setSession] = useState<FamilySession | null>(null)
+  const dispatch = useAppDispatch()
+  const user = useAppSelector((state) => state.auth.user)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [changingPassword, setChangingPassword] = useState(false)
@@ -25,7 +29,7 @@ export default function App() {
     setError('')
     getSession(controller.signal)
       .then((value) => {
-        if (!controller.signal.aborted) setSession(value)
+        if (!controller.signal.aborted) dispatch(userReceived(value.user))
       })
       .catch((failure: unknown) => {
         if (!controller.signal.aborted) setError(messageFor(failure))
@@ -35,25 +39,28 @@ export default function App() {
       })
 
     return () => controller.abort()
-  }, [reload])
+  }, [reload, dispatch])
 
-  const acceptSession = useCallback((value: FamilySession) => {
-    setSession(value)
-    setChangingPassword(false)
-    setError('')
-  }, [])
+  const acceptSession = useCallback(
+    (value: FamilySession) => {
+      dispatch(userReceived(value.user))
+      setChangingPassword(false)
+      setError('')
+    },
+    [dispatch],
+  )
 
   const handleSessionExpired = useCallback(() => {
-    setSession(null)
+    clearPrivateState(dispatch)
     setReload((value) => value + 1)
-  }, [])
+  }, [dispatch])
 
   async function logout() {
     setLoggingOut(true)
     setError('')
     try {
       await signOut()
-      setSession(null)
+      clearPrivateState(dispatch)
       setChangingPassword(false)
       setReload((value) => value + 1)
     } catch (failure) {
@@ -62,8 +69,6 @@ export default function App() {
       setLoggingOut(false)
     }
   }
-
-  const user = session?.user
 
   useEffect(() => {
     if (!user || user.mustChangePassword || changingPassword) {
@@ -102,7 +107,7 @@ export default function App() {
 
       {loading ? (
         <LoadingState label="Checking your session…" />
-      ) : error && !session ? (
+      ) : error && !user ? (
         <section className="surface-card app-error-card">
           <p className="error" role="alert">
             {error}
@@ -117,7 +122,7 @@ export default function App() {
         <>
           <div className="account-bar">
             <p>
-              Signed in as <strong>{user.displayName}</strong>
+              Signed in as <strong>{user.familyName}</strong>
             </p>
             <button type="button" className="secondary" onClick={logout} disabled={loggingOut}>
               {loggingOut ? 'Signing out…' : 'Sign out'}

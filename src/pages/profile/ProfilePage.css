@@ -1,0 +1,6 @@
+.profile-page > .panel {
+  max-width: 40rem;
+}
+.profile-page .nickname-form {
+  margin-top: var(--space-4);
+}

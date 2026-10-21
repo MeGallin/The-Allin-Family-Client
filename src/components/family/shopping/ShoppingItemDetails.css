@@ -1,0 +1,33 @@
+.shopping-item-details {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-2) 0 var(--space-3) calc(1.5rem + var(--space-3));
+  padding: var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+.shopping-item-details > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-1);
+}
+.shopping-item-details dt {
+  font-weight: 500;
+}
+.shopping-item-details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+}
+.shopping-item-details time {
+  display: block;
+  color: var(--color-text-muted);
+}
+@container family-content (min-width: 32rem) {
+  .shopping-item-details > div {
+    grid-template-columns: 6rem minmax(0, 1fr);
+  }
+}
