@@ -1,9 +1,11 @@
 import { lazy, Suspense } from 'react'
 import { Link, useSearchParams } from 'react-router'
-import { Camera, Images, RefreshCw } from 'lucide-react'
+import { Camera, Images } from 'lucide-react'
 import { useMemories } from '../../features/memories/useMemories'
 import { PageHeader } from '../../components/ui/PageHeader'
+import { RefreshButton } from '../../components/ui/RefreshButton'
 import { MemoryCard } from '../../components/family/memories/MemoryCard'
+import { useHashTarget } from '../../hooks/useHashTarget'
 import { MemoryActivity } from '../../components/family/memories/MemoryActivity'
 import { Icon } from '../../components/ui/Icon'
 import { EmptyState } from '../../components/ui/EmptyState'
@@ -15,6 +17,7 @@ const MemoryRemoval = lazy(() => import('../../components/family/memories/Memory
 export default function MemoriesPage() {
   const { memories, loading, error, feedback, pending, refresh, clearError } = useMemories()
   const [search, setSearch] = useSearchParams()
+  useHashTarget(!loading)
   const editing = memories.find((memory) => memory.id === search.get('edit'))
   const removing = memories.find((memory) => memory.id === search.get('remove'))
   const missing = !loading && (search.has('edit') || search.has('remove')) && !editing && !removing
@@ -50,10 +53,7 @@ export default function MemoriesPage() {
               ? 'Opening the family album…'
               : `${memories.length} ${memories.length === 1 ? 'memory' : 'memories'}`)}
         </p>
-        <button type="button" className="secondary" onClick={refresh} disabled={pending}>
-          <Icon icon={RefreshCw} />
-          Refresh memories
-        </button>
+        <RefreshButton label="Refresh memories" disabled={pending} onClick={refresh} />
       </div>
       {error && (
         <p role="alert" className="error">

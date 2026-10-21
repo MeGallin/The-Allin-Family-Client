@@ -44,7 +44,7 @@
   --weight-display: 700;
 
   /* Type scale */
-  --text-xs: 0.75rem;
+  --text-xs: 0.8125rem;
   --text-sm: 0.875rem;
   --text-md: 1rem;
   --text-lg: 1.125rem;
@@ -67,10 +67,13 @@
 
   /* Shape, elevation and layout */
   --radius-control: 0.5rem;
-  --radius-card: 1rem;
-  --radius-panel: 1.25rem;
+  --radius-card: 0.75rem;
+  --radius-panel: 0.875rem;
   --radius-pill: 9999px;
-  --shadow-card: 0 16px 40px rgb(0 0 0 / 24%), 0 0 32px rgb(14 116 233 / 6%);
+  --shadow-card: 0 8px 24px rgb(0 0 0 / 16%);
+  --line-compact: 1.4;
+  --section-gap: clamp(1.5rem, 2vw, 2rem);
+  --text-key-date: clamp(2.75rem, 6vw, 4rem);
   --shadow-raised: 0 24px 56px rgb(0 0 0 / 36%);
   --shadow-action: 0 4px 20px rgb(34 211 238 / 16%);
   --content-width: 45rem;

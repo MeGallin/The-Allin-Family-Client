@@ -1,31 +1,33 @@
 .admin-members {
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-4);
   min-width: 0;
 }
 .admin-members__header {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-4);
+  gap: var(--space-3);
 }
 .admin-members__header h2 {
   font-size: var(--text-xl);
+  margin: 0 0 var(--space-2);
 }
 .admin-members__grid {
-  display: grid;
-  gap: var(--space-4);
   list-style: none;
   padding: 0;
   margin: 0;
+  border-top: 1px solid var(--color-border);
 }
 .admin-members__card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-3);
+  align-items: start;
   min-width: 0;
   overflow-wrap: anywhere;
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
 }
 .admin-members__card h3 {
   display: flex;
@@ -33,9 +35,14 @@
   gap: var(--space-2);
   flex-wrap: wrap;
   font-size: var(--text-lg);
+  margin: 0 0 var(--space-1);
+  letter-spacing: -0.025em;
 }
 .admin-members__card > button {
-  margin-top: auto;
+  grid-column: 2;
+  grid-row: 1;
+  font-size: var(--text-sm);
+  padding-inline: var(--space-3);
 }
 .admin-members__you {
   font-size: var(--text-xs);
@@ -46,19 +53,46 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+  grid-column: 1 / -1;
 }
-@container family-content (min-width: 40rem) {
-  .admin-members__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.admin-members__support {
+  grid-column: 1 / -1;
+}
+.admin-members__support p + p {
+  margin-top: var(--space-1);
+}
+.admin-members__badges .status-label {
+  background: transparent;
+  padding: 0;
+  font-size: var(--text-xs);
+}
+.admin-members__badges .status-label + .status-label::before {
+  content: '· ';
+}
+@container family-content (min-width: 48rem) {
   .admin-members__header {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
   }
-}
-@container family-content (min-width: 64rem) {
-  .admin-members__grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .admin-members__card {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .admin-members__badges,
+  .admin-members__support {
+    grid-column: auto;
+  }
+  .admin-members__badges {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .admin-members__badges .status-label + .status-label::before {
+    content: '';
+  }
+  .admin-members__card > button {
+    grid-column: 4;
+    grid-row: 1;
   }
 }

@@ -38,52 +38,62 @@ export function ViewControls({
   const id = useId()
   const search = useRef<HTMLInputElement>(null)
   return (
-    <section className="view-controls" aria-label={label}>
-      <div className={'view-controls__fields' + (extra ? ' view-controls__fields--extra' : '')}>
-        <div>
-          <label htmlFor={id + '-search'}>{queryLabel}</label>
-          <input
-            ref={search}
-            id={id + '-search'}
-            type="search"
-            value={query}
-            maxLength={100}
-            onChange={(e) => onQuery(e.target.value)}
-            placeholder={placeholder}
-            aria-describedby={id + '-hint'}
-          />
-        </div>
-        <div>
-          <label htmlFor={id + '-sort'}>{sortLabel}</label>
-          <select id={id + '-sort'} value={sort} onChange={(e) => onSort(e.target.value)}>
-            {options.map(([key, text]) => (
-              <option key={key} value={key}>
-                {text}
-              </option>
-            ))}
-          </select>
-        </div>
-        {extra}
-      </div>
-      <div className="view-controls__summary">
-        <p id={id + '-hint'}>{hint}</p>
-        <p role="status">
+    <details className="view-controls">
+      <summary>
+        <span>{label}</span>
+        <span className="view-controls__count">
           {count} of {total} {noun}
           {total === 1 ? '' : 's'}
-        </p>
-        {active && (
-          <button
-            type="button"
-            className="button-link"
-            onClick={() => {
-              onReset()
-              search.current?.focus()
-            }}
-          >
-            Reset view
-          </button>
-        )}
+          {active ? ' · Filtered' : ''}
+        </span>
+      </summary>
+      <div className="view-controls__body" role="group" aria-label={label}>
+        <div className={'view-controls__fields' + (extra ? ' view-controls__fields--extra' : '')}>
+          <div>
+            <label htmlFor={id + '-search'}>{queryLabel}</label>
+            <input
+              ref={search}
+              id={id + '-search'}
+              type="search"
+              value={query}
+              maxLength={100}
+              onChange={(e) => onQuery(e.target.value)}
+              placeholder={placeholder}
+              aria-describedby={id + '-hint'}
+            />
+          </div>
+          <div>
+            <label htmlFor={id + '-sort'}>{sortLabel}</label>
+            <select id={id + '-sort'} value={sort} onChange={(e) => onSort(e.target.value)}>
+              {options.map(([key, text]) => (
+                <option key={key} value={key}>
+                  {text}
+                </option>
+              ))}
+            </select>
+          </div>
+          {extra}
+        </div>
+        <div className="view-controls__summary">
+          <p id={id + '-hint'}>{hint}</p>
+          <p role="status">
+            {count} of {total} {noun}
+            {total === 1 ? '' : 's'}
+          </p>
+          {active && (
+            <button
+              type="button"
+              className="button-link"
+              onClick={() => {
+                onReset()
+                search.current?.focus()
+              }}
+            >
+              Reset view
+            </button>
+          )}
+        </div>
       </div>
-    </section>
+    </details>
   )
 }

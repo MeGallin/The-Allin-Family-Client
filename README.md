@@ -337,7 +337,6 @@ Repository: https://github.com/MeGallin/The-Allin-Family-Client
 To add another removable feature, supply a typed adapter and use the shared hook
 and UI; do not introduce another timer, countdown component or delay constant.
 
-
 ## Saved family polls and administrator activity
 
 Apply API migration 011. The lazy /polls page is linked from Home's Have a say
@@ -370,6 +369,7 @@ is visible. Nickname writes invalidate activity through the existing profile flo
 The development database contains no generated examples after Gary's requested
 cleanup. User accounts, Gary's real entries and their audit history are preserved.
 No example poll is created automatically; the first poll should be real input.
+
 ## Administrator overview and charts
 
 The default /admin view is now an overview, with separate URL-addressable sections
@@ -466,3 +466,75 @@ Account-management browser verification also covers duplicate usernames, stale
 edits and loading the latest version. Loading the latest draft clears the old
 conflict error. The shared shoppingError adapter projects plain status/code/message
 fields even when a direct service throws ApiError, keeping Redux state serializable.
+
+## Home and real saved data
+
+Home reads the same authenticated shopping/calendar/memories/polls RTK Query caches
+as their full pages. The existing family sync subscribers refresh every15 seconds
+while focused and invalidate after writes; no duplicate Home API or snapshot store
+is introduced. Session clearing resets the same private caches. The /family request
+remains an authenticated bootstrap, not a source of sample content.
+
+HomeOverview and features/family/useHomeOverview.ts expose linked live totals for
+upcoming plans (each annual event counted once at its next occurrence), saved
+memories, items still to pick up, and open polls. Unknown totals show a dash with
+Loading/Unavailable rather than an invented zero; failed refreshes mark previously
+loaded totals. These summaries are navigation, not admin analytics.
+
+- Coming up shows the next three saved events, recurring birthdays projected by the
+  existing date helpers, human countdowns and a link to remaining plans. Cached plans
+  remain visible with a retry message if a later refresh fails.
+- Recent memories shows the three newest saved entries: the first uses the shared
+  photo/story/reaction card and the next two are compact album links. Ordering is
+  createdAt descending with a stable ID tie-break. The featured photo uses existing
+  priority loading; additional thumbnails are lazy and preserve image fallback UI.
+- Shopping reuses shoppingView and ShoppingList to show only unpicked items,
+  important first then newest. Counts and remainder links refer to this same view.
+  A genuine all-picked-up state links back to review the saved full list.
+- Polls feature the newest open question with live shared voting/results and links
+  to two further open questions. The featured question stays stable when voting.
+  With no open poll, the newest-created closed poll appears as a labelled result;
+  an actually empty database offers creation. Failed initial requests never display
+  a false empty prompt. Cached data remains available with retry feedback.
+
+Memory and poll cards have stable anchors. The shared useHashTarget hook resolves
+Home album/poll links after lazy routes and saved data mount, scrolls and focuses
+the matching card, and respects reduced motion. It also handles /#family-poll.
+No write logic or delayed removal timers are duplicated. Components/CSS remain
+colocated and use Nimbus tokens; the overview is two columns on phones and four
+on wider containers, with the existing one-to-two-column Home layout retained.
+No seeded content, database changes, new dependencies or backend changes are needed.
+
+## Family brief UI
+
+Nimbus remains the shared colour/font foundation. Family brief uses a stronger
+heading/date hierarchy, flat section dividers and aligned rows for structured data.
+`src/styles/tokens.css` owns type/spacing/shape decisions; `data-patterns.css` owns
+shared numerical summaries and explanatory disclosures. PageHeader, Panel and
+EmptyState carry the common page/section rhythm; feature CSS stays colocated.
+
+Home puts the next saved event before recent memories, alongside them on desktop.
+Its overview is an unboxed linked summary, and shortcuts follow the content.
+Calendar uses date-led agenda rows; Memories preserves full photographs; private
+notes keep their existing paper/pin/tilt/curl design. Empty Notes/Polls show the
+creation path without redundant search fields. No generated content is seeded.
+
+ViewControls consistently exposes filters/sorting through an expandable native
+summary with visible counts and an active-filter indication. RefreshButton shares
+accessible collection refresh controls. Labels and touch targets remain readable;
+phone layouts come first and wider layouts use the family-content container.
+
+Administration uses the same hierarchy: compact tabs, shared summary figures,
+aligned account/usage directories and date-grouped activity. Exact audit timestamps
+remain in change disclosures. Chart data, reporting semantics, permission checks,
+Redux/RTK Query caches and the common 30-second removal/Undo flow are retained.
+
+### Family brief regression follow-up
+
+The internal-browser regression covered Gary/Dad's family routes, admin views and
+sign-in flow on desktop and phones. CollectionToolbar now shares the compact
+privacy/help/refresh/feedback pattern on Notes and Polls. Full-page poll headings
+are level 2 (Home previews stay level 3), and an empty filtered view offers Show
+all polls. The reporting toolbar uses the shared icon refresh control so the
+period text fits a 320px phone. Temporary browser fixtures and their activity were
+removed; original family content was checked against the pre-test baseline.

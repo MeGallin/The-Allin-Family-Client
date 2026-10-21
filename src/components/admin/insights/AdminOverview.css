@@ -9,7 +9,7 @@
   align-items: end;
 }
 .admin-overview__toolbar h2 {
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   margin: var(--space-2) 0;
 }
 .admin-overview__eyebrow {
@@ -40,43 +40,6 @@
   font-size: var(--text-xs);
   color: var(--color-text-muted);
   flex: 1 1 16rem;
-}
-.insight-stats {
-  display: grid;
-  gap: var(--space-4);
-  margin: 0;
-}
-.insight-stats > div {
-  padding: var(--panel-padding);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  background: var(--color-surface-muted);
-}
-.insight-stats dt {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-}
-.insight-stats dt .ui-icon {
-  color: var(--color-accent);
-}
-.insight-stats dd {
-  margin: var(--space-3) 0;
-  font-size: var(--text-3xl);
-  font-weight: 650;
-  font-variant-numeric: tabular-nums;
-}
-.insight-stats dd span {
-  color: var(--color-text-muted);
-  font-size: var(--text-xl);
-  font-weight: 400;
-}
-.insight-stats p {
-  margin: 0;
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
 }
 .insight-charts {
   display: grid;
@@ -169,9 +132,6 @@
   padding-block: var(--space-3);
 }
 @container family-content (min-width: 40rem) {
-  .insight-stats {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
   .admin-overview__toolbar {
     grid-template-columns: minmax(0, 1fr) minmax(13rem, 18rem);
   }
@@ -182,5 +142,19 @@
 @container family-content (min-width: 48rem) {
   .insight-charts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.admin-overview__period {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+.admin-overview__period label {
+  grid-column: 1 / -1;
+}
+@container family-content (min-width: 40rem) {
+  .admin-overview__toolbar {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+    align-items: center;
   }
 }

@@ -1,8 +1,7 @@
 .admin-views {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-2);
-  padding-bottom: var(--space-4);
+  gap: 0 var(--space-3);
   border-bottom: 1px solid var(--color-border);
 }
 .admin-views a {
@@ -10,9 +9,8 @@
   align-items: center;
   justify-content: center;
   min-height: var(--control-min-height);
-  padding: var(--space-3);
-  border: 1px solid transparent;
-  border-radius: var(--radius-control);
+  padding: var(--space-2);
+  border-bottom: 2px solid transparent;
   font-size: var(--text-sm);
   text-align: center;
   text-decoration: none;
@@ -20,8 +18,11 @@
 }
 .admin-views a[aria-current='page'] {
   color: var(--color-accent);
-  background: var(--color-accent-soft);
-  border-color: var(--color-border-strong);
+  border-bottom-color: var(--color-accent);
+}
+.admin-views a:hover {
+  color: var(--color-text);
+  background: var(--color-surface-muted);
 }
 @container family-content (min-width: 40rem) {
   .admin-views {

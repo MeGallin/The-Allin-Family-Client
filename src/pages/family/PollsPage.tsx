@@ -3,7 +3,9 @@ import { Link, useSearchParams } from 'react-router'
 import { Vote } from 'lucide-react'
 import { usePolls } from '../../features/polls/usePolls'
 import { useAppSelector } from '../../app/store-hooks'
+import { useHashTarget } from '../../hooks/useHashTarget'
 import { PageHeader } from '../../components/ui/PageHeader'
+import { CollectionToolbar } from '../../components/ui/CollectionToolbar'
 import { ViewControls } from '../../components/ui/ViewControls'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { LoadingState } from '../../components/ui/LoadingState'
@@ -17,6 +19,7 @@ export default function PollsPage() {
   const [params, setParams] = useSearchParams()
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('open')
+  useHashTarget(!loading)
   const manage = (id: string | null) =>
     polls.find(
       (poll) => poll.id === id && (user?.role === 'admin' || user?.id === poll.createdBy.id),
@@ -47,41 +50,42 @@ export default function PollsPage() {
           </Link>
         }
       />
-      <ViewControls
-        label="Poll filters"
-        sortLabel="Show"
-        queryLabel="Question or name"
-        placeholder="Find a family poll"
-        hint="Search questions, details or who asked."
-        query={query}
-        sort={status}
-        options={[
-          ['open', 'Open for votes'],
-          ['closed', 'Voting closed'],
-          ['all', 'All polls'],
-        ]}
-        onQuery={setQuery}
-        onSort={setStatus}
-        onReset={() => {
-          setQuery('')
-          setStatus('open')
-        }}
-        active={!!query || status !== 'open'}
-        count={visible.length}
-        total={polls.length}
-        noun="poll"
-      />
-      <div className="polls-page__status">
-        <p className="note" role="status">
-          {pending ? 'Saving…' : feedback}
+      {polls.length > 0 && (
+        <ViewControls
+          label="Poll filters"
+          sortLabel="Show"
+          queryLabel="Question or name"
+          placeholder="Find a family poll"
+          hint="Search questions, details or who asked."
+          query={query}
+          sort={status}
+          options={[
+            ['open', 'Open for votes'],
+            ['closed', 'Voting closed'],
+            ['all', 'All polls'],
+          ]}
+          onQuery={setQuery}
+          onSort={setStatus}
+          onReset={() => {
+            setQuery('')
+            setStatus('open')
+          }}
+          active={!!query || status !== 'open'}
+          count={visible.length}
+          total={polls.length}
+          noun="poll"
+        />
+      )}
+      <CollectionToolbar
+        label="Refresh polls"
+        busy={pending}
+        feedback={pending ? 'Saving…' : feedback}
+        onRefresh={refresh}
+      >
+        <p className="note">
+          Each person has one vote per poll. Administrators can see who voted or changed a vote.
         </p>
-        <button type="button" className="secondary" onClick={refresh} disabled={pending}>
-          Refresh polls
-        </button>
-      </div>
-      <p className="note">
-        Each person has one vote per poll. Administrators can see who voted or changed a vote.
-      </p>
+      </CollectionToolbar>
       {error && (
         <p className="error" role="alert">
           {error}
@@ -106,6 +110,19 @@ export default function PollsPage() {
                 ? 'Change the filters to see other polls.'
                 : 'Create the first poll and invite the family to vote.'}
             </p>
+            {polls.length > 0 && (
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => {
+                  setQuery('')
+                  setStatus('all')
+                  document.getElementById('family-content')?.focus()
+                }}
+              >
+                Show all polls
+              </button>
+            )}
           </EmptyState>
         )
       )}

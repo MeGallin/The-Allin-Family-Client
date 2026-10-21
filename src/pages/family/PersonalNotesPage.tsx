@@ -1,10 +1,11 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
-import { LockKeyhole, NotebookPen, Plus, RefreshCw } from 'lucide-react'
+import { LockKeyhole, NotebookPen, Plus } from 'lucide-react'
 import { useAppSelector } from '../../app/store-hooks'
 import { usePersonalNotes } from '../../features/notes/usePersonalNotes'
 import { noteSorts, notesView, type NoteSort } from '../../features/notes/notes-view'
 import { PageHeader } from '../../components/ui/PageHeader'
+import { CollectionToolbar } from '../../components/ui/CollectionToolbar'
 import { Icon } from '../../components/ui/Icon'
 import { LoadingState } from '../../components/ui/LoadingState'
 import { EmptyState } from '../../components/ui/EmptyState'
@@ -59,35 +60,35 @@ export default function PersonalNotesPage({ onSessionExpired }: { onSessionExpir
           </Link>
         }
       />
-      <p className="personal-notes-page__privacy">
-        <Icon icon={LockKeyhole} />
-        <span>Only you can view, edit or delete your notes.</span>
-      </p>
-      <ViewControls
-        label="Your note filters and sorting"
-        queryLabel="Search your notes"
-        placeholder="Title or something you wrote"
-        hint="Search titles, headers, bodies and footers."
-        query={query}
-        sort={sort}
-        options={noteSorts}
-        onQuery={setQuery}
-        onSort={(value) => setSort(value as NoteSort)}
-        onReset={resetView}
-        active={!!query || sort !== 'updated'}
-        count={visible.length}
-        total={notes.length}
-        noun="note"
-      />
-      <div className="personal-notes-page__status">
-        <p role="status" className="note">
-          {feedback}
+      {notes.length > 0 && (
+        <ViewControls
+          label="Your note filters and sorting"
+          queryLabel="Search your notes"
+          placeholder="Title or something you wrote"
+          hint="Search titles, headers, bodies and footers."
+          query={query}
+          sort={sort}
+          options={noteSorts}
+          onQuery={setQuery}
+          onSort={(value) => setSort(value as NoteSort)}
+          onReset={resetView}
+          active={!!query || sort !== 'updated'}
+          count={visible.length}
+          total={notes.length}
+          noun="note"
+        />
+      )}
+      <CollectionToolbar
+        label="Refresh notes"
+        busy={pending}
+        feedback={feedback}
+        onRefresh={refresh}
+      >
+        <p className="personal-notes-page__privacy">
+          <Icon icon={LockKeyhole} />
+          <span>Only you can view, edit or delete your notes.</span>
         </p>
-        <button type="button" className="secondary" disabled={pending} onClick={refresh}>
-          <Icon icon={RefreshCw} />
-          Refresh notes
-        </button>
-      </div>
+      </CollectionToolbar>
       {error && (
         <p className="error" role="alert">
           {error}

@@ -39,28 +39,6 @@
   border: 1px solid var(--color-accent);
   border-radius: var(--radius-control);
 }
-.family-layout__notice {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-  max-width: var(--dashboard-width);
-  padding: var(--space-4) var(--page-gutter) 0;
-  margin-inline: auto;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-}
-.family-layout__notice .ui-icon {
-  margin-top: 2px;
-  color: var(--color-accent);
-}
-.family-layout__notice p {
-  margin: 0;
-}
-.family-layout__notice strong {
-  color: var(--color-accent);
-  font-weight: 600;
-  margin-right: var(--space-2);
-}
 .family-layout__content {
   container: family-content / inline-size;
   width: 100%;

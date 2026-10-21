@@ -48,3 +48,15 @@
 .event-row__details dd {
   margin: 0;
 }
+
+.event-row__edit {
+  color: var(--color-link);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  padding-inline: 0;
+}
+.event-row__edit:hover:not(:disabled) {
+  background: transparent;
+  text-decoration: underline;
+}

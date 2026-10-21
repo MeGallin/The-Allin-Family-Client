@@ -1,20 +1,21 @@
 .memory-card {
+  scroll-margin-top: var(--space-3);
   min-width: 0;
   overflow: hidden;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: transparent;
+  border: 0;
   border-radius: var(--radius-panel);
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
 }
 .memory-card__content {
-  padding: var(--panel-padding);
+  padding: var(--space-4) 0;
 }
 .memory-card__label {
   font-size: var(--text-xs);
   color: var(--color-text-muted);
   margin-bottom: var(--space-2);
 }
-.memory-card h2 {
+.memory-card__title {
   margin-bottom: var(--space-3);
   font-size: var(--text-2xl);
   font-weight: 650;
@@ -56,7 +57,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  margin-top: var(--space-5);
+  margin-top: var(--space-3);
 }
 .memory-card__reaction {
   display: inline-flex;
@@ -81,10 +82,10 @@
   fill: var(--color-accent-soft);
 }
 .memory-card--featured .family-image {
-  aspect-ratio: 16 / 8;
+  aspect-ratio: auto;
 }
 @container family-content (min-width: 46rem) {
-  .memory-card--featured h2 {
+  .memory-card--featured .memory-card__title {
     font-size: var(--text-3xl);
   }
 }

@@ -1,16 +1,17 @@
 .empty-state {
   display: grid;
-  justify-items: center;
+  justify-items: start;
   gap: var(--space-3);
-  text-align: center;
-  padding: var(--space-6) var(--space-4);
+  padding-block: var(--space-5);
   color: var(--color-text-muted);
+  max-width: 48ch;
 }
 .empty-state > .ui-icon {
   color: var(--color-accent);
 }
 .empty-state h2 {
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
+  letter-spacing: -0.025em;
   margin: 0;
 }
 .empty-state p:last-child {

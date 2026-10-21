@@ -8,7 +8,7 @@
 .page-header h1 {
   margin: 0;
   font-size: var(--text-page-title);
-  line-height: 1.15;
+  line-height: 1.08;
   letter-spacing: -0.04em;
   overflow-wrap: anywhere;
 }
@@ -17,6 +17,7 @@
   max-width: 56ch;
   color: var(--color-text-muted);
   font-size: var(--text-md);
+  line-height: 1.45;
 }
 @container family-content (min-width: 46rem) {
   .page-header {

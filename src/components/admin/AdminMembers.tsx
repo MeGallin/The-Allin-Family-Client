@@ -62,7 +62,7 @@ export default function AdminMembers() {
           Add family member
         </button>
       </header>
-      <p role="status">{feedback}</p>
+      {feedback && <p role="status">{feedback}</p>}
       {credential && <MemberCredential result={credential} onDismiss={() => setCredential(null)} />}
       {(selection === 'new' || member) && (
         <MemberEditor
@@ -96,7 +96,7 @@ export default function AdminMembers() {
       ) : (
         <ul className="admin-members__grid">
           {query.data?.members.map((item) => (
-            <li className="surface-card admin-members__card" key={item.id}>
+            <li className="admin-members__card" key={item.id}>
               <div>
                 <h3>
                   {item.familyName}
@@ -112,12 +112,14 @@ export default function AdminMembers() {
                 </span>
                 <span className="status-label">{item.enabled ? 'Active' : 'Access paused'}</span>
               </div>
-              {item.mustChangePassword && (
-                <p className="note">Password change required at sign-in</p>
-              )}
-              <p className="note">
-                Joined <FriendlyTime value={item.createdAt} />
-              </p>
+              <div className="admin-members__support">
+                {item.mustChangePassword && (
+                  <p className="note">Password change required at sign-in</p>
+                )}
+                <p className="note">
+                  Joined <FriendlyTime value={item.createdAt} />
+                </p>
+              </div>
               <button
                 type="button"
                 className="secondary"

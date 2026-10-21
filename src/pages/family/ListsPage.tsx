@@ -1,10 +1,11 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
-import { Plus, RefreshCw } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useShopping } from '../../features/shopping/useShopping'
 import { ShoppingActivity } from '../../components/family/shopping/ShoppingActivity'
 import { ShoppingList } from '../../components/family/shopping/ShoppingList'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { Panel } from '../../components/ui/Panel'
+import { RefreshButton } from '../../components/ui/RefreshButton'
 import { Icon } from '../../components/ui/Icon'
 import './ListsPage.css'
 import { ImportanceOption } from '../../components/family/shopping/ImportanceOption'
@@ -66,10 +67,7 @@ export default function ListsPage() {
   }
   return (
     <div className="page-stack page-enter lists-page">
-      <PageHeader
-        title="Little things, sorted."
-        description="One shared list for everyone. See who added and changed each item."
-      />
+      <PageHeader title="Little things, sorted." description="One list. Everyone’s essentials." />
       <ShoppingControls
         query={query}
         sort={sort}
@@ -84,15 +82,7 @@ export default function ListsPage() {
       <Panel
         title="Shopping list"
         action={
-          <button
-            type="button"
-            className="icon-button"
-            aria-label="Refresh list"
-            disabled={pending || loading}
-            onClick={refresh}
-          >
-            <Icon icon={RefreshCw} />
-          </button>
+          <RefreshButton label="Refresh list" disabled={pending || loading} onClick={refresh} />
         }
       >
         <p className="lists-page__count">

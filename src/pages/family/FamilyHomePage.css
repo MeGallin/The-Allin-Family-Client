@@ -1,7 +1,10 @@
 .family-home-grid {
   display: grid;
   gap: var(--space-5);
-  align-items: stretch;
+  align-items: start;
+}
+.family-home-grid > * {
+  min-width: 0;
 }
 .family-home-footer {
   margin: 0;
@@ -10,6 +13,6 @@
 }
 @container family-content (min-width: 46rem) {
   .family-home-grid {
-    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
   }
 }

@@ -10,3 +10,25 @@
   border: 0;
   background: transparent;
 }
+.family-poll__others {
+  display: grid;
+  list-style: none;
+  margin: var(--space-5) 0 0;
+  padding: 0;
+}
+.family-poll__others li {
+  display: grid;
+  gap: var(--space-1);
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+.family-poll__others a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-min-height);
+}
+.family-poll__others span,
+.family-poll__result {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}

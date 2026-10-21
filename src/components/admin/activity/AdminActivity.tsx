@@ -5,6 +5,10 @@ import { membersApi } from '../../../services/members-query'
 import { shoppingError } from '../../../services/shopping-query'
 import { LoadingState } from '../../ui/LoadingState'
 import { ActivityRow } from './ActivityRow'
+const activityDay = (value: string) =>
+  new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeZone: 'Europe/London' }).format(
+    new Date(value),
+  )
 import './AdminActivity.css'
 export default function AdminActivity() {
   const { params, setFilter } = useAdminFilters()
@@ -93,8 +97,17 @@ export default function AdminActivity() {
         <LoadingState label="Loading family activity…" />
       ) : data?.entries.length ? (
         <ol className="admin-activity__list">
-          {data.entries.map((entry) => (
-            <ActivityRow entry={entry} key={entry.id} />
+          {data.entries.map((entry, index) => (
+            <ActivityRow
+              entry={entry}
+              key={entry.id}
+              day={
+                index === 0 ||
+                activityDay(entry.occurredAt) !== activityDay(data.entries[index - 1].occurredAt)
+                  ? activityDay(entry.occurredAt)
+                  : undefined
+              }
+            />
           ))}
         </ol>
       ) : (

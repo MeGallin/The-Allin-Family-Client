@@ -1,6 +1,6 @@
 import { Suspense, useLayoutEffect } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
-import { ShieldCheck, FlaskConical } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
 import type { FamilyUser } from '../../types/auth'
 import { Icon } from '../ui/Icon'
 import { AccountMenu } from './AccountMenu'
@@ -55,13 +55,6 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
             loggingOut={loggingOut}
           />
         </header>
-        <div className="family-layout__notice">
-          <Icon icon={FlaskConical} />
-          <p>
-            <strong>Family space</strong> Shopping, calendar events, memories and polls are shared
-            and saved. Your personal notes stay private.
-          </p>
-        </div>
         <main id="family-content" className="family-layout__content" tabIndex={-1}>
           <PendingRemovals />
           {error && (

@@ -13,12 +13,14 @@ export function EventRow({
   disabled,
   day,
   time,
+  compact = false,
 }: {
   event: FamilyEvent
   onEdit?: (event: FamilyEvent) => void
   disabled: boolean
   day: string
   time: string
+  compact?: boolean
 }) {
   const { removals } = useRemovals('calendar')
   const removal = removals[event.id]
@@ -37,32 +39,34 @@ export function EventRow({
         <p>
           <EventCountdown event={event} />
         </p>
-        {event.annually && <p className="event-row__credit">Repeats every year</p>}
-        <p>
+        <p className={compact ? 'sr-only' : undefined}>
           <time dateTime={event.occursAt ?? event.startsAt}>
             {day} · {time}
+            {event.annually ? ' · Every year' : ''}
           </time>
         </p>
         {event.detail && <p className="event-row__notes">{event.detail}</p>}
-        <p className="event-row__credit">
-          {event.version === 1
-            ? 'Added by ' + event.createdBy.displayName
-            : event.createdBy.id === event.updatedBy.id
-              ? 'Added & updated by ' + event.createdBy.displayName
-              : event.createdBy.displayName +
-                ' added · ' +
-                event.updatedBy.displayName +
-                ' updated'}
-          {' · '}
-          <FriendlyTime value={event.version > 1 ? event.updatedAt : event.createdAt} />
-        </p>
+        {!compact && (
+          <p className="event-row__credit">
+            {event.version === 1
+              ? 'Added by ' + event.createdBy.displayName
+              : event.createdBy.id === event.updatedBy.id
+                ? 'Added & updated by ' + event.createdBy.displayName
+                : event.createdBy.displayName +
+                  ' added · ' +
+                  event.updatedBy.displayName +
+                  ' updated'}
+            {' · '}
+            <FriendlyTime value={event.version > 1 ? event.updatedAt : event.createdAt} />
+          </p>
+        )}
         <RemovalNotice removal={removal} />
         {onEdit && (
           <div className="event-row__controls">
             <button
               type="button"
               id={'calendar-remove-' + event.id}
-              className="button-link"
+              className="event-row__edit"
               disabled={disabled || !!removal}
               onClick={() => onEdit(event)}
               aria-label={'Edit ' + event.title}

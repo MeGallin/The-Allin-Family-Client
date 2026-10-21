@@ -6,6 +6,7 @@ import { insightsApi } from '../../../services/insights-query'
 import { shoppingError } from '../../../services/shopping-query'
 import { chartDate, featureNames } from '../../../features/insights/chart-config'
 import { LoadingState } from '../../ui/LoadingState'
+import { RefreshButton } from '../../ui/RefreshButton'
 import { Icon } from '../../ui/Icon'
 import { ActivityPulse } from './ActivityPulse'
 import { FeatureActivity } from './FeatureActivity'
@@ -34,11 +35,8 @@ export default function AdminOverview() {
     <div className="admin-overview">
       <div className="admin-overview__toolbar">
         <div>
-          <p className="admin-overview__eyebrow">Family space / At a glance</p>
-          <h2>How is the family using the site?</h2>
-          <p className="note">
-            A clear view of participation, useful features and where to focus next.
-          </p>
+          <h2>Participation at a glance</h2>
+          <p className="note">Who’s taking part, what’s useful, and where to focus next.</p>
         </div>
         <div className="admin-overview__period">
           <label htmlFor={id}>Reporting period</label>
@@ -47,14 +45,11 @@ export default function AdminOverview() {
             <option value="30">Last 30 days</option>
             <option value="90">Last 90 days</option>
           </select>
-          <button
-            type="button"
-            className="secondary"
-            onClick={() => void query.refetch()}
+          <RefreshButton
+            label="Refresh overview"
             disabled={query.isFetching}
-          >
-            Refresh overview
-          </button>
+            onClick={() => void query.refetch()}
+          />
         </div>
       </div>
       {query.error && (
@@ -80,7 +75,7 @@ export default function AdminOverview() {
                 {data.usageSince ? 'from ' + chartDate(data.usageSince) : 'not yet recorded'}.
               </p>
             </div>
-            <dl className="insight-stats">
+            <dl className="data-summary">
               <div>
                 <dt>
                   <Icon icon={Users} />
@@ -90,7 +85,6 @@ export default function AdminOverview() {
                   {data.summary.contributors}
                   <span> / {data.people.length}</span>
                 </dd>
-                <p>Members who added, changed or responded to shared content.</p>
               </div>
               <div>
                 <dt>
@@ -110,7 +104,6 @@ export default function AdminOverview() {
                   Successful sign-ins
                 </dt>
                 <dd>{data.summary.signins}</dd>
-                <p>Page refreshes and already-open sessions are excluded.</p>
               </div>
             </dl>
             <div className="insight-charts">
@@ -176,6 +169,10 @@ export default function AdminOverview() {
             </section>
             <details className="insight-definitions">
               <summary>What these figures mean</summary>
+              <p>
+                Shared contributors are members who added, changed or responded to shared content.
+                Successful sign-ins exclude refreshes and already-open sessions.
+              </p>
               <p>
                 Shared actions come from the complete recorded audit history for the period, not
                 only the latest activity page. Added means new content; updated includes edits and

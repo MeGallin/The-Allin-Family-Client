@@ -8,7 +8,7 @@
 
 .page-stack {
   display: grid;
-  gap: var(--space-5);
+  gap: var(--section-gap);
   min-width: 0;
 }
 .page-title {
@@ -139,10 +139,10 @@
 }
 
 .note {
-  margin-top: var(--space-4);
+  margin: 0;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
-  line-height: 1.6;
+  line-height: var(--line-compact);
 }
 
 form .note {
@@ -240,4 +240,8 @@ form > button {
   form > button {
     width: auto;
   }
+}
+
+[role='status']:empty {
+  display: none;
 }

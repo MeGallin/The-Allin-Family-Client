@@ -77,15 +77,18 @@ export default function AdminUsage() {
           Refresh usage
         </button>
       </div>
-      <p className="note">
-        Totals cover sessions started in the selected London calendar days. Last sign-in and last
-        seen cover all recorded history. Tracking starts from this update.
-      </p>
-      <p className="note">
-        Active time is an estimate from visible pages and recent interaction, checked about every 30
-        seconds. Idle or hidden tabs stop adding time. No activity before tracking began can be
-        reconstructed.
-      </p>
+      <details className="data-method">
+        <summary>How usage is measured</summary>
+        <p className="note">
+          Totals cover sessions started in the selected London calendar days. Last sign-in and last
+          seen cover all recorded history. Tracking starts from this update.
+        </p>
+        <p className="note">
+          Active time is an estimate from visible pages and recent interaction, checked about every
+          30 seconds. Idle or hidden tabs stop adding time. No activity before tracking began can be
+          reconstructed.
+        </p>
+      </details>
       {query.error && (
         <p className="error" role="alert">
           {shoppingError(query.error)?.message ?? 'Unable to load usage.'}
@@ -96,7 +99,7 @@ export default function AdminUsage() {
       ) : (
         data && (
           <>
-            <dl className="admin-usage__totals">
+            <dl className="data-summary">
               <div>
                 <dt>Sign-ins</dt>
                 <dd>{logins}</dd>

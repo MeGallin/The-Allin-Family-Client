@@ -1,6 +1,5 @@
 import type { ActivityEntry } from '../../../features/activity/types'
 import { FriendlyTime } from '../../ui/FriendlyTime'
-import { exactDate } from '../../../lib/friendly-dates'
 import { ActivityDetails } from './ActivityDetails'
 const nouns: Record<string, string> = {
   shopping_item: 'shopping item',
@@ -27,11 +26,12 @@ const verbs: Record<string, string> = {
   closed: 'closed voting on',
   reopened: 'reopened voting on',
 }
-export function ActivityRow({ entry }: { entry: ActivityEntry }) {
+export function ActivityRow({ entry, day }: { entry: ActivityEntry; day?: string }) {
   const title = entry.after?.title ?? entry.before?.title ?? entry.targetName
   const choice = entry.after?.choice
   return (
     <li className="admin-activity__entry">
+      {day && <h3 className="admin-activity__day">{day}</h3>}
       <p>
         <strong>{entry.actor.displayName}</strong>{' '}
         {verbs[entry.action] ?? entry.action.replaceAll('_', ' ')}{' '}
@@ -44,7 +44,7 @@ export function ActivityRow({ entry }: { entry: ActivityEntry }) {
       </p>
       {typeof choice === 'string' && <p className="note">Choice: {choice}</p>}
       <p className="note">
-        <FriendlyTime value={entry.occurredAt} /> · {exactDate(entry.occurredAt)}
+        <FriendlyTime value={entry.occurredAt} />
       </p>
       <ActivityDetails entry={entry} />
     </li>

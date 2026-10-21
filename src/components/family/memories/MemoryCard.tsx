@@ -16,9 +16,11 @@ import './MemoryCard.css'
 export function MemoryCard({
   memory,
   featured = false,
+  headingLevel = 2,
 }: {
   memory: FamilyMemory
   featured?: boolean
+  headingLevel?: 2 | 3
 }) {
   const { react, pending, clearError, removals } = useMemories()
   const removal = removals[memory.id]
@@ -31,8 +33,13 @@ export function MemoryCard({
   }, [pending, memory.liked])
   const user = useAppSelector((state) => state.auth.user)
   const canRemove = user?.id === memory.createdBy.id || user?.role === 'admin'
+  const Heading = headingLevel === 3 ? 'h3' : 'h2'
   return (
-    <article className={'memory-card' + (featured ? ' memory-card--featured' : '')}>
+    <article
+      id={'memory-' + memory.id}
+      tabIndex={-1}
+      className={'memory-card' + (featured ? ' memory-card--featured' : '')}
+    >
       {memory.photoKey && (
         <FamilyImage
           key={memory.photoKey}
@@ -45,7 +52,7 @@ export function MemoryCard({
         <p className="memory-card__label">
           {memory.photoKey ? 'A family moment' : 'A family story'}
         </p>
-        <h2>{memory.title}</h2>
+        <Heading className="memory-card__title">{memory.title}</Heading>
         {memory.story && <MemoryStory key={memory.version} story={memory.story} />}
         <p className="memory-card__credit">
           Added by {memory.createdBy.displayName} · <FriendlyTime value={memory.createdAt} />

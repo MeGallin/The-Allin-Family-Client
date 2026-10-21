@@ -36,10 +36,16 @@ export function ActivityDetails({ entry }: { entry: ActivityEntry }) {
   const keys = Array.from(
     new Set([...Object.keys(entry.before ?? {}), ...Object.keys(entry.after ?? {})]),
   ).filter((key) => JSON.stringify(entry.before?.[key]) !== JSON.stringify(entry.after?.[key]))
-  return keys.length ? (
+  return (
     <details className="admin-activity__details">
       <summary>Change details</summary>
       <dl>
+        <div>
+          <dt>Recorded</dt>
+          <dd>
+            <time dateTime={entry.occurredAt}>{exactDate(entry.occurredAt)}</time>
+          </dd>
+        </div>
         {keys.map((key) => (
           <div key={key}>
             <dt>{labels[key] ?? key}</dt>
@@ -54,5 +60,5 @@ export function ActivityDetails({ entry }: { entry: ActivityEntry }) {
         ))}
       </dl>
     </details>
-  ) : null
+  )
 }

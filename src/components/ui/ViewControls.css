@@ -39,3 +39,35 @@
     grid-template-columns: minmax(0, 1fr) minmax(10rem, 12rem) minmax(9rem, 11rem);
   }
 }
+
+.view-controls {
+  border-block: 1px solid var(--color-border);
+}
+.view-controls > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: var(--control-min-height);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--color-link);
+  padding-block: var(--space-2);
+}
+.view-controls > summary > span:first-child::before {
+  content: '+ ';
+  font-weight: 650;
+}
+.view-controls[open] > summary > span:first-child::before {
+  content: '− ';
+}
+.view-controls__count {
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.view-controls__body {
+  display: grid;
+  gap: var(--space-3);
+  padding-block: var(--space-2) var(--space-4);
+}

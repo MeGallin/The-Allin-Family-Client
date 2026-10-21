@@ -8,11 +8,13 @@ export function EventList({
   onEdit,
   disabled = false,
   blocks = false,
+  compact = false,
 }: {
   events: FamilyEvent[]
   onEdit?: (event: FamilyEvent) => void
   disabled?: boolean
   blocks?: boolean
+  compact?: boolean
 }) {
   return (
     <ul className={'event-list' + (blocks ? ' event-list--blocks' : '')}>
@@ -20,6 +22,7 @@ export function EventList({
         <EventRow
           key={event.id}
           event={event}
+          compact={compact}
           onEdit={onEdit}
           disabled={disabled}
           day={formatEventDay(eventDate(event).toISOString())}

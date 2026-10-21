@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState } from 'react'
 import { useNow } from '../../hooks/useNow'
-import { CalendarDays, CalendarPlus, RefreshCw } from 'lucide-react'
+import { CalendarDays, CalendarPlus } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
 import { useCalendar } from '../../features/calendar/useCalendar'
 import type { FamilyEvent } from '../../features/calendar/types'
@@ -12,6 +12,7 @@ import { Icon } from '../../components/ui/Icon'
 import { LoadingState } from '../../components/ui/LoadingState'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { Panel } from '../../components/ui/Panel'
+import { RefreshButton } from '../../components/ui/RefreshButton'
 import './CalendarPage.css'
 import { CalendarControls } from '../../components/family/calendar/CalendarControls'
 import { calendarSort, calendarView } from '../../features/calendar/calendar-view'
@@ -68,7 +69,7 @@ export default function CalendarPage() {
     <div className="page-stack page-enter calendar-page">
       <PageHeader
         title="Time together"
-        description="Shared plans for the whole family. See who added or changed each event."
+        description="Birthdays, plans and reasons to get together."
         action={
           <Link
             className="button-link"
@@ -94,15 +95,7 @@ export default function CalendarPage() {
       <Panel
         title="Coming up"
         action={
-          <button
-            type="button"
-            className="icon-button"
-            aria-label="Refresh calendar"
-            disabled={pending || loading}
-            onClick={refresh}
-          >
-            <Icon icon={RefreshCw} />
-          </button>
+          <RefreshButton label="Refresh calendar" disabled={pending || loading} onClick={refresh} />
         }
       >
         <p className="note">Times shown in {zone}. Updates refresh automatically.</p>

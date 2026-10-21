@@ -10,12 +10,18 @@ export function PollCard({ poll, preview = false }: { poll: FamilyPollRecord; pr
   const { vote, close, pending, removals, clearError } = usePolls()
   const user = useAppSelector((state) => state.auth.user)
   const group = useId()
+  const Heading = preview ? 'h3' : 'h2'
   const removal = removals[poll.id]
   const manage = user?.role === 'admin' || user?.id === poll.createdBy.id
   return (
-    <article className="poll-card" aria-labelledby={group + '-title'}>
+    <article
+      id={'poll-' + poll.id}
+      tabIndex={-1}
+      className="poll-card"
+      aria-labelledby={group + '-title'}
+    >
       <header className="poll-card__header">
-        <h3 id={group + '-title'}>{poll.title}</h3>
+        <Heading id={group + '-title'}>{poll.title}</Heading>
         <span className="status-label">{poll.closed ? 'Voting closed' : 'Open for votes'}</span>
       </header>
       {poll.detail && <p className="poll-card__detail">{poll.detail}</p>}
@@ -59,7 +65,12 @@ export function PollCard({ poll, preview = false }: { poll: FamilyPollRecord; pr
                 max={poll.totalVotes || 1}
                 value={option.votes}
                 aria-label={
-                  option.label + ': ' + option.votes + ' votes, ' + percentage + ' percent'
+                  option.label +
+                  ': ' +
+                  option.votes +
+                  (option.votes === 1 ? ' vote, ' : ' votes, ') +
+                  percentage +
+                  ' percent'
                 }
               />
             </label>
