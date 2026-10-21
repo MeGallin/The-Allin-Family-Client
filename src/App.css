@@ -1,0 +1,30 @@
+.app-shell {
+  width: min(var(--content-width), calc(100% - 2 * var(--page-gutter)));
+  margin: 3rem auto var(--space-9);
+}
+
+.app-title {
+  max-width: 12ch;
+  margin-bottom: var(--space-3);
+  font-size: var(--text-display);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+.app-status {
+  color: var(--color-text-muted);
+}
+
+.app-error-card {
+  margin-top: var(--space-5);
+}
+
+.app-inline-error {
+  margin-top: var(--space-4);
+}
+
+@media (min-width: 36rem) {
+  .app-shell {
+    margin-top: clamp(3.5rem, 10vh, 7rem);
+  }
+}

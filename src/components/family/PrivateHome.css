@@ -1,0 +1,11 @@
+.family-home-card {
+  margin-top: var(--space-5);
+  border-inline-start: 3px solid var(--color-accent);
+}
+
+.family-home-message {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  line-height: 1.35;
+}

@@ -1,0 +1,148 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--color-page);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--color-page);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: 1.6;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+h1 {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-display);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+h2 {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-2xl);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+
+h3 {
+  font-size: var(--text-xl);
+  line-height: 1.25;
+}
+
+p {
+  margin-bottom: var(--space-3);
+}
+
+label {
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+form {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+input {
+  width: 100%;
+  min-height: 2.875rem;
+  padding: 0.7rem 0.875rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  transition: border-color var(--control-transition), box-shadow var(--control-transition), background-color var(--control-transition);
+}
+
+input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.8;
+}
+
+input:hover:not(:disabled) {
+  border-color: var(--color-accent-deep);
+}
+
+input:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+input:focus-visible {
+  border-color: var(--color-action);
+}
+
+button {
+  min-height: 2.875rem;
+  padding: 0.65rem 1.125rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  background: var(--color-action);
+  color: var(--color-text-on-dark);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: 650;
+  line-height: 1.25;
+  transition: background-color var(--control-transition), border-color var(--control-transition), box-shadow var(--control-transition), transform var(--control-transition);
+}
+
+button:hover:not(:disabled) {
+  background: var(--color-action-hover);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

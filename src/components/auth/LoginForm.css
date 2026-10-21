@@ -1,0 +1,14 @@
+.login-card {
+  margin-top: var(--space-5);
+}
+
+.login-intro {
+  max-width: 42ch;
+  color: var(--color-text-muted);
+}
+
+.login-note {
+  max-width: 50ch;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
