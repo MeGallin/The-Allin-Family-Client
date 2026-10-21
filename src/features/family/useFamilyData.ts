@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from '../../app/store-hooks'
-import { memoryAdded, eventAdded, reactionToggled, pollChosen } from './family-slice'
+import { memoryAdded, reactionToggled, pollChosen } from './family-slice'
 import { previewImage } from './preview-images'
-import type { EventDraft, MemoryDraft, PollChoice } from './types'
+import type { MemoryDraft, PollChoice } from './types'
 
 export function useFamilyData() {
   const dispatch = useAppDispatch()
@@ -26,9 +26,6 @@ export function useFamilyData() {
           liked: false,
         }),
       )
-    },
-    addEvent: (draft: EventDraft) => {
-      dispatch(eventAdded({ ...draft, id: crypto.randomUUID() }))
     },
     toggleReaction: (id: string) => {
       dispatch(reactionToggled(id))

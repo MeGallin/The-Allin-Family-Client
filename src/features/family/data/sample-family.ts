@@ -1,17 +1,9 @@
 import coastalIllustration from '../../../assets/coastal-memory.svg'
-import type { FamilyEvent, FamilyMemory } from '../types'
-
-function inDays(days: number, hour: number, minute = 0): string {
-  const date = new Date()
-  date.setDate(date.getDate() + days)
-  date.setHours(hour, minute, 0, 0)
-  return date.toISOString()
-}
+import type { FamilyMemory } from '../types'
 
 // Deliberate preview fixtures. No invented events are sent to the PHP API.
 export function createSampleFamilyData(): {
   memories: FamilyMemory[]
-  events: FamilyEvent[]
 } {
   return {
     memories: [
@@ -26,26 +18,6 @@ export function createSampleFamilyData(): {
         sample: true,
         reactions: 4,
         liked: false,
-      },
-    ],
-    events: [
-      {
-        id: 'sample-shop',
-        title: 'Food shop',
-        startsAt: inDays(2, 10),
-        detail: 'Take the shared shopping list',
-      },
-      {
-        id: 'sample-call',
-        title: 'Family catch-up',
-        startsAt: inDays(3, 18),
-        detail: 'A little time for a video call',
-      },
-      {
-        id: 'sample-lunch',
-        title: 'Lunch together',
-        startsAt: inDays(4, 12, 30),
-        detail: 'Bring something to share',
       },
     ],
   }

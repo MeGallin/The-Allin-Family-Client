@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import { createSampleFamilyData } from './data/sample-family'
-import type { FamilyEvent, FamilyMemory, PollChoice } from './types'
+import type { FamilyMemory, PollChoice } from './types'
 
 const initialState = () => ({ ...createSampleFamilyData(), pollChoice: null as PollChoice | null })
 const familySlice = createSlice({
@@ -18,14 +18,10 @@ const familySlice = createSlice({
         memory.reactions += memory.liked ? 1 : -1
       }
     },
-    eventAdded(state, action: PayloadAction<FamilyEvent>) {
-      state.events.push(action.payload)
-    },
     pollChosen(state, action: PayloadAction<PollChoice>) {
       state.pollChoice = action.payload
     },
   },
 })
-export const { familyReset, memoryAdded, reactionToggled, eventAdded, pollChosen } =
-  familySlice.actions
+export const { familyReset, memoryAdded, reactionToggled, pollChosen } = familySlice.actions
 export default familySlice.reducer

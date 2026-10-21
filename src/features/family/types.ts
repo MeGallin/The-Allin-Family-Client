@@ -11,14 +11,6 @@ export type FamilyMemory = {
   liked: boolean
 }
 
-export type FamilyEvent = {
-  id: string
-  title: string
-  startsAt: string
-  detail: string
-}
-
 export type PollChoice = 'Picnic' | 'Games night'
 export type MemoryDraft = { title: string; caption: string; image: File }
-export type EventDraft = Omit<FamilyEvent, 'id'>
 export type Composer = 'memory' | 'event'

@@ -24,7 +24,7 @@ export const executeShoppingWrite =
           action === 'add'
             ? 'Item added to the shared list.'
             : action === 'edit'
-              ? 'Item name saved.'
+              ? 'Item changes saved.'
               : action === 'remove'
                 ? 'Item removed. Its history has been kept.'
                 : 'Shopping status saved.',

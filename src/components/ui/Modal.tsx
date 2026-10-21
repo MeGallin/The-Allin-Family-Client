@@ -7,10 +7,12 @@ export function Modal({
   title,
   onClose,
   children,
+  busy = false,
 }: {
   title: string
   onClose: () => void
   children: ReactNode
+  busy?: boolean
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const titleId = useId()
@@ -19,6 +21,7 @@ export function Modal({
     if (!dialog) return
     const previousFocus =
       document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const fallbackFocus = previousFocus?.closest<HTMLElement>('main') ?? null
     dialog.showModal()
     dialog.querySelector<HTMLElement>('input, textarea')?.focus()
     const previousOverflow = document.body.style.overflow
@@ -27,6 +30,7 @@ export function Modal({
       dialog.close()
       document.body.style.overflow = previousOverflow
       if (previousFocus?.isConnected) previousFocus.focus()
+      else if (fallbackFocus?.isConnected) fallbackFocus.focus({ preventScroll: true })
     }
   }, [])
 
@@ -37,12 +41,18 @@ export function Modal({
       aria-labelledby={titleId}
       onCancel={(event) => {
         event.preventDefault()
-        onClose()
+        if (!busy) onClose()
       }}
     >
       <header className="modal__header">
         <h2 id={titleId}>{title}</h2>
-        <button type="button" className="icon-button" aria-label="Close" onClick={onClose}>
+        <button
+          type="button"
+          className="icon-button"
+          aria-label="Close"
+          onClick={onClose}
+          disabled={busy}
+        >
           <Icon icon={X} />
         </button>
       </header>

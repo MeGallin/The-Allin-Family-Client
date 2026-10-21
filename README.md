@@ -66,7 +66,25 @@ profile/shopping data. Other signed-in sessions pick up changes on focus or the
 15-second profile refresh. Profile changes are audited by the PHP API.
 
 Shopping is stored in the PHP/MySQL API and shared by all signed-in family members.
-Items appear newest first, including immediately after adding and after refresh.
+Important items appear first, then standard items; each group is newest first.
+Shopping and calendar share `components/ui/ViewControls` and its colocated styles
+for search, sorting, result counts and Reset view. Shopping additionally offers
+All items, Still to get, Picked up, Important and Standard priority filters.
+Its sorts include Important first (default), Newest/Oldest added, Name A–Z/Z–A
+and Recently edited; choosing a sort explicitly replaces the default priority
+ordering. Search matches item titles and creator/editor nicknames. The q/sort/show
+URL parameters survive refresh. Filtering/sorting derives a view of the Redux
+API cache without changing shared order/data; Home keeps its default preview.
+No matching items has separate feedback and Reset view. Pending removal/Undo
+stays global even if an item is outside the current filtered view.
+The Important option is available in the add form and Edit item controls. It is
+saved for all family members, with existing creator/updater attribution and
+version checks. Importance changes appear in activity history. Add retries include
+the flag in the draft identity. Apply API migration 008 before deployment.
+Highlight colours use semantic `--color-important`, `--color-important-surface`
+and `--color-important-text` tokens mapped to the existing Nimbus cyan palette.
+Highlighted rows also display a star and Important text, so priority is not
+communicated by colour alone. Existing items default to standard priority.
 Members can add, rename, check/uncheck and remove items. Compact rows show the item
 name and smaller nickname attribution. The 48px options control opens Edit name,
 Item details (creator/updater and exact timestamps), or Remove. The add form sits
@@ -88,7 +106,53 @@ It requires an online API; failed writes show
 an error without pretending to save. Version conflicts refresh the list and ask
 the member to review their change. Add retries reuse a request key.
 
-Plans, photo previews, reactions and polls remain clearly labelled sample features
+Calendar events are saved through the PHP API and shared by all active family
+members. The calendar and home Coming up panel use the same RTK Query cache.
+Members can add events, edit titles/date/time/notes, and confirm removal. Compact
+nickname attribution stays visible; Event details exposes exact creator/updater
+timestamps and original time-zone context. Recent calendar activity records changes.
+The lazy event form retains drafts on failure and offers Load latest event for
+stale edits. A shared Redux write lock prevents overlapping local calendar writes;
+15-second polling, focus and reconnect refresh other sessions. Server versions
+prevent overwrites, and request keys prevent duplicate additions on retry. Session
+reset clears calendar data with the other private API caches. Dates/times are
+entered and displayed in the viewer's local time zone and saved in UTC. Notes-only
+edits preserve the original instant/time-zone metadata. Nonexistent times during
+daylight-saving clock changes are rejected. This covers individual timed events;
+other repeat patterns, reminders and calendar-provider sync are future work. All-day events
+keep their calendar date across time zones and stay in Coming up until that local
+day ends. Native date/time fields also read their visible values on submission.
+Repeat every year enables annual all-day birthdays. Calendar and Home derive the
+next occurrence from the saved anchor and rule; the original date is preserved
+when editing a projected occurrence. Editing/removal affects every year. A leap-day
+birthday uses 28 February in non-leap years. Activity details include annual status.
+Apply API migrations 005, 006 and 007 before using this client.
+
+Calendar uses compact date-stamped blocks in a responsive grid. Cards grow with
+their content and details; narrow screens stack them. Home retains its simpler
+event list. CalendarControls provides title/creator/editor nickname search and
+sorts by next occurrence, latest event date, newest/oldest addition, latest edit
+or name. The derived view lives in `features/calendar/calendar-view.ts`; shared
+events remain in RTK Query. Search/sort use URL parameters, survive refresh and
+remain selected while opening/closing the lazy event form. Reset view restores
+the default. No-match feedback differs from an empty calendar.
+
+Friendly dates use date-fns with the en-GB locale. Shared helpers in
+`src/lib/friendly-dates.ts` split longer spans into whole calendar years, months
+and remaining days (for example, In 4 months and 23 days). Zero units are omitted;
+shorter spans stay in days. Both countdowns and older relative timestamps use this
+breakdown, calculated at local day boundaries rather than fixed 30-day months.
+They also format relative activity times (just now, yesterday,
+days/months ago) and calendar-day event countdowns (Today, Tomorrow, In 28 days).
+Calendar and Home use the next annual occurrence for birthday countdowns. The
+shared `useNow` clock has one 30-second timer for all labels, refreshes on focus
+and tab visibility, and stops when no labels subscribe. Time labels have exact
+timestamps available to assistive technology and hover; item/event details and
+activity history retain explicit timestamps for touch users. EventCountdown has
+colocated styles; shared FriendlyTime has no independent visual styling. No
+stored timestamps, annual anchors, API payloads or audit data change for formatting.
+
+Photo previews, reactions and polls remain clearly labelled sample features
 in React state and reset on refresh or sign-out. Photos use local object URLs and
 are not uploaded. Their shared persistence and attribution are future work.
 

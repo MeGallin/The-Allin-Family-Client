@@ -21,7 +21,7 @@ export function shoppingError(error: unknown): ShoppingError | undefined {
 export const shoppingApi = createApi({
   reducerPath: 'shoppingApi',
   baseQuery: fakeBaseQuery<ShoppingError>(),
-  tagTypes: ['Shopping', 'Profiles'],
+  tagTypes: ['Shopping', 'Profiles', 'Calendar'],
   refetchOnFocus: true,
   refetchOnReconnect: true,
   keepUnusedDataFor: 0,

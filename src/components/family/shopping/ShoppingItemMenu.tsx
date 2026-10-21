@@ -68,7 +68,7 @@ export function ShoppingItemMenu({
           aria-label={'Edit ' + title}
         >
           <Icon icon={Pencil} />
-          Edit name
+          Edit item
         </button>
         <button
           type="button"

@@ -3,6 +3,7 @@ export type ShoppingItem = {
   id: string
   title: string
   checked: boolean
+  important: boolean
   version: number
   createdBy: Actor
   updatedBy: Actor
@@ -15,7 +16,7 @@ export type ShoppingActivity = {
   action: 'created' | 'edited' | 'checked' | 'unchecked' | 'removed'
   actor: Actor
   occurredAt: string
-  before: { title: string; checked: boolean } | null
-  after: { title: string; checked: boolean } | null
+  before: { title: string; checked: boolean; important?: boolean } | null
+  after: { title: string; checked: boolean; important?: boolean } | null
 }
 export type ShoppingSnapshot = { items: ShoppingItem[]; activity: ShoppingActivity[] }

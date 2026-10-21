@@ -20,6 +20,10 @@
   --color-accent: #22d3ee;
   --color-accent-deep: #0e74e9;
   --color-accent-soft: #10354b;
+  /* Shared shopping priority uses the Nimbus cyan palette. */
+  --color-important: var(--color-accent);
+  --color-important-surface: var(--color-accent-soft);
+  --color-important-text: var(--color-link);
   --color-action: #22d3ee;
   --color-action-hover: #67e8f9;
   --color-link: #67e8f9;

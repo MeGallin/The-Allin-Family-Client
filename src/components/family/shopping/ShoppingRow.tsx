@@ -1,11 +1,22 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check } from 'lucide-react'
+import { Check, Star } from 'lucide-react'
 import { useShopping } from '../../../features/shopping/useShopping'
 import type { ShoppingItem } from '../../../features/shopping/types'
 import { Icon } from '../../ui/Icon'
 import { ShoppingItemMenu } from './ShoppingItemMenu'
 import { ShoppingItemDetails } from './ShoppingItemDetails'
 import './ShoppingRow.css'
+import { FriendlyTime } from '../../ui/FriendlyTime'
+import { ImportanceOption } from './ImportanceOption'
+
+// A successful change can remove this row from the current filtered view.
+function focusAfterChange(target: HTMLElement | null) {
+  requestAnimationFrame(() => {
+    if (target && !target.isConnected && document.activeElement === document.body) {
+      document.getElementById('family-content')?.focus()
+    }
+  })
+}
 
 export function ShoppingRow({
   item,
@@ -19,6 +30,7 @@ export function ShoppingRow({
   const { check, edit, remove, removals } = useShopping()
   const [editing, setEditing] = useState<ShoppingItem | null>(null)
   const [title, setTitle] = useState(item.title)
+  const [important, setImportant] = useState(item.important)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const removal = removals[item.id]
   const optionsButton = useRef<HTMLElement>(null)
@@ -30,7 +42,7 @@ export function ShoppingRow({
     }
   }, [disabled, editing])
   return (
-    <li className="shopping-row">
+    <li className={'shopping-row' + (item.important ? ' shopping-row--important' : '')}>
       <div className="shopping-row__main">
         <label>
           <span className="shopping-row__check">
@@ -39,14 +51,21 @@ export function ShoppingRow({
               aria-label={item.title}
               checked={item.checked}
               disabled={disabled || !!removal}
-              onChange={(event) => {
-                returnFocus.current = event.currentTarget
-                void check(item)
+              onChange={async (event) => {
+                const target = event.currentTarget
+                returnFocus.current = target
+                if (await check(item)) focusAfterChange(target)
               }}
             />
             <Icon icon={Check} />
           </span>
           <span className="shopping-row__copy">
+            {item.important && (
+              <span className="shopping-row__priority">
+                <Icon icon={Star} />
+                Important
+              </span>
+            )}
             <span
               className={
                 item.checked
@@ -65,6 +84,8 @@ export function ShoppingRow({
                     item.updatedBy.displayName +
                     ' updated'
                 : 'Added by ' + item.createdBy.displayName}
+              {' · '}
+              <FriendlyTime value={item.version > 1 ? item.updatedAt : item.createdAt} />
             </span>
           </span>
         </label>
@@ -77,6 +98,7 @@ export function ShoppingRow({
             detailsOpen={detailsOpen}
             onEdit={() => {
               setTitle(item.title)
+              setImportant(item.important)
               setEditing(item)
             }}
             onRemove={() => {
@@ -93,8 +115,12 @@ export function ShoppingRow({
           className="shopping-row__edit"
           onSubmit={async (event) => {
             event.preventDefault()
-            returnFocus.current = optionsButton.current
-            if (await edit(editing, title.trim())) setEditing(null)
+            const target = optionsButton.current
+            returnFocus.current = target
+            if (await edit(editing, title.trim(), important)) {
+              setEditing(null)
+              focusAfterChange(target)
+            }
           }}
         >
           <label htmlFor={'shopping-edit-' + item.id}>Edit item name</label>
@@ -113,9 +139,10 @@ export function ShoppingRow({
             onChange={(event) => setTitle(event.target.value)}
             autoFocus
           />
+          <ImportanceOption checked={important} disabled={disabled} onChange={setImportant} />
           <div className="actions">
             <button disabled={disabled || !title.trim() || editing.version !== item.version}>
-              {disabled ? 'Saving…' : 'Save name'}
+              {disabled ? 'Saving…' : 'Save changes'}
             </button>
             <button
               type="button"

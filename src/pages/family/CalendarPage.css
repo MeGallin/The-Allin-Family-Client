@@ -1,6 +1,7 @@
 .calendar-page > .panel {
-  max-width: 52rem;
+  width: 100%;
 }
-.calendar-page .event-list {
-  gap: var(--space-5);
+.calendar-page__feedback {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
 }

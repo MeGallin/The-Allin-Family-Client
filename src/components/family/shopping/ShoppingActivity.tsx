@@ -1,9 +1,10 @@
 import { useShopping } from '../../../features/shopping/useShopping'
 import './ShoppingActivity.css'
+import { FriendlyTime } from '../../ui/FriendlyTime'
 
 const verbs = {
   created: 'added',
-  edited: 'renamed',
+  edited: 'updated',
   checked: 'picked up',
   unchecked: 'put back on the list',
   removed: 'removed',
@@ -21,11 +22,15 @@ export function ShoppingActivity() {
               <p>
                 <strong>{event.actor.displayName}</strong> {verbs[event.action]} “
                 {event.before?.title ?? event.after?.title}”
-                {event.action === 'edited' && <> to “{event.after?.title}”</>}.
+                {event.action === 'edited' && event.before?.title !== event.after?.title && (
+                  <> to “{event.after?.title}”</>
+                )}
+                .{event.action === 'created' && event.after?.important && ' Marked important.'}
+                {event.action === 'edited' &&
+                  !!event.before?.important !== !!event.after?.important &&
+                  (event.after?.important ? ' Marked important.' : ' No longer marked important.')}
               </p>
-              <time dateTime={event.occurredAt}>
-                {new Date(event.occurredAt).toLocaleString('en-GB')}
-              </time>
+              <FriendlyTime value={event.occurredAt} showExact />
             </li>
           ))}
         </ol>

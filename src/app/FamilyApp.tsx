@@ -5,6 +5,7 @@ import { useFamilyHome } from '../hooks/useFamilyHome'
 import { FamilyLayout } from '../components/layout/FamilyLayout'
 import { LoadingState } from '../components/ui/LoadingState'
 import { ShoppingSync } from '../features/shopping/ShoppingSync'
+import { CalendarSync } from '../features/calendar/CalendarSync'
 import { useAppSelector } from './store-hooks'
 
 const FamilyHomePage = lazy(() => import('../pages/family/FamilyHomePage'))
@@ -52,6 +53,7 @@ export default function FamilyApp({ onSessionExpired, ...layoutProps }: Props) {
     <BrowserRouter>
       <FamilyStateLifetime>
         <ShoppingSync onSessionExpired={onSessionExpired}>
+          <CalendarSync onSessionExpired={onSessionExpired} />
           <Routes>
             <Route element={<FamilyLayout user={user ?? home.user} {...layoutProps} />}>
               <Route index element={<FamilyHomePage />} />

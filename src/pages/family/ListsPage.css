@@ -1,4 +1,5 @@
-.lists-page > .panel {
+.lists-page > .panel,
+.lists-page > .view-controls {
   max-width: 48rem;
 }
 .lists-page__count {

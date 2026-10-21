@@ -7,10 +7,41 @@ import { PageHeader } from '../../components/ui/PageHeader'
 import { Panel } from '../../components/ui/Panel'
 import { Icon } from '../../components/ui/Icon'
 import './ListsPage.css'
+import { ImportanceOption } from '../../components/family/shopping/ImportanceOption'
+import { ShoppingControls } from '../../components/family/shopping/ShoppingControls'
+import { shoppingSort, shoppingFilter, shoppingView } from '../../features/shopping/shopping-view'
+import { useSearchParams } from 'react-router'
 
 export default function ListsPage() {
   const { items: shopping, add, pending, loading, error, refresh, feedback } = useShopping()
+  const [search, setSearch] = useSearchParams()
+  const query = (search.get('q') ?? '').slice(0, 100)
+  const sort = shoppingSort(search.get('sort'))
+  const filter = shoppingFilter(search.get('show'))
+  const visible = shoppingView(shopping, query, sort, filter)
+  function viewParam(key: string, value: string) {
+    setSearch(
+      (current) => {
+        const next = new URLSearchParams(current)
+        if (value) next.set(key, value)
+        else next.delete(key)
+        return next
+      },
+      { replace: true },
+    )
+  }
+  function resetView() {
+    setSearch(
+      (current) => {
+        const next = new URLSearchParams(current)
+        ;['q', 'sort', 'show'].forEach((key) => next.delete(key))
+        return next
+      },
+      { replace: true },
+    )
+  }
   const [title, setTitle] = useState('')
+  const [important, setImportant] = useState(false)
   const inputId = useId()
   const inputRef = useRef<HTMLInputElement>(null)
   const wasPending = useRef(false)
@@ -28,8 +59,9 @@ export default function ListsPage() {
     event.preventDefault()
     const value = title.trim()
     if (!value) return
-    if (await add(value)) {
+    if (await add(value, important)) {
       setTitle('')
+      setImportant(false)
     }
   }
   return (
@@ -37,6 +69,17 @@ export default function ListsPage() {
       <PageHeader
         title="Little things, sorted."
         description="One shared list for everyone. See who added and changed each item."
+      />
+      <ShoppingControls
+        query={query}
+        sort={sort}
+        filter={filter}
+        onQuery={(value) => viewParam('q', value)}
+        onSort={(value) => viewParam('sort', value === 'priority' ? '' : value)}
+        onFilter={(value) => viewParam('show', value === 'all' ? '' : value)}
+        onReset={resetView}
+        count={visible.length}
+        total={shopping.length}
       />
       <Panel
         title="Shopping list"
@@ -58,7 +101,10 @@ export default function ListsPage() {
             : shopping.length === 0
               ? 'Your shared list is empty'
               : remaining
-                ? remaining + ' to get · ' + shopping.length + ' items'
+                ? remaining +
+                  ' to get · ' +
+                  shopping.length +
+                  (shopping.length === 1 ? ' item' : ' items')
                 : 'Everything is picked up'}
         </p>
         {error && shopping.length > 0 && (
@@ -87,8 +133,13 @@ export default function ListsPage() {
               {pending ? 'Saving…' : 'Add item'}
             </button>
           </div>
+          <ImportanceOption
+            checked={important}
+            disabled={pending || loading}
+            onChange={setImportant}
+          />
         </form>
-        <ShoppingList removable />
+        <ShoppingList removable view={visible} onReset={resetView} />
 
         <p className="lists-page__feedback" role="status">
           {feedback}

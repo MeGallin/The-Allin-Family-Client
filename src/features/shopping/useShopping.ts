@@ -32,16 +32,19 @@ export function useShopping() {
         }),
       )
     },
-    add: async (title: string) => {
+    add: async (title: string, important = false) => {
       if (store.getState().shoppingUi.busy) return false
-      if (store.getState().shoppingUi.addition?.title !== title)
-        dispatch(additionPrepared({ title, requestKey: crypto.randomUUID() }))
+      if (
+        store.getState().shoppingUi.addition?.title !== title ||
+        store.getState().shoppingUi.addition?.important !== important
+      )
+        dispatch(additionPrepared({ title, important, requestKey: crypto.randomUUID() }))
       const saved = await mutate('add', store.getState().shoppingUi.addition!)
       if (saved) dispatch(additionCleared())
       return saved
     },
-    edit: (item: ShoppingItem, title: string) =>
-      mutate('edit', { id: item.id, version: item.version, title }),
+    edit: (item: ShoppingItem, title: string, important = item.important) =>
+      mutate('edit', { id: item.id, version: item.version, title, important }),
     check: (item: ShoppingItem) =>
       mutate('check', { id: item.id, version: item.version, checked: !item.checked }),
     removals: ui.removals,

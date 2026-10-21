@@ -1,0 +1,28 @@
+.calendar-activity {
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+.calendar-activity summary {
+  min-height: 3rem;
+  align-content: center;
+  cursor: pointer;
+  color: var(--color-text-muted);
+}
+.calendar-activity ol {
+  margin: 0;
+  padding-left: var(--space-4);
+}
+.calendar-activity li {
+  padding-block: var(--space-2);
+}
+.calendar-activity p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+.calendar-activity time {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+.calendar-activity dd {
+  margin-left: 0;
+}

@@ -10,7 +10,7 @@ export type PendingRemoval = {
 const initialState = {
   busy: false,
   feedback: '',
-  addition: null as { title: string; requestKey: string } | null,
+  addition: null as { title: string; important: boolean; requestKey: string } | null,
   removals: {} as Record<string, PendingRemoval>,
 }
 const shoppingUiSlice = createSlice({
@@ -28,7 +28,10 @@ const shoppingUiSlice = createSlice({
     feedbackReceived(state, action: PayloadAction<string>) {
       state.feedback = action.payload
     },
-    additionPrepared(state, action: PayloadAction<{ title: string; requestKey: string }>) {
+    additionPrepared(
+      state,
+      action: PayloadAction<{ title: string; important: boolean; requestKey: string }>,
+    ) {
       state.addition = action.payload
     },
     additionCleared(state) {

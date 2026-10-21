@@ -1,0 +1,5 @@
+.event-countdown {
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
