@@ -12,6 +12,7 @@ const FamilyHomePage = lazy(() => import('../pages/family/FamilyHomePage'))
 const CalendarPage = lazy(() => import('../pages/family/CalendarPage'))
 const MemoriesPage = lazy(() => import('../pages/family/MemoriesPage'))
 const ListsPage = lazy(() => import('../pages/family/ListsPage'))
+const PersonalNotesPage = lazy(() => import('../pages/family/PersonalNotesPage'))
 const AdminPage = lazy(() => import('../pages/admin/AdminPage'))
 const ProfilePage = lazy(() => import('../pages/profile/ProfilePage'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
@@ -60,6 +61,7 @@ export default function FamilyApp({ onSessionExpired, ...layoutProps }: Props) {
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="memories" element={<MemoriesPage />} />
               <Route path="lists" element={<ListsPage />} />
+              <Route path="notes" element={<PersonalNotesPage />} />
               <Route path="admin" element={<AdminPage />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="*" element={<NotFoundPage />} />

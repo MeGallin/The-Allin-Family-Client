@@ -50,10 +50,18 @@ or endpoint.
 
 ## Family home and source organisation
 
-The signed-in app has lazy routes for Home, Calendar, Memories, Lists and
+The signed-in app has lazy routes for Home, Calendar, Memories, Lists, Personal notes and
 Administration and Your profile, with a useful not-found page. Desktop navigation becomes a
 labelled bottom navigation on phones. Administration currently provides a role
 guard, family nickname editing and placeholder information; other account tools and statistics are future work.
+
+Personal notes (`/notes`) is a placeholder for a future owner-only notebook. It
+has no editor, saved note data or API yet. Planned notes include title, header,
+body, footer, note date and creation/edit dates, with editing and deletion.
+When implemented, enforce ownership on every server read/write, including for
+administrators; client filtering alone is not a privacy boundary. Keep note data
+out of shared family feeds, queries and analytics, and clear private cached data
+on sign-out or account changes.
 
 Members can choose a nickname under the account menu's Your profile link. Admins
 can change nicknames for active family accounts under Administration. Nicknames

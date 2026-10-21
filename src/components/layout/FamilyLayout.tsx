@@ -34,7 +34,7 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
           <span className="family-brand__mark">A</span>
           <span>Allin.</span>
         </Link>
-        <FamilyNavigation />
+        <FamilyNavigation familyName={user.familyName} />
         {user.role === 'admin' && (
           <NavLink to="/admin" className="family-layout__admin">
             <Icon icon={ShieldCheck} />
@@ -73,7 +73,7 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
             <Outlet />
           </Suspense>
         </main>
-        <FamilyNavigation mobile />
+        <FamilyNavigation mobile familyName={user.familyName} />
       </div>
     </div>
   )

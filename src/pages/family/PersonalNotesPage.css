@@ -1,0 +1,25 @@
+.personal-notes-page {
+  max-width: var(--content-width);
+}
+.personal-notes-page__privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  color: var(--color-accent);
+}
+.personal-notes-page__features {
+  display: grid;
+  gap: var(--space-4);
+  margin: var(--space-5) 0 0;
+}
+.personal-notes-page__features > div {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-4);
+}
+.personal-notes-page__features dt {
+  font-weight: 600;
+}
+.personal-notes-page__features dd {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+}
