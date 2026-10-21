@@ -13,12 +13,28 @@ html {
 body {
   min-width: 320px;
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
   background: var(--color-page);
+  background-image: var(--background-page);
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: var(--text-md);
   line-height: 1.6;
+}
+
+#root {
+  display: flow-root;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-text-on-action);
+}
+
+a {
+  color: var(--color-link);
+  text-underline-offset: 0.2em;
 }
 
 button,
@@ -42,13 +58,14 @@ h2,
 h3 {
   color: var(--color-text);
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: var(--weight-heading);
 }
 
 h1 {
   margin-bottom: var(--space-3);
   font-size: var(--text-display);
-  line-height: 0.98;
+  font-weight: var(--weight-display);
+  line-height: 1.08;
   letter-spacing: -0.035em;
 }
 
@@ -82,7 +99,7 @@ form {
 
 input {
   width: 100%;
-  min-height: 2.875rem;
+  min-height: var(--control-min-height);
   padding: 0.7rem 0.875rem;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-control);
@@ -93,17 +110,18 @@ input {
 
 input::placeholder {
   color: var(--color-text-muted);
-  opacity: 0.8;
+  opacity: 1;
 }
 
 input:hover:not(:disabled) {
-  border-color: var(--color-accent-deep);
+  border-color: var(--color-accent);
 }
 
 input:focus-visible,
 button:focus-visible,
 a:focus-visible {
-  outline: none;
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
   box-shadow: var(--focus-ring);
 }
 
@@ -112,14 +130,15 @@ input:focus-visible {
 }
 
 button {
-  min-height: 2.875rem;
+  min-height: var(--control-min-height);
   padding: 0.65rem 1.125rem;
   border: 1px solid transparent;
   border-radius: var(--radius-control);
   background: var(--color-action);
-  color: var(--color-text-on-dark);
+  color: var(--color-text-on-action);
+  box-shadow: var(--shadow-action);
   cursor: pointer;
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   font-weight: 650;
   line-height: 1.25;
   transition: background-color var(--control-transition), border-color var(--control-transition), box-shadow var(--control-transition), transform var(--control-transition);
@@ -144,5 +163,7 @@ button:disabled {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }

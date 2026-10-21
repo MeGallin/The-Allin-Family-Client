@@ -47,6 +47,10 @@ form .note {
   color: var(--color-success);
 }
 
+.form-error {
+  margin: var(--space-1) 0;
+}
+
 .actions,
 .account-bar {
   display: flex;
@@ -82,20 +86,22 @@ form > button {
   border-color: var(--color-border-strong);
   background: var(--color-surface);
   color: var(--color-text);
+  box-shadow: none;
 }
 
 .secondary:hover:not(:disabled) {
-  border-color: var(--color-accent-deep);
+  border-color: var(--color-accent);
   background: var(--color-accent-soft);
 }
 
 .text-button {
-  min-height: auto;
+  min-height: var(--control-min-height);
   margin-top: var(--space-3);
   padding: var(--space-2) 0;
   border-color: transparent;
   background: transparent;
-  color: var(--color-action);
+  color: var(--color-link);
+  box-shadow: none;
   font-weight: 600;
   text-decoration: underline;
   text-decoration-color: var(--color-accent);

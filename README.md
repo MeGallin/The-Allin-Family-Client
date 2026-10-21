@@ -23,6 +23,24 @@ npm run dev
 Use a Node version supported by the locked Vite release; this setup was checked
 with Node 22.18.0. Vite binds to loopback and requires port 5173 to be available.
 
+## Design system
+
+The Nimbus-inspired theme uses dark navy surfaces, cyan actions, electric-blue
+highlights and self-hosted Inter Variable. Font assets are bundled by Vite from
+`@fontsource-variable/inter`; browsers do not contact an external font service.
+
+- `src/styles/tokens.css`: semantic color, type, spacing, shape and motion tokens.
+- `src/styles/fonts.css`: local font-face declarations.
+- `src/styles/global.css`: base elements, controls and accessible focus defaults.
+- `src/styles/patterns.css`: shared surfaces, actions and feedback patterns.
+- `src/styles/index.css`: the shared style entry point.
+
+Keep each component's stylesheet next to its TSX file. Start layouts with phone
+defaults, including stacked actions and 48px controls, then enhance them with
+`min-width` breakpoints. Keep colours and other shared values in tokens so future
+theme changes do not require editing each component. Motion respects the user's
+reduced-motion preference.
+
 ## Accounts
 
 The client now includes sign-in, mandatory first-login password change, a protected

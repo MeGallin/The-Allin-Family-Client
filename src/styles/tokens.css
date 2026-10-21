@@ -1,33 +1,40 @@
 :root {
-  color-scheme: light;
+  color-scheme: dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* The Orbit palette, adapted to a warm and readable family utility. */
-  --color-page: #f6f3ed;
-  --color-surface: #fffefa;
-  --color-surface-raised: #ffffff;
-  --color-surface-muted: #eee9df;
-  --color-surface-dark: #3c372d;
-  --color-text: #302d27;
-  --color-text-muted: #665f54;
-  --color-text-on-dark: #fffefa;
-  --color-border: #e2dbcf;
-  --color-border-strong: #cfc3b2;
-  --color-accent: #c89a6b;
-  --color-accent-deep: #b07c50;
-  --color-accent-soft: #f1e5d7;
-  --color-action: #805a3c;
-  --color-action-hover: #69472f;
-  --color-success: #32634e;
-  --color-error: #a13d35;
+  /* Nimbus-inspired navy surfaces, cyan actions and electric-blue highlights. */
+  --color-page: #070d18;
+  --color-surface: #101c30;
+  --color-surface-raised: #16263d;
+  --color-surface-muted: #0c1524;
+  --color-surface-dark: #050912;
+  --color-text: #f4f9ff;
+  --color-text-muted: #b2c4da;
+  --color-text-on-dark: #f4f9ff;
+  --color-text-on-action: #041925;
+  --color-border: #293c56;
+  --color-border-strong: #5b7595;
+  --color-accent: #22d3ee;
+  --color-accent-deep: #0e74e9;
+  --color-accent-soft: #10354b;
+  --color-action: #22d3ee;
+  --color-action-hover: #67e8f9;
+  --color-link: #67e8f9;
+  --color-success: #6ee7b7;
+  --color-error: #fda4af;
+  --color-focus: #67e8f9;
+  --background-page: radial-gradient(ellipse at 10% 0%, rgb(14 116 233 / 18%), transparent 48%),
+    radial-gradient(ellipse at 100% 60%, rgb(34 211 238 / 7%), transparent 48%);
 
-  /* Reference faces first, followed by reliable local fallbacks. */
-  --font-display: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
-  --font-body: "Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  /* Inter is self-hosted through fonts.css; no third-party font requests. */
+  --font-body: "Inter Variable", "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font-body);
+  --font-mono: "SFMono-Regular", Consolas, monospace;
+  --weight-heading: 650;
+  --weight-display: 700;
 
   /* Type scale */
   --text-xs: 0.75rem;
@@ -36,7 +43,7 @@
   --text-lg: 1.125rem;
   --text-xl: 1.375rem;
   --text-2xl: 1.75rem;
-  --text-display: clamp(3rem, 7vw, 4.5rem);
+  --text-display: clamp(2.5rem, 6vw, 3.75rem);
 
   /* 8px spacing rhythm with a 4px half-step. */
   --space-1: 0.25rem;
@@ -54,10 +61,14 @@
   --radius-card: 1rem;
   --radius-panel: 1.25rem;
   --radius-pill: 9999px;
-  --shadow-card: 0 12px 32px rgb(60 55 45 / 7%);
-  --shadow-raised: 0 18px 44px rgb(60 55 45 / 12%);
+  --shadow-card: 0 16px 40px rgb(0 0 0 / 24%), 0 0 32px rgb(14 116 233 / 6%);
+  --shadow-raised: 0 24px 56px rgb(0 0 0 / 36%);
+  --shadow-action: 0 4px 20px rgb(34 211 238 / 16%);
   --content-width: 45rem;
   --page-gutter: clamp(1.25rem, 5vw, 2rem);
-  --focus-ring: 0 0 0 3px rgb(176 124 80 / 28%);
-  --control-transition: 150ms ease;
+  --control-min-height: 3rem;
+  --focus-ring: 0 0 0 5px rgb(34 211 238 / 18%);
+  --motion-fast: 150ms;
+  --motion-ease: cubic-bezier(0.2, 0, 0, 1);
+  --control-transition: var(--motion-fast) var(--motion-ease);
 }
