@@ -43,8 +43,12 @@
   flex-direction: column;
   justify-content: center;
   gap: var(--space-1);
-  padding: var(--space-2) var(--space-1);
+  padding: var(--space-2) 0;
   font-size: var(--text-xs);
+}
+.family-navigation--mobile .family-navigation__link > span {
+  white-space: nowrap;
+  overflow-wrap: normal;
 }
 @media (min-width: 64rem) {
   .family-navigation--mobile {

@@ -53,7 +53,7 @@ export const profileApi = shoppingApi.injectEndpoints({
           await dispatch(
             profileApi.util.upsertQueryData('getProfile', undefined, { profile: data.self }),
           )
-          dispatch(profileApi.util.invalidateTags(['Profiles', 'Shopping', 'Calendar']))
+          dispatch(profileApi.util.invalidateTags(['Profiles', 'Shopping', 'Calendar', 'Memories']))
         } catch {
           /* The form displays the mutation error and retains the draft. */
         }

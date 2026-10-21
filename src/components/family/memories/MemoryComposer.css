@@ -1,6 +1,33 @@
 .memory-composer input[type='file'] {
+  min-width: 0;
+  width: 100%;
   padding: var(--space-3);
   font-size: var(--text-sm);
+}
+.memory-composer fieldset {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.memory-composer__preview {
+  width: 100%;
+  max-height: 18rem;
+  object-fit: contain;
+  border-radius: var(--radius-control);
+  background: var(--color-surface-muted);
+}
+.memory-composer__remove-photo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-min-height);
+}
+.memory-composer__remove-photo input {
+  width: auto;
+  accent-color: var(--color-accent);
 }
 .memory-composer input[type='file']::file-selector-button {
   margin-right: var(--space-3);

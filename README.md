@@ -63,10 +63,34 @@ administrators; client filtering alone is not a privacy boundary. Keep note data
 out of shared family feeds, queries and analytics, and clear private cached data
 on sign-out or account changes.
 
+## Shared memories
+
+Memories and the Home preview now read saved family photos/stories from the PHP
+API. A memory needs a title and a photo, story or both; stories allow 5,000
+characters. The lazy composer supports a preview, photo description, replacement
+and removal. Accepted photos are JPG/PNG/WebP up to 10 MB/24 megapixels; the server
+validates uploads. Longer stories expand on demand. Cards show nickname-based
+creator/editor attribution, relative dates, exact details and full-photo access.
+
+Shared memory data/history lives in the existing RTK Query API cache; write status,
+feedback and errors live in the `memoriesUi` slice. Files and preview object URLs
+stay outside Redux and are released when their component closes. Adds reuse the
+same request key when retrying an unchanged draft; version conflicts retain the
+draft and require reopening the latest memory. Sign-out aborts writes and clears
+the private cache; a session generation guard rejects late results.
+
+The family can edit shared memories. Only the creator/admin can remove one, with
+server enforcement and a confirmation dialog. Content/history persist in MySQL;
+photos persist in private API storage and are served only to signed-in members.
+Love reactions are also saved per user. Polls remain the sole sample preview.
+Memories refresh every 15 seconds while focused, and on focus/reconnect; failed
+writes retain form values and show retryable errors. Apply API migration 009 and
+configure private upload storage as described in the API README before deployment.
+
 Members can choose a nickname under the account menu's Your profile link. Admins
 can change nicknames for active family accounts under Administration. Nicknames
 appear throughout family greetings, the account menu, shopping attribution/history
-and preview photo credits; without one, the first name is used. Full names are
+and memory credits/history; without one, the first name is used. Full names are
 retained for account administration. Blank clears a nickname, and duplicate names
 are allowed because attribution uses account IDs. Forms preserve failed drafts and
 require review if someone else edited the same profile. Successful changes refresh
@@ -160,9 +184,8 @@ activity history retain explicit timestamps for touch users. EventCountdown has
 colocated styles; shared FriendlyTime has no independent visual styling. No
 stored timestamps, annual anchors, API payloads or audit data change for formatting.
 
-Photo previews, reactions and polls remain clearly labelled sample features
-in React state and reset on refresh or sign-out. Photos use local object URLs and
-are not uploaded. Their shared persistence and attribution are future work.
+Polls remain a labelled sample feature in Redux and reset on refresh or sign-out.
+Memories, reactions, shopping and calendar events use the saved PHP API data.
 
 - `src/app`: router and signed-in application composition.
 - `src/pages`: lazy route views with colocated styles.
@@ -173,7 +196,10 @@ are not uploaded. Their shared persistence and attribution are future work.
 - `src/components/profile`: reusable nickname form with colocated styles.
 - `src/components/admin`: family nickname administration with colocated styles.
 - `src/pages/profile`: lazy profile page with colocated styles.
-- `src/features/family`: preview data, navigation, family slice and selectors/actions.
+- `src/features/family`: navigation, sample poll state and family selectors/actions.
+- `src/features/memories`: memory types, write state/actions and a Redux-backed hook.
+- `src/services/memories-api.ts`, `memories-query.ts`: multipart uploads, authenticated
+  photo URLs and RTK Query memory data sharing the existing API cache.
 - `src/features/shopping`: typed attribution, shopping UI slice and a Redux-backed hook.
 - `src/services/shopping-query.ts`: RTK Query endpoints and shared shopping cache.
 - `src/services/profile-api.ts`, `profile-query.ts`: profile transport and injected
@@ -200,13 +226,14 @@ component copies of shared feature data. Keep temporary form text and dialog sta
 local to the component. The setup follows the [Redux TypeScript guide](https://redux.js.org/usage/usage-with-typescript)
 and [RTK Query guidance](https://redux.js.org/toolkit/rtk-query/usage/polling).
 
-Only the public account profile belongs in Redux. Passwords, session cookies,
-CSRF tokens, File objects and browser resources are excluded. Photo previews put
-serializable URL strings in Redux and release the underlying object URLs separately.
+Only the public account profile and serializable feature data belong in Redux.
+Passwords, session cookies, CSRF tokens, File objects and browser resources are
+excluded. Photo preview object URLs remain local to the composer and are revoked
+when replaced or unmounted.
 Sign-out/session expiry aborts pending requests and clears private caches, feature
 data and feedback. A session generation guard prevents late write responses from
 repopulating another session. Redux is not persisted to browser storage; the API
-database remains the source of truth for shopping. DevTools are enabled in development.
+database remains the source of truth for persisted features. DevTools are enabled in development.
 
 PHP verifies every private request. React receives only the signed-in user's
 public profile. The session ID stays in an HttpOnly cookie; CSRF tokens are held

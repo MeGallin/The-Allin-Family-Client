@@ -1,18 +1,16 @@
 import { useEffect } from 'react'
-import { useLocation, Link } from 'react-router'
-import { Images } from 'lucide-react'
+import { useLocation } from 'react-router'
 import { useFamilyData } from '../../features/family/useFamilyData'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { QuickActions } from '../../components/family/QuickActions'
-import { MemoryCard } from '../../components/family/memories/MemoryCard'
+import { MemoryPreview } from '../../components/family/memories/MemoryPreview'
 import { UpcomingPlans } from '../../components/family/calendar/UpcomingPlans'
 import { ShoppingPreview } from '../../components/family/shopping/ShoppingPreview'
 import { FamilyPoll } from '../../components/family/polls/FamilyPoll'
-import { EmptyState } from '../../components/ui/EmptyState'
 import './FamilyHomePage.css'
 
 export default function FamilyHomePage() {
-  const { user, memories } = useFamilyData()
+  const { user } = useFamilyData()
   const location = useLocation()
   const firstName = user.familyName
   useEffect(() => {
@@ -33,17 +31,7 @@ export default function FamilyHomePage() {
       />
       <QuickActions />
       <div className="family-home-grid">
-        {memories[0] ? (
-          <MemoryCard memory={memories[0]} featured />
-        ) : (
-          <section className="surface-card">
-            <EmptyState icon={Images} title="Your family stories start here">
-              <p>
-                <Link to="/memories?compose=memory">Share the first moment</Link>
-              </p>
-            </EmptyState>
-          </section>
-        )}
+        <MemoryPreview />
         <UpcomingPlans />
         <ShoppingPreview />
         <FamilyPoll />

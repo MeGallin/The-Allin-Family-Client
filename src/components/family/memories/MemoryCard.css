@@ -22,10 +22,33 @@
   letter-spacing: -0.035em;
   overflow-wrap: anywhere;
 }
-.memory-card__caption {
+.memory-card__credit {
+  margin-top: var(--space-4);
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
-  font-size: var(--text-sm);
   overflow-wrap: anywhere;
+}
+.memory-card__edit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-min-height);
+}
+.memory-card__details {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+.memory-card__details summary {
+  cursor: pointer;
+  min-height: var(--control-min-height);
+  padding-block: var(--space-3);
+}
+.memory-card__details a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-min-height);
 }
 .memory-card__footer {
   display: flex;
@@ -34,27 +57,6 @@
   justify-content: space-between;
   gap: var(--space-3);
   margin-top: var(--space-5);
-}
-.memory-card__author {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-width: 0;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  overflow-wrap: anywhere;
-}
-.memory-card__author > span:first-child {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 2rem;
-  height: 2rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-surface-raised);
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
-  font-size: var(--text-xs);
 }
 .memory-card__reaction {
   display: inline-flex;

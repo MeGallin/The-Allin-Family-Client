@@ -1,0 +1,8 @@
+.memory-story__text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.65;
+}
+.memory-story button {
+  margin-top: var(--space-3);
+}
