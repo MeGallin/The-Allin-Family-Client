@@ -1,36 +1,47 @@
-import { useId } from 'react'
-import { useFamilyData } from '../../../features/family/useFamilyData'
-import type { PollChoice } from '../../../features/family/types'
+import { Link } from 'react-router'
+import { usePolls } from '../../../features/polls/usePolls'
 import { Panel } from '../../ui/Panel'
+import { LoadingState } from '../../ui/LoadingState'
+import { PollCard } from './PollCard'
 import './FamilyPoll.css'
-
-const options: PollChoice[] = ['Picnic', 'Games night']
-
 export function FamilyPoll() {
-  const { pollChoice, vote } = useFamilyData()
-  const group = useId()
+  const { polls, loading, pending, feedback, error, refresh } = usePolls()
+  const poll = polls.find((entry) => !entry.closed) ?? polls[0]
   return (
     <div id="family-poll" className="family-poll">
-      <Panel title="Next time together?">
-        <p className="family-poll__intro">Pick the plan you fancy.</p>
-        <fieldset className="family-poll__choices">
-          <legend className="sr-only">Choose a family activity</legend>
-          {options.map((option) => (
-            <label key={option} className={pollChoice === option ? 'is-selected' : ''}>
-              <input
-                type="radio"
-                name={group}
-                value={option}
-                checked={pollChoice === option}
-                onChange={() => vote(option)}
-              />
-              <span>{option}</span>
-            </label>
-          ))}
-        </fieldset>
-        <p className="family-poll__feedback" role="status">
-          {pollChoice ? 'You chose ' + pollChoice.toLowerCase() + '.' : 'Everyone gets a say.'}
-        </p>
+      <Panel title="Have a say" action={<Link to="/polls">All polls</Link>}>
+        {loading ? (
+          <LoadingState label="Loading family polls…" />
+        ) : poll ? (
+          <PollCard poll={poll} preview />
+        ) : (
+          <>
+            <p className="note">Ask a question, share a few choices and let everyone have a say.</p>
+            <Link className="button-link" to="/polls?compose=poll">
+              Create a poll
+            </Link>
+          </>
+        )}
+        {pending && (
+          <p role="status" className="note">
+            Saving…
+          </p>
+        )}
+        {feedback && (
+          <p role="status" className="note">
+            {feedback}
+          </p>
+        )}
+        {error && (
+          <div>
+            <p role="alert" className="error">
+              {error}
+            </p>
+            <button type="button" className="secondary" disabled={pending} onClick={refresh}>
+              Try again
+            </button>
+          </div>
+        )}
       </Panel>
     </div>
   )

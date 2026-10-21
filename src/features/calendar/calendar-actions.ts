@@ -7,7 +7,7 @@ import { calendarWriteStarted, calendarWriteFinished, calendarFeedback } from '.
 export const executeCalendarWrite =
   (action: CalendarWrite['action'], body: object) =>
   async (dispatch: AppDispatch, getState: () => RootState): Promise<boolean> => {
-    return executeWrite(getState, {
+    return executeWrite(dispatch, getState, {
       busy: (state) => state.calendarUi.busy,
       start: () => {
         dispatch(calendarWriteStarted())

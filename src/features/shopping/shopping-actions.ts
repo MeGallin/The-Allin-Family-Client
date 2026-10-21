@@ -6,7 +6,7 @@ import { feedbackReceived, writeStarted, writeFinished } from './shopping-ui-sli
 export const executeShoppingWrite =
   (action: ShoppingWrite['action'], body: object) =>
   async (dispatch: AppDispatch, getState: () => RootState): Promise<boolean> => {
-    return executeWrite(getState, {
+    return executeWrite(dispatch, getState, {
       busy: (state) => state.shoppingUi.busy,
       start: () => {
         dispatch(writeStarted())

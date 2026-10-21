@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
 import auth from '../features/auth/auth-slice'
-import family from '../features/family/family-slice'
+import pollsUi from '../features/polls/polls-ui-slice'
 import shoppingUi from '../features/shopping/shopping-ui-slice'
 import calendarUi from '../features/calendar/calendar-ui-slice'
 import memoriesUi from '../features/memories/memories-ui-slice'
@@ -13,7 +13,7 @@ import removals from '../features/removals/removals-slice'
 export const store = configureStore({
   reducer: {
     auth,
-    family,
+    pollsUi,
     shoppingUi,
     calendarUi,
     memoriesUi,

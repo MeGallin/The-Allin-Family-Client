@@ -11,16 +11,22 @@ export async function getSession(signal?: AbortSignal): Promise<FamilySession> {
 }
 
 export async function signIn(username: string, password: string): Promise<FamilySession> {
-  return rememberSession(await request<FamilySession>('/auth/login', { username, password }))
+  return rememberSession(
+    await request<FamilySession>('/auth/login', {
+      username,
+      password,
+      page: window.location.pathname,
+    }),
+  )
 }
 
 export async function signOut(): Promise<void> {
   try {
-    await request('/auth/logout', {})
+    await request('/auth/logout', { page: window.location.pathname })
   } catch (error) {
     if (!(error instanceof ApiError) || error.code !== 'csrf_failed') throw error
     await getSession()
-    await request('/auth/logout', {})
+    await request('/auth/logout', { page: window.location.pathname })
   }
   setCsrfToken('')
 }

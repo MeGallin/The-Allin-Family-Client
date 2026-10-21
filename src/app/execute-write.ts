@@ -1,5 +1,10 @@
-import type { RootState } from './store'
-import { shoppingError, serializableError, type ShoppingError } from '../services/shopping-query'
+import type { AppDispatch, RootState } from './store'
+import {
+  shoppingApi,
+  shoppingError,
+  serializableError,
+  type ShoppingError,
+} from '../services/shopping-query'
 type WritePlan<T> = {
   busy: (state: RootState) => boolean
   start: () => void
@@ -11,6 +16,7 @@ type WritePlan<T> = {
 }
 /** One lifecycle for feature writes. Plans supply only domain-specific operations. */
 export async function executeWrite<T>(
+  dispatch: AppDispatch,
   getState: () => RootState,
   plan: WritePlan<T>,
 ): Promise<boolean> {
@@ -22,6 +28,7 @@ export async function executeWrite<T>(
     const data = await plan.request()
     if (!current()) return false
     await plan.commit(data)
+    if (current()) dispatch(shoppingApi.util.invalidateTags(['AdminActivity']))
     return current()
   } catch (error) {
     if (!current()) return false

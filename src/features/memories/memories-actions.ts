@@ -14,7 +14,7 @@ import type { MemoryAction } from './types'
 export const executeMemoryWrite =
   (action: MemoryAction, body: object, photo?: File) =>
   async (dispatch: AppDispatch, getState: () => RootState): Promise<boolean> => {
-    return executeWrite(getState, {
+    return executeWrite(dispatch, getState, {
       busy: (state) => state.memoriesUi.busy,
       start: () => {
         dispatch(memoryWriteStarted())

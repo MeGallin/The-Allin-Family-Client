@@ -106,7 +106,7 @@ the private cache; a session generation guard rejects late results.
 The family can edit shared memories. Only the creator/admin can remove one, with
 server enforcement and a confirmation dialog. Content/history persist in MySQL;
 photos persist in private API storage and are served only to signed-in members.
-Love reactions are also saved per user. Polls remain the sole sample preview.
+Love reactions are also saved per user and appear in the administrator activity feed.
 Memories refresh every 15 seconds while focused, and on focus/reconnect; failed
 writes retain form values and show retryable errors. Apply API migration 009 and
 configure private upload storage as described in the API README before deployment.
@@ -208,7 +208,7 @@ activity history retain explicit timestamps for touch users. EventCountdown has
 colocated styles; shared FriendlyTime has no independent visual styling. No
 stored timestamps, annual anchors, API payloads or audit data change for formatting.
 
-Polls remain a labelled sample feature in Redux and reset on refresh or sign-out.
+Polls and votes are saved by the API; their client state uses the same shared RTK Query cache.
 Memories, reactions, shopping and calendar events use the saved PHP API data.
 
 - `src/app`: router and signed-in application composition.
@@ -220,7 +220,9 @@ Memories, reactions, shopping and calendar events use the saved PHP API data.
 - `src/components/profile`: reusable nickname form with colocated styles.
 - `src/components/admin`: family nickname administration with colocated styles.
 - `src/pages/profile`: lazy profile page with colocated styles.
-- `src/features/family`: navigation, sample poll state and family selectors/actions.
+- `src/features/family`: navigation and authenticated family identity.
+- `src/features/polls`: saved polls, write adapters, shared deletion and polling.
+- `src/features/activity`: types for the administrator activity feed.
 - `src/features/memories`: memory types, write state/actions and a Redux-backed hook.
 - `src/services/memories-api.ts`, `memories-query.ts`: multipart uploads, authenticated
   photo URLs and RTK Query memory data sharing the existing API cache.
@@ -307,7 +309,7 @@ Repository: https://github.com/MeGallin/The-Allin-Family-Client
 
 ## Shared writes and delayed removal
 
-- All shopping, calendar, memories and personal-note writes use
+- All shopping, calendar, memories, polls and personal-note writes use
   `src/app/execute-write.ts`: one busy/session guard, request lifecycle,
   conflict refresh and finally cleanup. Feature adapters handle typed cache updates
   and their feedback. Private-note snapshots remain keyed and checked by owner.
@@ -334,3 +336,62 @@ Repository: https://github.com/MeGallin/The-Allin-Family-Client
 
 To add another removable feature, supply a typed adapter and use the shared hook
 and UI; do not introduce another timer, countdown component or delay constant.
+
+
+## Saved family polls and administrator activity
+
+Apply API migration 011. The lazy /polls page is linked from Home's Have a say
+shortcut and the desktop sidebar. The Home poll panel uses the same saved data
+and voting card. The existing five mobile navigation targets remain uncrowded;
+Home's shortcut and poll panel provide phone access to the full polls page.
+
+Any signed-in family member can create a poll with two to six distinct choices,
+cast one vote, change it or withdraw it while voting is open. Everyone sees totals
+and percentages. Only the creator or an administrator can edit question/details,
+close/reopen voting or remove a poll. Choices stay fixed to preserve ballot meaning.
+Removal uses the shared 30-second pending countdown/Undo; votes/history remain after
+soft removal. Empty, loading, saving, closed, missing and error states are included.
+
+features/polls and services/polls-* separate types, Redux UI state, RTK Query data
+and transport. Writes use executeWrite/writeRequest; removals use useRemovals with
+a typed polls adapter. No new timer, write middleware, dependency or sample seed.
+Server-generated actor IDs, independent per-person ballot revisions and poll
+versions prevent spoofed/duplicate votes and stale changes. Unchanged retries have
+no new activity; an unchanged addition draft reuses its user-scoped request key.
+
+Administration now has a lazy Family activity feed. Filter by person and feature;
+expand before/after changes and page back in blocks of 50 using stable cursors.
+It covers shopping, calendar, memories/likes, polls/votes and nicknames. Voting
+screens explicitly explain that administrators can see voter identity/choices.
+Personal note content/history is excluded. Activity invalidation after successful
+writes is centralised in executeWrite; the feed also polls while its latest page
+is visible. Nickname writes invalidate activity through the existing profile flow.
+
+The development database contains no generated examples after Gary's requested
+cleanup. User accounts, Gary's real entries and their audit history are preserved.
+No example poll is created automatically; the first poll should be real input.
+## Platform usage
+
+Administration now includes a lazy Platform usage section backed by the existing
+Redux/RTK Query API cache. It shows per-person login counts, estimated active time,
+last login/last seen, members without recorded use, and paginated session history
+with last section and explicit sign-out location/time. Filters cover person and
+sessions started in the last7/30/90 days or since tracking began. Data refreshes
+every30 seconds on the latest page while focused. Nickname changes invalidate
+this view, and sign-out/session changes clear it with the shared private cache.
+
+UsagePresence is mounted once inside the authenticated router. It sends only the
+pathname and recent-input/visibility state through the shared CSRF write transport;
+no typed text, query string, note ID or content is sent. Pointer/keyboard/wheel/touch
+input renews activity; raw scroll events do not, because automatic layout changes
+and scroll anchoring must not reset the idle timer. Inputs expire after60
+seconds; visible heartbeats run every30 seconds, hidden tabs stop periodic traffic,
+and missing intervals are bounded by server time. Network failures never block
+content workflows. Explicit sign-out sends the current pathname through auth-api.
+The profile explains administrator visibility and continued note-content privacy.
+
+Apply API migrations012 and013 first. Tracking starts now; an already-open session is
+labelled as existing rather than a new login. Closing the browser is not a reliable
+logout event: stale sessions display inactive and retain their last recorded
+section. Duration is an estimate of active time across sessions, not exact time
+between login and logout. No third-party analytics package or cookie is added.

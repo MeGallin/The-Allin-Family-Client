@@ -3,6 +3,7 @@ import './ViewControls.css'
 export function ViewControls({
   label,
   queryLabel,
+  sortLabel = 'Sort by',
   placeholder,
   hint,
   query,
@@ -18,6 +19,7 @@ export function ViewControls({
   extra,
 }: {
   label: string
+  sortLabel?: string
   queryLabel: string
   placeholder: string
   hint: string
@@ -52,7 +54,7 @@ export function ViewControls({
           />
         </div>
         <div>
-          <label htmlFor={id + '-sort'}>Sort by</label>
+          <label htmlFor={id + '-sort'}>{sortLabel}</label>
           <select id={id + '-sort'} value={sort} onChange={(e) => onSort(e.target.value)}>
             {options.map(([key, text]) => (
               <option key={key} value={key}>

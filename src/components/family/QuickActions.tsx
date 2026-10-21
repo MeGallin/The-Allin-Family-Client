@@ -7,7 +7,7 @@ const actions = [
   { to: '/memories?compose=memory', label: 'Share a moment', icon: Camera },
   { to: '/calendar?compose=event', label: 'Make a plan', icon: CalendarPlus },
   { to: '/lists', label: 'Shopping list', icon: ShoppingBasket },
-  { to: '/#family-poll', label: 'Have a say', icon: MessagesSquare },
+  { to: '/polls', label: 'Have a say', icon: MessagesSquare },
 ]
 
 export function QuickActions() {

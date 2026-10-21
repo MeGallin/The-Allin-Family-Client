@@ -15,6 +15,10 @@ export default function ProfilePage() {
         </p>
         <NicknameForm profile={user} />
       </Panel>
+      <p className="note">
+        Family administrators can see sign-in counts, estimated active time and the last section
+        visited. Your personal note contents stay private.
+      </p>
     </div>
   )
 }

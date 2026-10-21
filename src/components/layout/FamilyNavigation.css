@@ -47,8 +47,13 @@
   font-size: var(--text-xs);
 }
 .family-navigation--mobile .family-navigation__link > span {
+  max-width: 100%;
+  box-sizing: border-box;
+  padding-inline: var(--space-1);
   white-space: nowrap;
   overflow-wrap: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 @media (min-width: 64rem) {
   .family-navigation--mobile {

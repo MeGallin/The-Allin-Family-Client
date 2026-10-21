@@ -1,3 +1,5 @@
+import { pollsApi } from '../../services/polls-query'
+import { executePollWrite } from '../polls/polls-actions'
 import type { AppDispatch, RootState } from '../../app/store'
 import { shoppingApi } from '../../services/shopping-query'
 import { calendarApi } from '../../services/calendar-query'
@@ -16,6 +18,12 @@ type Adapter = {
 const body = ({ item }: PendingRemoval) => ({ id: item.id, version: item.version })
 /** Only domain differences live here; timing, Undo and safety checks live in the listener. */
 export const removalAdapters: Record<RemovalDomain, Adapter> = {
+  polls: {
+    busy: (state) => state.pollsUi.busy,
+    latest: (state) => pollsApi.endpoints.getPolls.select()(state).data?.polls,
+    remove: (dispatch, entry) =>
+      dispatch(executePollWrite({ action: 'remove', body: body(entry) })),
+  },
   shopping: {
     busy: (state) => state.shoppingUi.busy,
     latest: (state) => shoppingApi.endpoints.getShopping.select()(state).data?.items,

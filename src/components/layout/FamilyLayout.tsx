@@ -58,8 +58,8 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
         <div className="family-layout__notice">
           <Icon icon={FlaskConical} />
           <p>
-            <strong>Family space</strong> Shopping, calendar events and memories are shared and
-            saved. Polls are still a sample preview that resets on refresh.
+            <strong>Family space</strong> Shopping, calendar events, memories and polls are shared
+            and saved. Your personal notes stay private.
           </p>
         </div>
         <main id="family-content" className="family-layout__content" tabIndex={-1}>

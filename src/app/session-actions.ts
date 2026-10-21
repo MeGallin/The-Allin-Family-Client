@@ -4,7 +4,7 @@ import { shoppingApi } from '../services/shopping-query'
 import { shoppingUiReset } from '../features/shopping/shopping-ui-slice'
 import { calendarUiReset } from '../features/calendar/calendar-ui-slice'
 import { userReceived } from '../features/auth/auth-slice'
-import { familyReset } from '../features/family/family-slice'
+import { pollsUiReset } from '../features/polls/polls-ui-slice'
 import { abortMemoryWrites } from '../services/memories-api'
 import { memoriesUiReset } from '../features/memories/memories-ui-slice'
 import { notesUiReset } from '../features/notes/notes-ui-slice'
@@ -19,6 +19,6 @@ export function clearPrivateState(dispatch: AppDispatch) {
   dispatch(calendarUiReset())
   dispatch(memoriesUiReset())
   dispatch(notesUiReset())
-  dispatch(familyReset())
+  dispatch(pollsUiReset())
   dispatch(userReceived(null))
 }

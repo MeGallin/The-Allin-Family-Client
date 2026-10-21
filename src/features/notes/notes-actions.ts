@@ -9,7 +9,7 @@ export const executeNoteWrite =
   async (dispatch: AppDispatch, getState: () => RootState): Promise<boolean> => {
     const ownerId = getState().auth.user?.id
     if (!ownerId) return false
-    return executeWrite(getState, {
+    return executeWrite(dispatch, getState, {
       busy: (state) => state.notesUi.busy,
       start: () => {
         dispatch(noteWriteStarted())
