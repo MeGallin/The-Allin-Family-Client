@@ -1,0 +1,19 @@
+.admin-roadmap {
+  display: grid;
+  gap: var(--space-5);
+}
+.admin-roadmap .surface-card > .ui-icon {
+  color: var(--color-accent);
+  margin-bottom: var(--space-4);
+}
+.admin-roadmap h2 {
+  font-size: var(--text-xl);
+}
+.admin-roadmap p {
+  color: var(--color-text-muted);
+}
+@container family-content (min-width: 46rem) {
+  .admin-roadmap {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

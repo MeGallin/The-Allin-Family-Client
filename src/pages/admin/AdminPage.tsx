@@ -1,48 +1,55 @@
 import { lazy, Suspense } from 'react'
 import { LoadingState } from '../../components/ui/LoadingState'
-import { Navigate } from 'react-router'
-import { KeyRound, Settings2, ShieldCheck } from 'lucide-react'
+import { Link, Navigate, useSearchParams } from 'react-router'
 import { useFamilyData } from '../../features/family/useFamilyData'
-import { Icon } from '../../components/ui/Icon'
 import { PageHeader } from '../../components/ui/PageHeader'
 import './AdminPage.css'
-import { UserNicknames } from '../../components/admin/UserNicknames'
+import { adminPeriod } from '../../features/admin/useAdminFilters'
 
 const AdminActivity = lazy(() => import('../../components/admin/activity/AdminActivity'))
 const AdminUsage = lazy(() => import('../../components/admin/usage/AdminUsage'))
+const AdminOverview = lazy(() => import('../../components/admin/insights/AdminOverview'))
+const AdminMembers = lazy(() => import('../../components/admin/AdminMembers'))
+const views = [
+  ['overview', 'Overview'],
+  ['usage', 'Usage details'],
+  ['activity', 'Shared activity'],
+  ['members', 'Family members'],
+] as const
 
 export default function AdminPage() {
   const { user } = useFamilyData()
+  const [params] = useSearchParams()
+  const selected = params.get('view') ?? 'overview'
+  const view = views.some(([key]) => key === selected) ? selected : 'overview'
   if (user.role !== 'admin') return <Navigate to="/" replace />
   return (
     <div className="page-stack page-enter">
-      <PageHeader title="Administration" description="A place to look after the family space." />
-      <Suspense fallback={<LoadingState label="Opening platform usage…" />}>
-        <AdminUsage />
+      <PageHeader
+        title="Administration"
+        description="Understand the family space. Look after the people in it."
+      />
+      <nav className="admin-views" aria-label="Administration sections">
+        {views.map(([key, label]) => (
+          <Link
+            key={key}
+            to={
+              key === 'overview'
+                ? '/admin?days=' + adminPeriod(params.get('days'))
+                : '/admin?view=' + key + '&days=' + adminPeriod(params.get('days'), true)
+            }
+            aria-current={view === key ? 'page' : undefined}
+          >
+            {label}
+          </Link>
+        ))}
+      </nav>
+      <Suspense fallback={<LoadingState label="Opening administration…" />}>
+        {view === 'overview' && <AdminOverview />}
+        {view === 'usage' && <AdminUsage />}
+        {view === 'activity' && <AdminActivity />}
+        {view === 'members' && <AdminMembers />}
       </Suspense>
-      <Suspense fallback={<LoadingState label="Opening family activity…" />}>
-        <AdminActivity />
-      </Suspense>
-      <UserNicknames />
-      <div className="admin-roadmap">
-        <section className="surface-card">
-          <Icon icon={KeyRound} />
-          <h2>Family account support</h2>
-          <p>Password reset and account management tools will be added here.</p>
-          <span className="status-label">Coming later</span>
-        </section>
-        <section className="surface-card">
-          <Icon icon={Settings2} />
-          <h2>Site controls</h2>
-          <p>Content controls will be added here. Shared activity is available above.</p>
-          <span className="status-label">Coming later</span>
-        </section>
-      </div>
-      <p className="admin-roadmap__note">
-        <Icon icon={ShieldCheck} />
-        Signed in with administrator access. Review shared activity and help with family nicknames
-        above. Other account and site tools are coming later.
-      </p>
     </div>
   )
 }

@@ -1,0 +1,186 @@
+.admin-overview {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+}
+.admin-overview__toolbar {
+  display: grid;
+  gap: var(--space-4);
+  align-items: end;
+}
+.admin-overview__toolbar h2 {
+  font-size: var(--text-2xl);
+  margin: var(--space-2) 0;
+}
+.admin-overview__eyebrow {
+  color: var(--color-link);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: var(--text-xs);
+  font-weight: 650;
+}
+.admin-overview__period {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.admin-overview__period label {
+  font-size: var(--text-sm);
+}
+.admin-overview__coverage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  border-left: 2px solid var(--color-accent);
+  padding-left: var(--space-4);
+}
+.admin-overview__coverage p {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  flex: 1 1 16rem;
+}
+.insight-stats {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+}
+.insight-stats > div {
+  padding: var(--panel-padding);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-muted);
+}
+.insight-stats dt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.insight-stats dt .ui-icon {
+  color: var(--color-accent);
+}
+.insight-stats dd {
+  margin: var(--space-3) 0;
+  font-size: var(--text-3xl);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.insight-stats dd span {
+  color: var(--color-text-muted);
+  font-size: var(--text-xl);
+  font-weight: 400;
+}
+.insight-stats p {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+.insight-charts {
+  display: grid;
+  align-items: start;
+  gap: var(--space-5);
+  min-width: 0;
+}
+.insight-feature-links,
+.insight-member-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.insight-feature-links a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  min-height: var(--control-min-height);
+  border-bottom: 1px solid var(--color-border);
+  padding-block: var(--space-2);
+}
+.insight-feature-links span {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+.insight-member-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+.insight-member-list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-min-height);
+  font-weight: 600;
+}
+.insight-member-list p {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+.insight-member-list strong {
+  color: var(--color-text);
+}
+.insight-direction {
+  border-top: 1px solid var(--color-border-strong);
+  padding-top: var(--space-6);
+}
+.insight-direction h2 {
+  font-size: var(--text-xl);
+}
+.insight-direction ul {
+  display: grid;
+  gap: var(--space-5);
+  list-style: none;
+  padding: 0;
+  margin: var(--space-5) 0 0;
+}
+.insight-direction li {
+  min-width: 0;
+  border-left: 1px solid var(--color-border);
+  padding-left: var(--space-4);
+}
+.insight-direction p {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  margin-top: var(--space-2);
+}
+.insight-direction a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-min-height);
+  font-size: var(--text-sm);
+}
+.insight-definitions {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+.insight-definitions summary {
+  cursor: pointer;
+  color: var(--color-link);
+  min-height: var(--control-min-height);
+  padding-block: var(--space-3);
+}
+@container family-content (min-width: 40rem) {
+  .insight-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .admin-overview__toolbar {
+    grid-template-columns: minmax(0, 1fr) minmax(13rem, 18rem);
+  }
+  .insight-direction ul {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@container family-content (min-width: 48rem) {
+  .insight-charts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

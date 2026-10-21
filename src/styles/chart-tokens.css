@@ -1,0 +1,10 @@
+:root {
+  /* One semantic palette shared by every admin chart, derived from Nimbus. */
+  --chart-created: var(--color-accent);
+  --chart-updated: #7caeff;
+  --chart-responded: #b2c4da;
+  --chart-removed: #fda4af;
+  --chart-line: var(--color-text);
+  --chart-grid: var(--color-border);
+  --chart-axis: var(--color-text-muted);
+}

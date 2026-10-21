@@ -1,4 +1,5 @@
-import { useId, useState } from 'react'
+import { useId } from 'react'
+import { useAdminFilters } from '../../../features/admin/useAdminFilters'
 import { activityApi } from '../../../services/activity-query'
 import { profileApi } from '../../../services/profile-query'
 import { shoppingError } from '../../../services/shopping-query'
@@ -6,9 +7,11 @@ import { LoadingState } from '../../ui/LoadingState'
 import { ActivityRow } from './ActivityRow'
 import './AdminActivity.css'
 export default function AdminActivity() {
-  const [type, setType] = useState(''),
-    [actor, setActor] = useState(''),
-    [before, setBefore] = useState('')
+  const { params, setFilter } = useAdminFilters()
+  const type = params.get('type') ?? ''
+  const actor = params.get('actor') ?? ''
+  const before = params.get('before') ?? ''
+  const setBefore = (value: string) => setFilter('before', value)
   const id = useId()
   const query = activityApi.useGetAdminActivityQuery(
     { type, actor, before },
@@ -33,8 +36,7 @@ export default function AdminActivity() {
             id={id + '-type'}
             value={type}
             onChange={(e) => {
-              setType(e.target.value)
-              setBefore('')
+              setFilter('type', e.target.value)
             }}
           >
             {[
@@ -57,8 +59,7 @@ export default function AdminActivity() {
             id={id + '-actor'}
             value={actor}
             onChange={(e) => {
-              setActor(e.target.value)
-              setBefore('')
+              setFilter('actor', e.target.value)
             }}
           >
             <option value="">Everyone</option>

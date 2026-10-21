@@ -62,6 +62,7 @@ export const profileApi = shoppingApi.injectEndpoints({
               'Polls',
               'AdminActivity',
               'AdminUsage',
+              'AdminInsights',
             ]),
           )
         } catch {

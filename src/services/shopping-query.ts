@@ -30,6 +30,7 @@ export const shoppingApi = createApi({
     'Polls',
     'AdminActivity',
     'AdminUsage',
+    'AdminInsights',
   ],
   refetchOnFocus: true,
   refetchOnReconnect: true,

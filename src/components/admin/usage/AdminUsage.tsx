@@ -1,4 +1,5 @@
-import { useId, useState } from 'react'
+import { useId } from 'react'
+import { useAdminFilters } from '../../../features/admin/useAdminFilters'
 import { usageApi } from '../../../services/usage-query'
 import { shoppingError } from '../../../services/shopping-query'
 import { usageDuration } from '../../../features/usage/usage-format'
@@ -9,9 +10,10 @@ import './AdminUsage.css'
 
 export default function AdminUsage() {
   const id = useId()
-  const [days, setDays] = useState('30')
-  const [user, setUser] = useState('')
-  const [before, setBefore] = useState('')
+  const { params, days, setFilter } = useAdminFilters(true)
+  const user = params.get('user') ?? ''
+  const before = params.get('before') ?? ''
+  const setBefore = (value: string) => setFilter('before', value)
   const query = usageApi.useGetAdminUsageQuery(
     { days, user, before },
     {
@@ -39,8 +41,7 @@ export default function AdminUsage() {
             id={id + '-period'}
             value={days}
             onChange={(e) => {
-              setDays(e.target.value)
-              setBefore('')
+              setFilter('days', e.target.value)
             }}
           >
             <option value="7">Last 7 days</option>
@@ -55,11 +56,11 @@ export default function AdminUsage() {
             id={id + '-person'}
             value={user}
             onChange={(e) => {
-              setUser(e.target.value)
-              setBefore('')
+              setFilter('user', e.target.value)
             }}
           >
             <option value="">Everyone</option>
+            {user && !data && <option value={user}>Loading member…</option>}
             {data?.people.map((person) => (
               <option key={person.id} value={person.id}>
                 {person.name}
@@ -77,8 +78,8 @@ export default function AdminUsage() {
         </button>
       </div>
       <p className="note">
-        Totals cover sessions started in the selected period. Last sign-in and last seen cover all
-        recorded history. Tracking starts from this update.
+        Totals cover sessions started in the selected London calendar days. Last sign-in and last
+        seen cover all recorded history. Tracking starts from this update.
       </p>
       <p className="note">
         Active time is an estimate from visible pages and recent interaction, checked about every 30

@@ -28,7 +28,7 @@ export async function executeWrite<T>(
     const data = await plan.request()
     if (!current()) return false
     await plan.commit(data)
-    if (current()) dispatch(shoppingApi.util.invalidateTags(['AdminActivity']))
+    if (current()) dispatch(shoppingApi.util.invalidateTags(['AdminActivity', 'AdminInsights']))
     return current()
   } catch (error) {
     if (!current()) return false

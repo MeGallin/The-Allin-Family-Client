@@ -370,6 +370,42 @@ is visible. Nickname writes invalidate activity through the existing profile flo
 The development database contains no generated examples after Gary's requested
 cleanup. User accounts, Gary's real entries and their audit history are preserved.
 No example poll is created automatically; the first poll should be real input.
+## Administrator overview and charts
+
+The default /admin view is now an overview, with separate URL-addressable sections
+for Usage details, Shared activity and Family members (?view=usage/activity/members).
+Each view is lazy; Recharts3.10.1 and its react-is peer are loaded with the overview,
+so chart code is not part of ordinary family pages. The existing Redux/RTK Query
+API owns the insight snapshot, refreshes every30 seconds while focused, clears it
+with session state, and invalidates it after shared writes/nickname changes.
+
+The daily pulse combines stacked audit-action categories with a sign-in line.
+Feature and member charts reuse one StackedActivityChart, semantic palette/legend
+and ChartPanel. All colours live in styles/chart-tokens.css, derived from Nimbus.
+Animations are disabled for chart polling; existing route transitions remain.
+Responsive SVG, keyboard accessibility, plain figures and an expandable daily
+table provide access beyond colour/hover. Phone layouts stack; desktop compares
+features and members side by side. Chart categories keep the same meaning across
+all views: added, updated, votes/reactions and removed.
+
+Only real recorded data is shown. Before the first recorded date, values are null
+and displayed as unavailable; the plot starts at the first available day. Today is
+partial, calendar days use Europe/London, and previous-period comparisons are
+withheld until earlier recorded coverage exists. Feature counts measure writes,
+not page views or time reading a feature. Personal-note activity is excluded.
+Member usage links retain the selected period/person; feature links explicitly
+open the full audit history for that feature. Data-driven next-step notes highlight
+limited history, enabled members without recorded use, and the busiest shared
+feature. No forecasts or made-up engagement scores are produced.
+
+Admin filters share features/admin/useAdminFilters.ts and live in the URL. Overview
+periods, usage person/period and audit feature/actor/cursor survive refresh and
+browser Back. Filter changes reset an older cursor; navigation keeps the period.
+Named chart applications support keyboard access to tooltips. ChartTooltip uses
+the actual chart width to pin tooltips inside narrow frames, avoiding plot-axis
+clamping overflow at320px; desktop tooltips follow the chart normally. The daily
+figures table scrolls within its own keyboard-focusable region.
+
 ## Platform usage
 
 Administration now includes a lazy Platform usage section backed by the existing
