@@ -538,3 +538,53 @@ are level 2 (Home previews stay level 3), and an empty filtered view offers Show
 all polls. The reporting toolbar uses the shared icon refresh control so the
 period text fits a 320px phone. Temporary browser fixtures and their activity were
 removed; original family content was checked against the pre-test baseline.
+
+## Draft protection, reporting periods and poll links
+
+The authenticated app uses a React Router data router, preserving lazy page routes.
+`DraftProtectionProvider` owns one blocker and one shared Nimbus confirmation for
+all registered editors. `useDraftGuard` protects dirty Notes, Calendar, Memories,
+Polls, Shopping add/inline-edit, nickname and admin member forms. Closing, Cancel,
+Back, changing editor/admin view, password settings and sign-out preserve writing
+until the person explicitly discards it. Successful saves bypass the warning.
+Refresh/tab close use the browser's native beforeunload warning. Filter and anchor
+changes that retain the editor do not warn. Shopping retains editing rows even if
+a background update removes them from the filtered view. Missing records keep the
+mounted draft available to copy and disable saving. Nested modals share a scroll
+lock and restore scrolling regardless of closing order.
+
+`DraftConflict` provides a shared three-way field review. Untouched fields adopt
+the latest saved values; overlapping changes require choosing the draft or saved
+value. Reconciled fields remain editable and require an explicit save. Selected
+memory images stay in memory while the editor remains open. Draft text/files are
+not persisted in URLs, localStorage or a draft API. Deliberately discarding,
+confirmed reloads, crashes and expired authentication can still lose a draft.
+
+`ReportingPeriodSelect` is shared by Overview, Usage and Activity. Activity now
+passes days through its RTK Query/API filters and shows the returned reporting
+bounds. All use London calendar days including today, with exclusive next-midnight
+UTC query bounds. Activity and Usage also support all recorded history (days=0).
+Changing filters clears the pagination cursor. Usage remains a session-start cohort,
+not a per-day allocation of total active time; lifetime last-login/seen stay labelled.
+
+Poll status and search live in `show`/`q` URL parameters. `pollLink` includes the
+saved open/closed status and target anchor. An anchored poll hidden by filters
+reveals its actual current status, clears conflicting search and focuses the card
+after loading. A missing poll gives recovery feedback. Compose/edit/remove preserve
+the current view and anchor when closing; Back from another page restores the view.
+No schema changes, dependencies or generated records are needed for this increment.
+
+### Reliability regression follow-up
+
+Internal-browser regression under Gary/Dad covered shared dirty-form navigation,
+Cancel/X/Escape/Back, retained image selection, overlapping/non-overlapping note
+conflicts and retained shopping drafts after filtering and background removal.
+Reporting windows/drill-downs matched database counts with temporary boundary
+fixtures; closed-poll links, refresh, Back, preserved editor filters and missing-link
+recovery worked at phone widths. The cancelled refresh attempt retained writing;
+IAB did not expose its native prompt, and crash/tab-close recovery is not promised.
+Rapid admin selections now accumulate URL filters rather than losing a prior choice.
+Warnings focus Keep editing; conflict review restores editor focus, and modal return
+focus can fall back to main content when an account-menu trigger disappears.
+Only Gary-owned disposable fixtures were used; all were removed and original content,
+account identities and audit history were compared exactly with the private baseline.

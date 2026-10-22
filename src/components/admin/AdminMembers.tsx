@@ -1,3 +1,4 @@
+import { useDraftProtection } from '../../features/drafts/DraftProtection'
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { useAppDispatch, useAppSelector } from '../../app/store-hooks'
@@ -14,6 +15,7 @@ import { MemberCredential } from './members/MemberCredential'
 import './AdminMembers.css'
 
 export default function AdminMembers() {
+  const { protect } = useDraftProtection()
   const dispatch = useAppDispatch()
   const { days } = useAdminFilters()
   const user = useAppSelector((state) => state.auth.user)
@@ -57,7 +59,7 @@ export default function AdminMembers() {
         <button
           type="button"
           disabled={busy || selection === 'new'}
-          onClick={() => changeSelection('new')}
+          onClick={() => protect(() => changeSelection('new'))}
         >
           Add family member
         </button>
@@ -124,7 +126,7 @@ export default function AdminMembers() {
                 type="button"
                 className="secondary"
                 disabled={busy || selection === item.id}
-                onClick={() => changeSelection(item.id)}
+                onClick={() => protect(() => changeSelection(item.id))}
                 aria-label={`Edit account for ${item.familyName}`}
               >
                 Edit account

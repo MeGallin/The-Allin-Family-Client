@@ -1,3 +1,4 @@
+import { useDraftGuard } from '../../features/drafts/DraftProtection'
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { Plus } from 'lucide-react'
 import { useShopping } from '../../features/shopping/useShopping'
@@ -43,6 +44,7 @@ export default function ListsPage() {
   }
   const [title, setTitle] = useState('')
   const [important, setImportant] = useState(false)
+  const guard = useDraftGuard(!!title || important, pending && (!!title || important))
   const inputId = useId()
   const inputRef = useRef<HTMLInputElement>(null)
   const wasPending = useRef(false)
@@ -61,8 +63,10 @@ export default function ListsPage() {
     const value = title.trim()
     if (!value) return
     if (await add(value, important)) {
-      setTitle('')
-      setImportant(false)
+      guard.complete(() => {
+        setTitle('')
+        setImportant(false)
+      })
     }
   }
   return (

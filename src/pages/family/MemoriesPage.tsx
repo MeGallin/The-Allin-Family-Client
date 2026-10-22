@@ -1,3 +1,4 @@
+import { useEditingRecord } from '../../hooks/useEditingRecord'
 import { lazy, Suspense } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { Camera, Images } from 'lucide-react'
@@ -18,7 +19,7 @@ export default function MemoriesPage() {
   const { memories, loading, error, feedback, pending, refresh, clearError } = useMemories()
   const [search, setSearch] = useSearchParams()
   useHashTarget(!loading)
-  const editing = memories.find((memory) => memory.id === search.get('edit'))
+  const editing = useEditingRecord(memories, search.get('edit'))
   const removing = memories.find((memory) => memory.id === search.get('remove'))
   const missing = !loading && (search.has('edit') || search.has('remove')) && !editing && !removing
   function closeComposer() {

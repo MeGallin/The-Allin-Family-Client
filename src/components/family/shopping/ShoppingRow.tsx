@@ -1,3 +1,5 @@
+import { useDraftGuard } from '../../../features/drafts/DraftProtection'
+import { DraftConflict } from '../../ui/DraftConflict'
 import { useEffect, useRef, useState } from 'react'
 import { Check, Star } from 'lucide-react'
 import { useShopping } from '../../../features/shopping/useShopping'
@@ -22,16 +24,28 @@ export function ShoppingRow({
   item,
   editable,
   disabled,
+  missing = false,
+  onEditingChange,
 }: {
   item: ShoppingItem
   editable: boolean
   disabled: boolean
+  missing?: boolean
+  onEditingChange?: (id: string, item: ShoppingItem | null) => void
 }) {
   const { check, edit, remove, removals } = useShopping()
   const [editing, setEditing] = useState<ShoppingItem | null>(null)
+  function changeEditing(next: ShoppingItem | null) {
+    setEditing(next)
+    onEditingChange?.(item.id, next)
+  }
   const [title, setTitle] = useState(item.title)
   const [important, setImportant] = useState(item.important)
   const [detailsOpen, setDetailsOpen] = useState(false)
+  const guard = useDraftGuard(
+    !!editing && (title !== editing.title || important !== editing.important),
+    !!editing && disabled,
+  )
   const removal = removals[item.id]
   const optionsButton = useRef<HTMLElement>(null)
   const returnFocus = useRef<HTMLElement | null>(null)
@@ -50,7 +64,7 @@ export function ShoppingRow({
               type="checkbox"
               aria-label={item.title}
               checked={item.checked}
-              disabled={disabled || !!removal}
+              disabled={disabled || !!removal || missing}
               onChange={async (event) => {
                 const target = event.currentTarget
                 returnFocus.current = target
@@ -89,7 +103,7 @@ export function ShoppingRow({
             </span>
           </span>
         </label>
-        {editable && !removal && (
+        {editable && !removal && !missing && (
           <ShoppingItemMenu
             id={item.id}
             title={item.title}
@@ -97,13 +111,17 @@ export function ShoppingRow({
             buttonRef={optionsButton}
             detailsOpen={detailsOpen}
             onEdit={() => {
-              setTitle(item.title)
-              setImportant(item.important)
-              setEditing(item)
+              guard.close(() => {
+                setTitle(item.title)
+                setImportant(item.important)
+                changeEditing(item)
+              })
             }}
             onRemove={() => {
-              remove(item)
-              setEditing(null)
+              guard.close(() => {
+                remove(item)
+                guard.complete(() => changeEditing(null))
+              })
             }}
             onDetails={() => setDetailsOpen(!detailsOpen)}
           />
@@ -115,20 +133,35 @@ export function ShoppingRow({
           className="shopping-row__edit"
           onSubmit={async (event) => {
             event.preventDefault()
+            if (disabled || missing || editing.version !== item.version) return
             const target = optionsButton.current
             returnFocus.current = target
             if (await edit(editing, title.trim(), important)) {
-              setEditing(null)
+              guard.complete(() => changeEditing(null))
               focusAfterChange(target)
             }
           }}
         >
           <label htmlFor={'shopping-edit-' + item.id}>Edit item name</label>
-          {editing.version !== item.version && (
-            <p role="alert" className="error">
-              This item changed while you were editing. The latest name is “{item.title}”. Cancel
-              and reopen the edit to use the latest version.
+          {missing && (
+            <p className="error" role="alert">
+              This item was removed while you were editing. Your draft is still here to copy before
+              closing.
             </p>
+          )}
+          {!missing && editing.version !== item.version && (
+            <DraftConflict
+              key={item.version}
+              before={{ title: editing.title, important: editing.important }}
+              mine={{ title, important }}
+              latest={{ title: item.title, important: item.important }}
+              labels={{ title: 'Item name', important: 'Important' }}
+              onResolve={(merged) => {
+                changeEditing(item)
+                setTitle(merged.title)
+                setImportant(merged.important)
+              }}
+            />
           )}
           <input
             id={'shopping-edit-' + item.id}
@@ -141,7 +174,9 @@ export function ShoppingRow({
           />
           <ImportanceOption checked={important} disabled={disabled} onChange={setImportant} />
           <div className="actions">
-            <button disabled={disabled || !title.trim() || editing.version !== item.version}>
+            <button
+              disabled={disabled || missing || !title.trim() || editing.version !== item.version}
+            >
               {disabled ? 'Saving…' : 'Save changes'}
             </button>
             <button
@@ -150,7 +185,7 @@ export function ShoppingRow({
               disabled={disabled}
               onClick={() => {
                 returnFocus.current = optionsButton.current
-                setEditing(null)
+                guard.close(() => changeEditing(null))
               }}
             >
               Cancel

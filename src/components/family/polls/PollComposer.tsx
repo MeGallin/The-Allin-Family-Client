@@ -3,6 +3,8 @@ import type { FamilyPollRecord } from '../../../features/polls/types'
 import { usePolls } from '../../../features/polls/usePolls'
 import { Modal } from '../../ui/Modal'
 import './PollComposer.css'
+import { useDraftGuard } from '../../../features/drafts/DraftProtection'
+import { DraftConflict } from '../../ui/DraftConflict'
 export default function PollComposer({
   poll,
   onClose,
@@ -10,11 +12,21 @@ export default function PollComposer({
   poll?: FamilyPollRecord
   onClose: () => void
 }) {
-  const { add, edit, pending, error, polls } = usePolls()
-  const [original] = useState(poll)
+  const { add, edit, pending, error, polls, clearError } = usePolls()
+  const [original, setOriginal] = useState(poll)
   const [title, setTitle] = useState(poll?.title ?? '')
   const [detail, setDetail] = useState(poll?.detail ?? '')
   const [options, setOptions] = useState(poll?.options.map((option) => option.label) ?? ['', ''])
+  const [baseline, setBaseline] = useState({
+    title: poll?.title ?? '',
+    detail: poll?.detail ?? '',
+    options: poll?.options.map((option) => option.label) ?? ['', ''],
+  })
+  const guard = useDraftGuard(
+    JSON.stringify({ title, detail, options }) !== JSON.stringify(baseline),
+    pending,
+  )
+  const close = () => guard.close(onClose)
   const addition = useRef<{ signature: string; key: string } | null>(null)
   const [problem, setProblem] = useState('')
   const errorRef = useRef<HTMLParagraphElement>(null)
@@ -55,19 +67,37 @@ export default function PollComposer({
     if (!addition.current || addition.current.signature !== signature)
       addition.current = { signature, key: crypto.randomUUID() }
     const saved = original ? await edit(original, draft) : await add(draft, addition.current.key)
-    if (saved) onClose()
+    if (saved) guard.complete(onClose)
     else requestAnimationFrame(() => errorRef.current?.focus())
   }
   return (
-    <Modal
-      title={original ? 'Edit family poll' : 'Ask the family'}
-      busy={pending}
-      onClose={onClose}
-    >
+    <Modal title={original ? 'Edit family poll' : 'Ask the family'} busy={pending} onClose={close}>
       <p className="note">
         Everyone in the family can vote and see the totals. Administrators can see voting activity,
         including who voted and changed their choice.
       </p>
+      {stale && latest && (
+        <DraftConflict
+          key={latest.version}
+          before={{ title: baseline.title, detail: baseline.detail }}
+          mine={{ title, detail }}
+          latest={{ title: latest.title, detail: latest.detail }}
+          labels={{ title: 'Question', detail: 'Details' }}
+          onResolve={(merged) => {
+            setOriginal(latest)
+            setBaseline({
+              title: latest.title,
+              detail: latest.detail,
+              options: latest.options.map((option) => option.label),
+            })
+            setTitle(merged.title)
+            setDetail(merged.detail)
+            setOptions(latest.options.map((option) => option.label))
+            setProblem('')
+            clearError()
+          }}
+        />
+      )}
       <form onSubmit={(event) => void save(event)} className="poll-composer">
         <label htmlFor={id + '-title'}>Question</label>
         <input
@@ -132,14 +162,18 @@ export default function PollComposer({
         </p>
         {(stale || problem || error) && (
           <p ref={errorRef} role="alert" tabIndex={-1} className="error">
-            {stale ? 'This poll changed. Close and review the latest version.' : problem || error}
+            {stale
+              ? latest
+                ? 'Review newer changes above before saving.'
+                : 'This poll was removed. Your draft is kept here so you can copy it before closing.'
+              : problem || error}
           </p>
         )}
         <div className="actions">
           <button type="submit" disabled={pending || stale}>
             {pending ? 'Saving…' : original ? 'Save changes' : 'Share poll'}
           </button>
-          <button type="button" className="secondary" disabled={pending} onClick={onClose}>
+          <button type="button" className="secondary" disabled={pending} onClick={close}>
             Cancel
           </button>
         </div>

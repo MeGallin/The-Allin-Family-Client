@@ -1,3 +1,4 @@
+import { pollLink } from '../../../features/polls/poll-links'
 import { Link } from 'react-router'
 import { usePolls } from '../../../features/polls/usePolls'
 import { homePolls } from '../../../features/family/home-view'
@@ -11,7 +12,10 @@ export function FamilyPoll() {
   const poll = featured ?? recentResult
   return (
     <div id="family-poll" tabIndex={-1} className="family-poll">
-      <Panel title="Have a say" action={<Link to="/polls">View polls</Link>}>
+      <Panel
+        title="Have a say"
+        action={<Link to={poll ? pollLink(poll) : '/polls'}>View polls</Link>}
+      >
         {!loading && !error && (
           <p className="note">
             {open.length
@@ -29,7 +33,7 @@ export function FamilyPoll() {
               <ul className="family-poll__others" aria-label="More open polls">
                 {open.slice(1, 3).map((entry) => (
                   <li key={entry.id}>
-                    <Link to={'/polls#poll-' + entry.id}>{entry.title}</Link>
+                    <Link to={pollLink(entry)}>{entry.title}</Link>
                     <span>
                       {entry.totalVotes} {entry.totalVotes === 1 ? 'vote' : 'votes'}
                       {entry.ownOptionId ? ' · Your vote is saved' : ' · Have your say'}

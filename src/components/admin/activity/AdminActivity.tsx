@@ -1,3 +1,5 @@
+import { ReportingPeriodSelect } from '../../ui/ReportingPeriodSelect'
+import { chartDate } from '../../../features/insights/chart-config'
 import { useId } from 'react'
 import { useAdminFilters } from '../../../features/admin/useAdminFilters'
 import { activityApi } from '../../../services/activity-query'
@@ -11,14 +13,14 @@ const activityDay = (value: string) =>
   )
 import './AdminActivity.css'
 export default function AdminActivity() {
-  const { params, setFilter } = useAdminFilters()
+  const { params, days, setFilter } = useAdminFilters(true)
   const type = params.get('type') ?? ''
   const actor = params.get('actor') ?? ''
   const before = params.get('before') ?? ''
   const setBefore = (value: string) => setFilter('before', value)
   const id = useId()
   const query = activityApi.useGetAdminActivityQuery(
-    { type, actor, before },
+    { type, actor, before, days },
     { pollingInterval: before ? 0 : 15000, skipPollingIfUnfocused: true },
   )
   const users = membersApi.useGetAdminMembersQuery(undefined)
@@ -34,6 +36,11 @@ export default function AdminActivity() {
         </p>
       </header>
       <div className="admin-activity__filters">
+        <ReportingPeriodSelect
+          value={days}
+          onChange={(value) => setFilter('days', value)}
+          allowAll
+        />
         <div>
           <label htmlFor={id + '-type'}>Feature</label>
           <select
@@ -85,6 +92,14 @@ export default function AdminActivity() {
         </button>
       </div>
       <p className="note">
+        {data && (
+          <>
+            {data.from
+              ? `${chartDate(data.from)} – ${chartDate(data.through)}`
+              : 'All recorded history'}{' '}
+            · London calendar days.{' '}
+          </>
+        )}
         Newest changes first.{' '}
         {before ? 'Showing older activity.' : 'Updates refresh automatically.'}
       </p>

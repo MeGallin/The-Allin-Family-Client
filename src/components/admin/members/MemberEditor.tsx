@@ -1,3 +1,5 @@
+import { useDraftGuard } from '../../../features/drafts/DraftProtection'
+import { DraftConflict } from '../../ui/DraftConflict'
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import type { AdminMember, MemberDraft, MemberWrite } from '../../../features/members/types'
 import { MemberPasswordReset } from './MemberPasswordReset'
@@ -23,13 +25,15 @@ export function MemberEditor({
 }: Props) {
   const id = useId()
   const heading = useRef<HTMLHeadingElement>(null)
-  const [draft, setDraft] = useState<MemberDraft>({
+  const [baseline, setBaseline] = useState<MemberDraft>({
     username: member?.username ?? '',
     displayName: member?.displayName ?? '',
     nickname: member?.nickname ?? '',
     role: member?.role ?? 'member',
     enabled: member?.enabled ?? true,
   })
+  const [draft, setDraft] = useState(baseline)
+  const guard = useDraftGuard(JSON.stringify(draft) !== JSON.stringify(baseline), busy)
   const [version, setVersion] = useState(member?.profileVersion ?? 1)
   const self = member?.id === selfId
   const conflict = member !== undefined && member.profileVersion !== version
@@ -40,6 +44,7 @@ export function MemberEditor({
     setDraft((previous) => ({ ...previous, [key]: value }))
   async function submit(event: FormEvent) {
     event.preventDefault()
+    if (busy || conflict) return
     await onSave(
       member
         ? { action: 'edit', body: { ...draft, id: member.id, version } }
@@ -140,28 +145,38 @@ export function MemberEditor({
         </fieldset>
         {self && <p className="note">Your own administrator role and access are protected.</p>}
         {conflict && (
-          <div className="member-editor__conflict" role="status">
-            <p>A newer version of this account is available. Load it before saving.</p>
-            <button
-              type="button"
-              className="secondary"
-              disabled={busy}
-              onClick={() => {
-                setDraft({
-                  username: member.username,
-                  displayName: member.displayName,
-                  nickname: member.nickname ?? '',
-                  role: member.role,
-                  enabled: member.enabled,
-                })
-                setVersion(member.profileVersion)
-                onClearError()
-                heading.current?.focus()
-              }}
-            >
-              Load latest details
-            </button>
-          </div>
+          <DraftConflict
+            key={member.profileVersion}
+            before={baseline}
+            mine={draft}
+            latest={{
+              username: member.username,
+              displayName: member.displayName,
+              nickname: member.nickname ?? '',
+              role: member.role,
+              enabled: member.enabled,
+            }}
+            labels={{
+              username: 'Username',
+              displayName: 'Full name',
+              nickname: 'Nickname',
+              role: 'Role',
+              enabled: 'Account access enabled',
+            }}
+            onResolve={(merged) => {
+              setBaseline({
+                username: member.username,
+                displayName: member.displayName,
+                nickname: member.nickname ?? '',
+                role: member.role,
+                enabled: member.enabled,
+              })
+              setDraft(merged)
+              setVersion(member.profileVersion)
+              onClearError()
+              heading.current?.focus()
+            }}
+          />
         )}
         {error && (
           <p className="error" role="alert">
@@ -172,7 +187,12 @@ export function MemberEditor({
           <button type="submit" disabled={busy || conflict}>
             {busy ? 'Saving…' : member ? 'Save changes' : 'Create account'}
           </button>
-          <button type="button" className="secondary" disabled={busy} onClick={onCancel}>
+          <button
+            type="button"
+            className="secondary"
+            disabled={busy}
+            onClick={() => guard.close(onCancel)}
+          >
             Cancel
           </button>
         </div>
@@ -182,7 +202,11 @@ export function MemberEditor({
           member={member}
           self={self}
           busy={busy || conflict}
-          onReset={() => onSave({ action: 'password', body: { id: member.id, version } })}
+          onReset={async () =>
+            guard.close(() => {
+              void onSave({ action: 'password', body: { id: member.id, version } })
+            })
+          }
         />
       )}
     </section>

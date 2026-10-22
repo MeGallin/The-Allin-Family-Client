@@ -4,6 +4,15 @@ import type { NoteDraft, PersonalNote } from '../../features/notes/types'
 import { dateInputValue } from '../../lib/dates'
 import { Modal } from '../ui/Modal'
 import './NoteComposer.css'
+import { useDraftGuard } from '../../features/drafts/DraftProtection'
+import { DraftConflict } from '../ui/DraftConflict'
+const noteFields = (note?: PersonalNote): NoteDraft => ({
+  title: note?.title ?? '',
+  header: note?.header ?? '',
+  body: note?.body ?? '',
+  footer: note?.footer ?? '',
+  noteDate: note?.noteDate ?? dateInputValue(new Date()),
+})
 export default function NoteComposer({
   note,
   onClose,
@@ -11,23 +20,23 @@ export default function NoteComposer({
   note?: PersonalNote
   onClose: () => void
 }) {
-  const { add, edit, pending, error, clearError } = usePersonalNotes()
-  const [original] = useState(note)
-  const [draft, setDraft] = useState<NoteDraft>({
-    title: note?.title ?? '',
-    header: note?.header ?? '',
-    body: note?.body ?? '',
-    footer: note?.footer ?? '',
-    noteDate: note?.noteDate ?? dateInputValue(new Date()),
-  })
+  const { notes, add, edit, pending, error, clearError } = usePersonalNotes()
+  const [original, setOriginal] = useState(note)
+  const [baseline, setBaseline] = useState(() => noteFields(note))
+  const [draft, setDraft] = useState(baseline)
+  const guard = useDraftGuard(JSON.stringify(draft) !== JSON.stringify(baseline), pending)
+  const close = () => guard.close(onClose)
   const addition = useRef<{ signature: string; key: string } | null>(null)
   const failureNotice = useRef<HTMLParagraphElement>(null)
   const [validation, setValidation] = useState('')
-  const stale = !!original && original.version !== note?.version
+  const latest = original ? notes.find((item) => item.id === original.id) : undefined
+  const stale = !!original && (!latest || original.version !== latest.version)
   const problem =
     validation ||
     (stale
-      ? 'This note changed in another window. Your draft is still here. Close and reopen the latest note before saving.'
+      ? latest
+        ? 'Review newer changes above before saving.'
+        : 'This note was removed. Your draft is kept here so you can copy your writing before closing.'
       : error)
   const id = useId()
   function update(field: keyof NoteDraft, value: string) {
@@ -35,6 +44,7 @@ export default function NoteComposer({
   }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (pending || stale) return
     clearError()
     setValidation('')
     const body = {
@@ -52,16 +62,35 @@ export default function NoteComposer({
     const signature = JSON.stringify(body)
     if (!addition.current || addition.current.signature !== signature)
       addition.current = { signature, key: crypto.randomUUID() }
-    if (original ? await edit(original, body) : await add(body, addition.current.key)) onClose()
+    if (original ? await edit(original, body) : await add(body, addition.current.key))
+      guard.complete(onClose)
     else requestAnimationFrame(() => failureNotice.current?.focus())
   }
   return (
-    <Modal
-      title={original ? 'Edit your note' : 'New personal note'}
-      onClose={onClose}
-      busy={pending}
-    >
+    <Modal title={original ? 'Edit your note' : 'New personal note'} onClose={close} busy={pending}>
       <p className="note">Only you can view and change this note.</p>
+      {stale && latest && (
+        <DraftConflict
+          key={latest.version}
+          before={baseline}
+          mine={draft}
+          latest={noteFields(latest)}
+          labels={{
+            title: 'Title',
+            header: 'Header',
+            body: 'Body',
+            footer: 'Footer',
+            noteDate: 'Note date',
+          }}
+          onResolve={(merged) => {
+            setOriginal(latest)
+            setBaseline(noteFields(latest))
+            setDraft(merged)
+            setValidation('')
+            clearError()
+          }}
+        />
+      )}
       <form className="note-composer" onSubmit={submit} aria-busy={pending}>
         <fieldset disabled={pending}>
           <label htmlFor={id + '-title'}>Title</label>
@@ -131,7 +160,7 @@ export default function NoteComposer({
           <button type="submit" disabled={pending || stale}>
             {pending ? 'Saving…' : original ? 'Save changes' : 'Save note'}
           </button>
-          <button type="button" className="secondary" disabled={pending} onClick={onClose}>
+          <button type="button" className="secondary" disabled={pending} onClick={close}>
             Cancel
           </button>
         </div>

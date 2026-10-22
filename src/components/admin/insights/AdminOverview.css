@@ -149,8 +149,10 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
 }
-.admin-overview__period label {
-  grid-column: 1 / -1;
+.admin-overview__period > div {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
 }
 @container family-content (min-width: 40rem) {
   .admin-overview__toolbar {

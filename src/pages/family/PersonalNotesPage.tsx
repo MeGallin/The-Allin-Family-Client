@@ -1,3 +1,4 @@
+import { useEditingRecord } from '../../hooks/useEditingRecord'
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { LockKeyhole, NotebookPen, Plus } from 'lucide-react'
@@ -27,7 +28,7 @@ export default function PersonalNotesPage({ onSessionExpired }: { onSessionExpir
     if (failure?.status === 401 || failure?.code === 'password_change_required') onSessionExpired()
   }, [failure?.status, failure?.code, onSessionExpired])
   const visible = notesView(notes, query, sort)
-  const editing = notes.find((note) => note.id === search.get('edit'))
+  const editing = useEditingRecord(notes, search.get('edit'))
   const removing = notes.find((note) => note.id === search.get('remove'))
   const missing =
     !loading && !error && (search.has('edit') || search.has('remove')) && !editing && !removing

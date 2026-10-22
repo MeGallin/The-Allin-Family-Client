@@ -1,3 +1,4 @@
+import { ReportingPeriodSelect } from '../../ui/ReportingPeriodSelect'
 import { useId } from 'react'
 import { useAdminFilters } from '../../../features/admin/useAdminFilters'
 import { usageApi } from '../../../services/usage-query'
@@ -35,21 +36,12 @@ export default function AdminUsage() {
         </p>
       </header>
       <div className="admin-usage__filters">
-        <div>
-          <label htmlFor={id + '-period'}>Session period</label>
-          <select
-            id={id + '-period'}
-            value={days}
-            onChange={(e) => {
-              setFilter('days', e.target.value)
-            }}
-          >
-            <option value="7">Last 7 days</option>
-            <option value="30">Last 30 days</option>
-            <option value="90">Last 90 days</option>
-            <option value="0">Since tracking began</option>
-          </select>
-        </div>
+        <ReportingPeriodSelect
+          value={days}
+          onChange={(value) => setFilter('days', value)}
+          allowAll
+          label="Session period"
+        />
         <div>
           <label htmlFor={id + '-person'}>Usage for</label>
           <select

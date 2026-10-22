@@ -4,6 +4,8 @@ import type { FamilyMemory } from '../../../features/memories/types'
 import { memoryPhotoUrl } from '../../../services/memories-api'
 import { Modal } from '../../ui/Modal'
 import './MemoryComposer.css'
+import { useDraftGuard } from '../../../features/drafts/DraftProtection'
+import { DraftConflict } from '../../ui/DraftConflict'
 
 export default function MemoryComposer({
   memory,
@@ -12,8 +14,8 @@ export default function MemoryComposer({
   memory?: FamilyMemory
   onClose: () => void
 }) {
-  const { add, edit, pending, error, clearError } = useMemories()
-  const [original] = useState(memory)
+  const { add, edit, pending, error, clearError, memories } = useMemories()
+  const [original, setOriginal] = useState(memory)
   const id = useId()
   const [title, setTitle] = useState(memory?.title ?? '')
   const [story, setStory] = useState(memory?.story ?? '')
@@ -26,7 +28,25 @@ export default function MemoryComposer({
   const failureNotice = useRef<HTMLParagraphElement>(null)
   const focusFailure = () => requestAnimationFrame(() => failureNotice.current?.focus())
   const addition = useRef<{ signature: string; file: File | null; key: string } | null>(null)
-  const stale = !!original && original.version !== memory?.version
+  const latest = original ? memories.find((item) => item.id === original.id) : undefined
+  const stale = !!original && (!latest || original.version !== latest.version)
+  const guard = useDraftGuard(
+    title !== (original?.title ?? '') ||
+      story !== (original?.story ?? '') ||
+      photoAlt !== (original?.photoAlt ?? '') ||
+      !!image ||
+      removePhoto,
+    pending,
+  )
+  const close = () => guard.close(onClose)
+  const originalPhoto = original?.photoKey ? 'Original photo' : 'No photo'
+  const latestPhoto =
+    latest?.photoKey === original?.photoKey
+      ? originalPhoto
+      : latest?.photoKey
+        ? 'Latest saved photo'
+        : 'No photo'
+
   useEffect(() => {
     if (!image) {
       setPreview('')
@@ -38,6 +58,7 @@ export default function MemoryComposer({
   }, [image])
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (pending || stale) return
     setValidation('')
     clearError()
     if (!title.trim() || (!story.trim() && !image && (!original?.photoKey || removePhoto))) {
@@ -71,22 +92,54 @@ export default function MemoryComposer({
     const saved = original
       ? await edit(original, draft, image ?? undefined)
       : await add(draft, addition.current.key, image ?? undefined)
-    if (saved) onClose()
+    if (saved) guard.complete(onClose)
     else focusFailure()
   }
   const photo = preview || (!removePhoto && original?.photoKey ? memoryPhotoUrl(original) : '')
   const problem =
     validation ||
     (stale
-      ? 'Someone changed this memory while you were editing. Your draft is still here. Close and reopen the edit to use the latest version.'
+      ? latest
+        ? 'Review newer changes above before saving.'
+        : 'This memory was removed. Your draft is kept here so you can copy your writing before closing.'
       : error)
   return (
-    <Modal
-      title={original ? 'Edit this memory' : 'Share a moment'}
-      onClose={onClose}
-      busy={pending}
-    >
+    <Modal title={original ? 'Edit this memory' : 'Share a moment'} onClose={close} busy={pending}>
       <p className="note">Share a photo, a story, or both. Saved for everyone in the family.</p>
+      {stale && latest && (
+        <DraftConflict
+          key={latest.version}
+          before={{
+            title: original?.title ?? '',
+            story: original?.story ?? '',
+            photoAlt: original?.photoAlt ?? '',
+            photo: originalPhoto,
+          }}
+          mine={{
+            title,
+            story,
+            photoAlt,
+            photo: image ? 'Your selected photo' : removePhoto ? 'No photo' : originalPhoto,
+          }}
+          latest={{
+            title: latest.title,
+            story: latest.story,
+            photoAlt: latest.photoAlt,
+            photo: latestPhoto,
+          }}
+          labels={{ title: 'Title', story: 'Story', photoAlt: 'Photo description', photo: 'Photo' }}
+          onResolve={(merged) => {
+            setTitle(merged.title)
+            setStory(merged.story)
+            setPhotoAlt(merged.photoAlt)
+            if (merged.photo !== 'Your selected photo') setImage(null)
+            setRemovePhoto(merged.photo === 'No photo' && !!latest.photoKey)
+            setOriginal(latest)
+            setValidation('')
+            clearError()
+          }}
+        />
+      )}
       <form onSubmit={submit} className="memory-composer" aria-busy={pending}>
         <fieldset disabled={pending}>
           <label htmlFor={id + '-title'}>Give it a title</label>
@@ -182,7 +235,7 @@ export default function MemoryComposer({
           <button type="submit" disabled={pending || stale}>
             {pending ? 'Saving…' : original ? 'Save changes' : 'Share memory'}
           </button>
-          <button type="button" className="secondary" disabled={pending} onClick={onClose}>
+          <button type="button" className="secondary" disabled={pending} onClick={close}>
             Cancel
           </button>
         </div>

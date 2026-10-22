@@ -1,4 +1,4 @@
-export type ActivityFilters = { type: string; actor: string; before: string }
+export type ActivityFilters = { type: string; actor: string; before: string; days: string }
 export type ActivityEntry = {
   id: string
   entityType: string
@@ -10,4 +10,10 @@ export type ActivityEntry = {
   before: Record<string, unknown> | null
   after: Record<string, unknown> | null
 }
-export type ActivitySnapshot = { entries: ActivityEntry[]; nextCursor: string | null }
+export type ActivitySnapshot = {
+  days: number
+  from: string | null
+  through: string
+  entries: ActivityEntry[]
+  nextCursor: string | null
+}

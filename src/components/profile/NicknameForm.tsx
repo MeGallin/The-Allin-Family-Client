@@ -1,3 +1,5 @@
+import { useDraftGuard } from '../../features/drafts/DraftProtection'
+import { DraftConflict } from '../ui/DraftConflict'
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { profileApi } from '../../services/profile-query'
 import { shoppingError } from '../../services/shopping-query'
@@ -18,13 +20,22 @@ export function NicknameForm({ profile, admin = false }: { profile: FamilyUser; 
     if (wasSaving.current && !isLoading) inputRef.current?.focus()
     wasSaving.current = isLoading
   }, [isLoading])
+  const [baseline, setBaseline] = useState(profile.nickname ?? '')
+  const guard = useDraftGuard(draft.nickname !== baseline, isLoading)
   const changedElsewhere = profile.profileVersion > draft.version
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (isLoading || changedElsewhere) return
     setFeedback('')
     try {
       const result = await save({ ...draft, ...(admin ? { userId: profile.id } : {}) }).unwrap()
-      setDraft({ nickname: result.profile.nickname ?? '', version: result.profile.profileVersion })
+      guard.complete(() => {
+        setBaseline(result.profile.nickname ?? '')
+        setDraft({
+          nickname: result.profile.nickname ?? '',
+          version: result.profile.profileVersion,
+        })
+      })
       setFeedback(`Saved. Family pages will show ${result.profile.familyName}.`)
     } catch {
       /* Keep the draft so the person can correct or retry it. */
@@ -51,22 +62,20 @@ export function NicknameForm({ profile, admin = false }: { profile: FamilyUser; 
         username stay the same.
       </p>
       {changedElsewhere && (
-        <div className="nickname-form__conflict">
-          <p className="note">A newer profile version is available.</p>
-          <button
-            type="button"
-            className="secondary"
-            disabled={isLoading}
-            onClick={() => {
-              setDraft({ nickname: profile.nickname ?? '', version: profile.profileVersion })
-              setFeedback('')
-              reset()
-              inputRef.current?.focus()
-            }}
-          >
-            Load latest nickname
-          </button>
-        </div>
+        <DraftConflict
+          key={profile.profileVersion}
+          before={{ nickname: baseline }}
+          mine={{ nickname: draft.nickname }}
+          latest={{ nickname: profile.nickname ?? '' }}
+          labels={{ nickname: 'Nickname' }}
+          onResolve={(merged) => {
+            setBaseline(profile.nickname ?? '')
+            setDraft({ ...merged, version: profile.profileVersion })
+            setFeedback('')
+            reset()
+            inputRef.current?.focus()
+          }}
+        />
       )}
       {error && (
         <p className="error" role="alert">

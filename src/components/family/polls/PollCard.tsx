@@ -1,5 +1,6 @@
 import { useId } from 'react'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
+import { pollActionPath } from '../../../features/polls/poll-links'
 import { useAppSelector } from '../../../app/store-hooks'
 import { usePolls } from '../../../features/polls/usePolls'
 import type { FamilyPollRecord } from '../../../features/polls/types'
@@ -9,6 +10,7 @@ import './PollCard.css'
 export function PollCard({ poll, preview = false }: { poll: FamilyPollRecord; preview?: boolean }) {
   const { vote, close, pending, removals, clearError } = usePolls()
   const user = useAppSelector((state) => state.auth.user)
+  const location = useLocation()
   const group = useId()
   const Heading = preview ? 'h3' : 'h2'
   const removal = removals[poll.id]
@@ -114,7 +116,10 @@ export function PollCard({ poll, preview = false }: { poll: FamilyPollRecord; pr
       <RemovalNotice removal={removal} />
       {manage && !removal && !preview && (
         <footer className="poll-card__actions">
-          <Link to={'?edit=' + poll.id} onClick={clearError}>
+          <Link
+            to={pollActionPath(location.search, location.hash, 'edit', poll.id)}
+            onClick={clearError}
+          >
             Edit poll
           </Link>
           <button
@@ -131,7 +136,11 @@ export function PollCard({ poll, preview = false }: { poll: FamilyPollRecord; pr
           >
             {poll.closed ? 'Reopen voting' : 'Close voting'}
           </button>
-          <Link id={'polls-remove-' + poll.id} to={'?remove=' + poll.id} onClick={clearError}>
+          <Link
+            id={'polls-remove-' + poll.id}
+            to={pollActionPath(location.search, location.hash, 'remove', poll.id)}
+            onClick={clearError}
+          >
             Remove poll
           </Link>
         </footer>

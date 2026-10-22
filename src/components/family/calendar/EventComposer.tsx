@@ -5,6 +5,8 @@ import type { FamilyEvent } from '../../../features/calendar/types'
 import { dateInputValue, eventDate } from '../../../lib/dates'
 import { Modal } from '../../ui/Modal'
 import './EventComposer.css'
+import { useDraftGuard } from '../../../features/drafts/DraftProtection'
+import { DraftConflict } from '../../ui/DraftConflict'
 
 const localZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone
 function fields(event?: FamilyEvent) {
@@ -30,7 +32,9 @@ export default function EventComposer({
   const { events, add, edit, remove, pending, error, failure, clearError, refresh, loading } =
     useCalendar()
   const [original, setOriginal] = useState(event)
-  const [draft, setDraft] = useState(() => fields(event))
+  const [baseline, setBaseline] = useState(() => fields(event))
+  const [draft, setDraft] = useState(baseline)
+  const guard = useDraftGuard(JSON.stringify(draft) !== JSON.stringify(baseline), pending)
   const [validation, setValidation] = useState('')
   const [confirmRemove, setConfirmRemove] = useState(false)
   const [restoreFocus, setRestoreFocus] = useState(false)
@@ -56,16 +60,7 @@ export default function EventComposer({
     }
   }, [pending, restoreFocus])
   function close() {
-    if (!pending) onClose()
-  }
-  function loadLatest() {
-    if (!latest) return
-    setOriginal(latest)
-    setDraft(fields(latest))
-    setValidation('')
-    clearError()
-    setConfirmRemove(false)
-    titleRef.current?.focus()
+    if (!pending) guard.close(onClose)
   }
   async function submit(submitEvent: FormEvent<HTMLFormElement>) {
     submitEvent.preventDefault()
@@ -111,12 +106,12 @@ export default function EventComposer({
       timeZone: timeUnchanged ? original.timeZone : localZone(),
       detail: draft.detail.trim(),
     }
-    if (await (original ? edit(original, body) : add(body))) onClose()
+    if (await (original ? edit(original, body) : add(body))) guard.complete(onClose)
     else setRestoreFocus(true)
   }
   async function removeEvent() {
     if (!original || pending || stale) return
-    if (await remove(original)) onClose()
+    if (await remove(original)) guard.complete(onClose)
     else {
       setConfirmRemove(false)
       setRestoreFocus(true)
@@ -127,17 +122,36 @@ export default function EventComposer({
       <p className="note">
         Saved for everyone in the family. Times are shown in your time zone: {localZone()}.
       </p>
-      {stale && (
-        <div className="feedback feedback--error" role="alert">
-          {latest
-            ? 'This event changed while you were editing. Your draft has been kept.'
-            : 'This event was removed by someone else.'}
-          {latest && (
-            <button type="button" className="button-link" disabled={pending} onClick={loadLatest}>
-              Load latest event
-            </button>
-          )}
-        </div>
+      {stale && latest && (
+        <DraftConflict
+          key={latest.version}
+          before={baseline}
+          mine={draft}
+          latest={fields(latest)}
+          labels={{
+            title: 'Event title',
+            day: 'Date',
+            time: 'Time',
+            detail: 'Details',
+            allDay: 'All day',
+            annually: 'Repeat every year',
+          }}
+          onResolve={(merged) => {
+            setOriginal(latest)
+            setBaseline(fields(latest))
+            setDraft(merged)
+            setValidation('')
+            clearError()
+            setConfirmRemove(false)
+            titleRef.current?.focus()
+          }}
+        />
+      )}
+      {stale && !latest && (
+        <p role="alert" className="error">
+          This event was removed. Your draft is kept here so you can copy your writing before
+          closing.
+        </p>
       )}
       <form onSubmit={submit} aria-busy={pending}>
         <label htmlFor={id + '-title'}>What’s the plan?</label>
@@ -264,7 +278,11 @@ export default function EventComposer({
                 kept.
               </p>
               <div className="actions">
-                <button type="button" disabled={pending} onClick={() => void removeEvent()}>
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={() => guard.close(() => void removeEvent())}
+                >
                   {pending ? 'Removing…' : 'Yes, remove event'}
                 </button>
                 <button

@@ -1,3 +1,4 @@
+import { ReportingPeriodSelect } from '../../ui/ReportingPeriodSelect'
 import { useId } from 'react'
 import { useAdminFilters } from '../../../features/admin/useAdminFilters'
 import { Link } from 'react-router'
@@ -39,12 +40,7 @@ export default function AdminOverview() {
           <p className="note">Who’s taking part, what’s useful, and where to focus next.</p>
         </div>
         <div className="admin-overview__period">
-          <label htmlFor={id}>Reporting period</label>
-          <select id={id} value={days} onChange={(e) => setFilter('days', e.target.value)}>
-            <option value="7">Last 7 days</option>
-            <option value="30">Last 30 days</option>
-            <option value="90">Last 90 days</option>
-          </select>
+          <ReportingPeriodSelect value={days} onChange={(value) => setFilter('days', value)} />
           <RefreshButton
             label="Refresh overview"
             disabled={query.isFetching}

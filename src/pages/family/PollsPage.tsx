@@ -1,5 +1,7 @@
-import { lazy, Suspense, useState } from 'react'
-import { Link, useSearchParams } from 'react-router'
+import { useEditingRecord } from '../../hooks/useEditingRecord'
+import { pollActionPath, pollStatus } from '../../features/polls/poll-links'
+import { lazy, Suspense, useEffect } from 'react'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 import { Vote } from 'lucide-react'
 import { usePolls } from '../../features/polls/usePolls'
 import { useAppSelector } from '../../app/store-hooks'
@@ -16,16 +18,16 @@ const PollRemoval = lazy(() => import('../../components/family/polls/PollRemoval
 export default function PollsPage() {
   const { polls, loading, pending, error, feedback, refresh, clearError } = usePolls()
   const user = useAppSelector((state) => state.auth.user)
-  const [params, setParams] = useSearchParams()
-  const [query, setQuery] = useState('')
-  const [status, setStatus] = useState('open')
-  useHashTarget(!loading)
-  const manage = (id: string | null) =>
-    polls.find(
-      (poll) => poll.id === id && (user?.role === 'admin' || user?.id === poll.createdBy.id),
-    )
-  const editing = manage(params.get('edit')),
-    removing = manage(params.get('remove'))
+  const [params] = useSearchParams()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const query = (params.get('q') ?? '').slice(0, 100)
+  const status = pollStatus(params.get('show'))
+  const editablePolls = polls.filter(
+    (poll) => user?.role === 'admin' || user?.id === poll.createdBy.id,
+  )
+  const editing = useEditingRecord(editablePolls, params.get('edit'))
+  const removing = editablePolls.find((poll) => poll.id === params.get('remove'))
   const missing =
     !loading && !error && (params.has('edit') || params.has('remove')) && !editing && !removing
   const visible = polls.filter(
@@ -35,8 +37,46 @@ export default function PollsPage() {
         .toLocaleLowerCase()
         .includes(query.trim().toLocaleLowerCase()),
   )
+  const requestedId = /^#poll-(\d+)$/.exec(location.hash)?.[1]
+  const requested = polls.find((poll) => poll.id === requestedId)
+  const targetVisible = !requestedId || visible.some((poll) => poll.id === requestedId)
+  const composing = params.get('compose') === 'poll'
+  useHashTarget(!loading && targetVisible && !composing && !editing && !removing)
+  useEffect(() => {
+    if (loading || !requested || targetVisible || composing || editing || removing) return
+    const next = new URLSearchParams(params)
+    next.delete('q')
+    next.set('show', requested.closed ? 'closed' : 'open')
+    void navigate(
+      { pathname: '/polls', search: next.toString(), hash: location.hash },
+      { replace: true },
+    )
+  }, [
+    loading,
+    requested,
+    targetVisible,
+    composing,
+    editing,
+    removing,
+    params,
+    location.hash,
+    navigate,
+  ])
+  function view(change: Record<string, string>) {
+    const next = new URLSearchParams(params)
+    for (const [key, value] of Object.entries(change)) {
+      if (value) next.set(key, value)
+      else next.delete(key)
+    }
+    void navigate({ pathname: '/polls', search: next.toString(), hash: '' }, { replace: true })
+  }
   const close = () => {
-    setParams({}, { replace: true })
+    const next = new URLSearchParams(params)
+    for (const key of ['compose', 'edit', 'remove']) next.delete(key)
+    void navigate(
+      { pathname: '/polls', search: next.toString(), hash: location.hash },
+      { replace: true },
+    )
     clearError()
   }
   return (
@@ -45,7 +85,11 @@ export default function PollsPage() {
         title="Have a say"
         description="Shared questions, one vote each, and results everyone can see."
         action={
-          <Link className="button-link" to="?compose=poll" onClick={clearError}>
+          <Link
+            className="button-link"
+            to={pollActionPath(location.search, location.hash, 'compose', 'poll')}
+            onClick={clearError}
+          >
             Create a poll
           </Link>
         }
@@ -64,11 +108,10 @@ export default function PollsPage() {
             ['closed', 'Voting closed'],
             ['all', 'All polls'],
           ]}
-          onQuery={setQuery}
-          onSort={setStatus}
+          onQuery={(value) => view({ q: value })}
+          onSort={(value) => view({ show: value })}
           onReset={() => {
-            setQuery('')
-            setStatus('open')
+            view({ q: '', show: '' })
           }}
           active={!!query || status !== 'open'}
           count={visible.length}
@@ -86,6 +129,14 @@ export default function PollsPage() {
           Each person has one vote per poll. Administrators can see who voted or changed a vote.
         </p>
       </CollectionToolbar>
+      {!loading && !error && requestedId && !requested && (
+        <div className="feedback" role="status">
+          <p>The linked poll is no longer available.</p>
+          <button type="button" className="secondary" onClick={() => view({ q: '', show: 'all' })}>
+            Show available polls
+          </button>
+        </div>
+      )}
       {error && (
         <p className="error" role="alert">
           {error}
@@ -115,8 +166,7 @@ export default function PollsPage() {
                 type="button"
                 className="secondary"
                 onClick={() => {
-                  setQuery('')
-                  setStatus('all')
+                  view({ q: '', show: 'all' })
                   document.getElementById('family-content')?.focus()
                 }}
               >

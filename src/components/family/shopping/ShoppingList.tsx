@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react'
 import { ShoppingBasket } from 'lucide-react'
 import { useShopping } from '../../../features/shopping/useShopping'
 import { LoadingState } from '../../ui/LoadingState'
@@ -18,8 +19,25 @@ export function ShoppingList({
   onReset?: () => void
 }) {
   const { items: shopping, loading, error, pending, refresh } = useShopping()
-  if (loading) return <LoadingState label="Loading the shared list…" />
-  if (error && shopping.length === 0)
+  const [editingRows, setEditingRows] = useState<Record<string, ShoppingItem>>({})
+  const trackEditing = useCallback((id: string, item: ShoppingItem | null) => {
+    setEditingRows((previous) => {
+      const next = { ...previous }
+      if (item) next[id] = item
+      else delete next[id]
+      return next
+    })
+  }, [])
+  const displayed = (view ?? shopping).slice(0, limit)
+  const retained = Object.values(editingRows).filter(
+    (item) => !displayed.some((row) => row.id === item.id),
+  )
+  const rows = [
+    ...displayed,
+    ...retained.map((item) => shopping.find((row) => row.id === item.id) ?? item),
+  ]
+  if (loading && rows.length === 0) return <LoadingState label="Loading the shared list…" />
+  if (error && rows.length === 0)
     return (
       <div>
         <p className="error" role="alert">
@@ -30,13 +48,13 @@ export function ShoppingList({
         </button>
       </div>
     )
-  if (shopping.length === 0)
+  if (rows.length === 0 && shopping.length === 0)
     return (
       <EmptyState icon={ShoppingBasket} title="Nothing on the list">
         <p>Add what you need for the next shop.</p>
       </EmptyState>
     )
-  if (view && view.length === 0)
+  if (view && rows.length === 0)
     return (
       <EmptyState icon={ShoppingBasket} title="No matching items">
         <p>Try another name or reset your view.</p>
@@ -49,8 +67,15 @@ export function ShoppingList({
     )
   return (
     <ul className="shopping-list">
-      {(view ?? shopping).slice(0, limit).map((item) => (
-        <ShoppingRow key={item.id} item={item} editable={removable} disabled={pending} />
+      {rows.map((item) => (
+        <ShoppingRow
+          key={item.id}
+          item={item}
+          editable={removable}
+          disabled={pending}
+          missing={!shopping.some((row) => row.id === item.id)}
+          onEditingChange={trackEditing}
+        />
       ))}
     </ul>
   )
