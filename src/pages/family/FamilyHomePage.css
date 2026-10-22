@@ -6,11 +6,6 @@
 .family-home-grid > * {
   min-width: 0;
 }
-.family-home-footer {
-  margin: 0;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-}
 @container family-content (min-width: 46rem) {
   .family-home-grid {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);

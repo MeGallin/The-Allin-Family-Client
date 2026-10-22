@@ -5,7 +5,30 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   return {
-    plugins: [react()],
+    plugins: [
+      react(),
+      {
+        name: 'canonical-local-navigation',
+        configureServer(server) {
+          server.middlewares.use((request, response, next) => {
+            // Keep the browser on the origin expected by local sessions and CSRF checks.
+            // This middleware runs only in development, never in the deployed client.
+            if (
+              /^(GET|HEAD)$/.test(request.method || '') &&
+              request.headers.host === `localhost:${server.config.server.port}` &&
+              request.headers.accept?.includes('text/html')
+            ) {
+              response.writeHead(302, {
+                Location: `http://127.0.0.1:${server.config.server.port}${request.url || '/'}`,
+              })
+              response.end()
+              return
+            }
+            next()
+          })
+        },
+      },
+    ],
     server: {
       host: '127.0.0.1',
       port: 5173,

@@ -7,6 +7,8 @@ import { AccountMenu } from './AccountMenu'
 import { FamilyNavigation } from './FamilyNavigation'
 import { LoadingState } from '../ui/LoadingState'
 import { PendingRemovals } from '../removals/PendingRemovals'
+import { FamilyBrand } from '../brand/FamilyBrand'
+import { FamilyFooter } from '../brand/FamilyFooter'
 import './FamilyLayout.css'
 
 type Props = {
@@ -31,8 +33,7 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
       </a>
       <aside className="family-layout__sidebar">
         <Link to="/" className="family-brand" aria-label="The Allin Family home">
-          <span className="family-brand__mark">A</span>
-          <span>Allin.</span>
+          <FamilyBrand size="small" />
         </Link>
         <FamilyNavigation familyName={user.familyName} />
         {user.role === 'admin' && (
@@ -44,9 +45,8 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
       </aside>
       <div className="family-layout__workspace">
         <header className="family-layout__header">
-          <Link to="/" className="family-brand">
-            <span className="family-brand__mark family-brand__mark--mobile">A</span>
-            <span>{import.meta.env.VITE_APP_NAME || 'The Allin Family'}</span>
+          <Link to="/" className="family-brand" aria-label="The Allin Family home">
+            <FamilyBrand />
           </Link>
           <AccountMenu
             user={user}
@@ -66,6 +66,9 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
             <Outlet />
           </Suspense>
         </main>
+        <div className="family-layout__footer">
+          <FamilyFooter />
+        </div>
         <FamilyNavigation mobile familyName={user.familyName} />
       </div>
     </div>

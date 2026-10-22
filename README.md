@@ -12,7 +12,13 @@ API and database using the API README, then run:
 npm run dev
 ```
 
-Open `http://127.0.0.1:5173`. On a fresh checkout:
+Open `http://127.0.0.1:5173`.
+
+Development page requests to `localhost:5173` redirect to `127.0.0.1:5173`, keeping
+navigation on the same origin as local session and CSRF configuration. The
+redirect middleware is development-only and does not alter production hosting.
+
+On a fresh checkout:
 
 ```powershell
 npm ci
@@ -33,6 +39,8 @@ highlights and self-hosted Inter Variable. Font assets are bundled by Vite from
 - `src/styles/fonts.css`: local font-face declarations.
 - `src/styles/global.css`: base elements, controls and accessible focus defaults.
 - `src/styles/patterns.css`: shared surfaces, actions and feedback patterns.
+- `src/components/brand`: shared shield/wordmark, footer and usage guide. Small,
+  medium and large sizes use global brand tokens and preserve the SVG aspect ratio.
 - `src/styles/index.css`: the shared style entry point.
 
 Keep each component's stylesheet next to its TSX file. Start layouts with phone

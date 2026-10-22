@@ -4,6 +4,8 @@ import type { FamilySession } from './types/auth'
 import { messageFor } from './lib/errors'
 import { LoginForm } from './components/auth/LoginForm'
 import { LoadingState } from './components/ui/LoadingState'
+import { FamilyBrand } from './components/brand/FamilyBrand'
+import { FamilyFooter } from './components/brand/FamilyFooter'
 import './App.css'
 import { useAppDispatch, useAppSelector } from './app/store-hooks'
 import { userReceived } from './features/auth/auth-slice'
@@ -103,9 +105,14 @@ export default function App() {
 
   return (
     <main className="app-shell">
-      <p className="eyebrow">theallinfamily.co.uk</p>
-      <h1 className="app-title">{import.meta.env.VITE_APP_NAME || 'The Allin Family'}</h1>
-      <p className="intro">A place for all of us.</p>
+      {(loading || user || error) && (
+        <>
+          <h1 className="app-title" aria-label="The Allin Family">
+            <FamilyBrand size="large" />
+          </h1>
+          <p className="intro">A place for all of us.</p>
+        </>
+      )}
 
       {loading ? (
         <LoadingState label="Checking your session…" />
@@ -144,6 +151,7 @@ export default function App() {
           </Suspense>
         </>
       )}
+      <FamilyFooter showBrand={Boolean(user)} />
     </main>
   )
 }

@@ -11,6 +11,20 @@
   letter-spacing: -0.045em;
 }
 
+.app-shell > .family-footer {
+  margin-top: var(--space-7);
+}
+
+.app-shell:has(.login-card) {
+  width: min(32rem, calc(100% - 2 * var(--page-gutter)));
+}
+
+@media (min-width: 52rem) {
+  .app-shell:has(.login-card) {
+    width: min(56rem, calc(100% - 2 * var(--page-gutter)));
+  }
+}
+
 .app-status {
   color: var(--color-text-muted);
 }

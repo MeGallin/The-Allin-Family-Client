@@ -27,7 +27,6 @@ export default function FamilyHomePage() {
         <MemoryPreview />
       </div>
       <QuickActions />
-      <p className="family-home-footer">A private space for the people who matter.</p>
     </div>
   )
 }

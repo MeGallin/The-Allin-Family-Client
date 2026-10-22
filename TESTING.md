@@ -29,6 +29,15 @@ The client setup blocks unmocked fetch calls, so a missing test mock cannot cont
 | Undo                 | All five real removal adapters use the shared 20-second boundary. Undo before sending prevents HTTP; duplicate scheduling, independent deadlines, busy saves, newer/missing records, account changes, failed responses and already-sending state are covered. Accessible countdown/progress/focus and omission of private body text from the queue are checked. |
 | Collection rendering | Batch resets when returning to a previous filter; deep links reveal an older target without mounting the whole collection.                                                                                                                                                                                                                                      |
 
+## Sign-in and family branding
+
+Colocated tests in `components/auth/LoginForm.test.tsx` and
+`components/brand/FamilyBrand.test.tsx` cover the three shared logo sizes, the
+full accessible family name, shield-only/wordmark variants, absence of repeated
+signed-out footer branding, required/autocomplete fields, busy state, successful
+session handoff/password clearing and error/retry feedback. Browser checks remain
+necessary for actual SVG proportions, responsive split/stack layouts and focus.
+
 ## Real API prerequisites and isolation
 
 See `../api/tests/README.md` for the server setup and recovery procedure. Start the existing isolated local MariaDB on 127.0.0.1:3307 first. The API's local `.env` and ignored `.local/mysql-admin.ini` must already be configured; PHP needs pdo_mysql, Argon2id, fileinfo and GD for photo support. On Windows the default PHP path is C:/xampp/php/php.exe; elsewhere it is php. Override with `$env:PHP_BINARY` if necessary.

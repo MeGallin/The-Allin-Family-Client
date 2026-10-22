@@ -93,6 +93,11 @@
   --mobile-nav-height: 5rem;
   --panel-padding: clamp(1rem, 3vw, 1.5rem);
   --icon-size: 1.25rem;
+  /* Brand sizes share one 10:11 SVG; wordmark lettering is half the shield width. */
+  --brand-shield-small: 2.5rem;
+  --brand-shield-medium: 3rem;
+  --brand-shield-large: 5rem;
+  --brand-shield-ratio: 10 / 11;
   --page-gutter: clamp(1.25rem, 5vw, 2rem);
   --control-min-height: 3rem;
   --focus-ring: 0 0 0 5px color-mix(in srgb, var(--color-accent) 18%, transparent);
