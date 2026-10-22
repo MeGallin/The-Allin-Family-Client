@@ -11,22 +11,24 @@ import { shoppingApi } from '../services/shopping-query'
 import { removalListener } from '../features/removals/removal-listener'
 import removals from '../features/removals/removals-slice'
 
-export const store = configureStore({
-  reducer: {
-    auth,
-    pollsUi,
-    shoppingUi,
-    calendarUi,
-    memoriesUi,
-    notesUi,
-    membersUi,
-    removals,
-    [shoppingApi.reducerPath]: shoppingApi.reducer,
-  },
-  middleware: (getDefault) =>
-    getDefault().prepend(removalListener.middleware).concat(shoppingApi.middleware),
-  devTools: import.meta.env.DEV,
-})
+export const createAppStore = () =>
+  configureStore({
+    reducer: {
+      auth,
+      pollsUi,
+      shoppingUi,
+      calendarUi,
+      memoriesUi,
+      notesUi,
+      membersUi,
+      removals,
+      [shoppingApi.reducerPath]: shoppingApi.reducer,
+    },
+    middleware: (getDefault) =>
+      getDefault().prepend(removalListener.middleware).concat(shoppingApi.middleware),
+    devTools: import.meta.env.DEV,
+  })
+export const store = createAppStore()
 setupListeners(store.dispatch)
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch

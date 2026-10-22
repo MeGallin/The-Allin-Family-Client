@@ -7,8 +7,13 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "format": "prettier --write src",
-    "format:check": "prettier --check src"
+    "format": "prettier --write src vite.config.ts vitest.config.ts",
+    "format:check": "prettier --check src vite.config.ts vitest.config.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:api": "node --test ../api/tests/regression.test.mjs",
+    "test:all": "npm run test && npm run test:api && npm run test:auth",
+    "test:auth": "node ../api/tests/run-auth.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
@@ -23,12 +28,16 @@
     "recharts": "^3.10.1"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "jsdom": "^29.1.1",
     "prettier": "^3.9.10",
     "typescript": "^7.0.2",
-    "vite": "^8.3.5"
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
   }
 }

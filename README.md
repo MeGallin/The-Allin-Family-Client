@@ -61,7 +61,7 @@ header/footer and a required body. Limits: title 120 characters, header/footer 5
 each and body 20,000. Cards show excerpts, expandable full content and friendly/
 exact creation/edit dates. Editing and confirmed deletion use version checks;
 failed saves preserve the draft and focus the error. Deletion hides the note and
-retains private history. All removals use the shared 30-second countdown and Undo
+retains private history. All removals use the shared 20-second countdown and Undo
 described below. No post-delete restore screen is provided.
 
 The responsive pinboard uses four pastel paper colours, small stable tilts,
@@ -149,7 +149,7 @@ including earlier names and removed items. Removal preserves database history.
 The list refreshes every 15 seconds while visible and when the tab regains focus;
 members can also refresh manually. Unchecked boxes use navy surfaces with cyan
 outlines and checked boxes use cyan with a dark tick, including keyboard focus
-and forced-colour support. Removing an item starts a 30-second spinner/countdown
+and forced-colour support. Removing an item starts a 20-second spinner/countdown
 with Undo; no removal request is sent before that deadline. The pending-removals
 panel stays available across signed-in routes, and multiple removals have independent
 deadlines. Other members see the item until the removal is actually saved. Changes
@@ -317,7 +317,7 @@ Repository: https://github.com/MeGallin/The-Allin-Family-Client
   existing authenticated request client and retries an expired CSRF token once.
   Shopping, calendar, notes, memories and nickname updates use it.
 - Every record removal starts through `useRemovals(domain).remove(record)`.
-  `features/removals/removals-slice.ts` defines the only 30-second delay.
+  `features/removals/removals-slice.ts` defines the only 20-second delay.
   `removal-listener.ts` alone waits and submits the removal after expiry.
   `removal-adapters.ts` maps each domain to its existing version-protected API.
   Do not call a domain's raw remove write from a component.
@@ -348,7 +348,7 @@ Any signed-in family member can create a poll with two to six distinct choices,
 cast one vote, change it or withdraw it while voting is open. Everyone sees totals
 and percentages. Only the creator or an administrator can edit question/details,
 close/reopen voting or remove a poll. Choices stay fixed to preserve ballot meaning.
-Removal uses the shared 30-second pending countdown/Undo; votes/history remain after
+Removal uses the shared 20-second pending countdown/Undo; votes/history remain after
 soft removal. Empty, loading, saving, closed, missing and error states are included.
 
 features/polls and services/polls-* separate types, Redux UI state, RTK Query data
@@ -527,7 +527,7 @@ phone layouts come first and wider layouts use the family-content container.
 Administration uses the same hierarchy: compact tabs, shared summary figures,
 aligned account/usage directories and date-grouped activity. Exact audit timestamps
 remain in change disclosures. Chart data, reporting semantics, permission checks,
-Redux/RTK Query caches and the common 30-second removal/Undo flow are retained.
+Redux/RTK Query caches and the common 20-second removal/Undo flow are retained.
 
 ### Family brief regression follow-up
 
@@ -657,3 +657,7 @@ Tested in the internal browser as Gary/Dad using 166 disposable records across s
 Recorded private responsive-image requests (36 KB mobile / 111 KB desktop for the existing 2.9 MB photo), lazy loading of an offscreen uploaded image and authenticated original/preview revalidation. Unauthenticated photo access returns 401. Per-page request logs confirmed unrelated feature collections do not poll on Shopping. Unchanged snapshots return 304 with no body. Background/offline pause and return/reconnect refresh passed using temporary local UI controls that simulated platform events; native IAB hiding does not change page visibility, so this is not an OS-level offline/background check. Diagnostic controls were removed.
 
 All fixtures, uploaded fixture photos/derivatives and associated audit/vote/option records were removed with a private recovery copy. Original domain records, identity fields and history exactly matched the baseline afterwards; real usage tracking remains. Evidence and focused QA scripts are in the shared project workspace, outside this repository. Production build, source formatting and PHP syntax checks pass.
+
+## Repeatable regression coverage
+
+Run `npm run test:all` from this directory for client, feature API and existing authentication checks. See [TESTING.md](TESTING.md) for the coverage matrix, isolated fixture requirements and limitations. The shared Undo delay is now **20 seconds** across shopping, calendar, memories, private notes and polls; all countdowns/hints read the same constant. Usage heartbeats and admin refresh intervals remain separate policies.
