@@ -296,39 +296,50 @@ is not included in a production build.
 
 ### Prepare the Windows upload folder
 
-From this client directory, run:
+From this client directory, choose the package you need:
 
 ```powershell
 npm run build:deploy
+npm run build:deploy:client
+npm run build:deploy:api
 ```
+
+| Command | Folder under `C:\xampp\htdocs\WebSitesDesigns\live` | Contents |
+| --- | --- | --- |
+| `build:deploy` | `theallinfamily` | Built client and `api/` runtime |
+| `build:deploy:client` | `theallinfamily-client` | Built client only, including root `.htaccess` |
+| `build:deploy:api` | `theallinfamily-api` | Only `api/`, ready to merge into the site root |
 
 The batch entry point `scripts/build-deploy.cmd` calls Windows PowerShell for
 checked file operations. It works from npm or by double-clicking the batch file;
-Node/npm, installed client dependencies and PHP CLI are required. PHP is resolved
-from PATH, falling back to `C:\xampp\php\php.exe`.
+double-clicking prepares the full package. Client builds require Node/npm and
+installed client dependencies. Packages containing the API require PHP CLI,
+resolved from PATH, falling back to `C:\xampp\php\php.exe`. Client-only does not
+require or inspect PHP/API runtime; API-only does not run TypeScript/Vite or read dist.
 
-The fixed destination is `C:\xampp\htdocs\WebSitesDesigns\live\theallinfamily`.
-Its `live` parent must exist; the final folder is created if missing. The command:
+The selected destination's `live` parent must exist; its final folder is created
+if missing. The other two package folders remain untouched. Each command:
 
 1. Validates the destination, rejects source overlap and junctions/symbolic links,
-   and locks out another deployment to that folder.
-2. Runs the normal TypeScript/Vite build, with root hosting (`/`) and same-origin
-   API (`/api`) explicitly selected. Normal `npm run build` remains available.
-3. Copies all dist files (including the production `.htaccess`) to a fresh sibling
-   staging folder, then adds `api/index.php`, `api/.htaccess`, `api/.env.example`
-   and PHP runtime files under `api/src`. Verifies each copy with SHA-256 and
-   checks every packaged PHP file with `php -l`.
+   and uses one shared lock to prevent any packaging commands running concurrently.
+2. For client/full packages, runs the normal TypeScript/Vite build with root
+   hosting (`/`) and same-origin API (`/api`) explicitly selected. Normal
+   `npm run build` remains available.
+3. Copies only the selected runtime into a fresh sibling staging folder: client
+   dist files (including the production `.htaccess`) and/or `api/index.php`,
+   `api/.htaccess`, `api/.env.example` and PHP runtime under `api/src`.
+   Verifies each copy with SHA-256 and checks every packaged PHP file with `php -l`.
 4. Moves the entire previous destination, including hidden/stale files, into
-   `live\.deploy-backups\theallinfamily-<timestamp>-<id>`, then moves the validated
+   `live\.deploy-backups\<package-folder>-<timestamp>-<id>`, then moves the validated
    staging folder into its place. A failed final move restores the previous folder.
 
 A build/copy/validation error exits nonzero without replacing the live folder.
 Failed staging folders remain outside the upload folder for diagnosis; their
 paths are printed. Backups are retained until manually reviewed/removed and are
-blocked from Apache access with their own `.htaccess`. Only one deployment to
-this destination can run at a time. No server upload or database changes occur.
+blocked from Apache access with their own `.htaccess`. Only one family packaging
+command can run at a time. No server upload or database changes occur.
 
-The resulting folder contains the built client and PHP runtime, not a configured
+The resulting folder contains only the selected runtime, not a configured
 production installation. Development `.env`, Git metadata, node_modules, tests,
 CLI tools, migrations, database data, photos and sessions are excluded. Any config
 or media manually put in the local destination is replaced on the next run and
@@ -344,11 +355,20 @@ not production credentials; do not rename it unchanged. Existing database conten
 and private photos require a separate transfer plan. These are subsequent server
 setup steps, not actions performed by this packaging command.
 
-Upload the **contents** of the generated `theallinfamily` folder using FileZilla,
-including `.htaccess` files. FileZilla copying does not remove obsolete files on
-the remote server: arrange a remote backup and replacement separately. Preserve
-server-only configuration/private storage outside the generated upload content.
-Review hosting-specific Apache/PHP settings before replacing the old server site.
+Upload the **contents** of the selected package folder into `public_html` using
+FileZilla, including `.htaccess` files. For API-only this means merging its `api/`
+folder into the existing `public_html/api/`, not uploading PHP files into the root.
+For client-only, retain the entire remote `api/` folder. For every mode, preserve
+server `api/.env` and private photo/session storage. Do not delete or mirror the
+remote site to match a partial package. FileZilla copying does not remove obsolete
+remote assets; review any stale-file cleanup separately with a server backup.
+
+Choose the mode deliberately; scripts do not infer changes or API compatibility.
+Before a client-only upload, confirm that any required API/schema version is
+already live. Before an API upload, confirm compatibility with the existing client.
+Apply required versioned migrations separately with a production backup, then deploy
+the matching runtime. Packaging never runs migrations or copies a local database.
+Review hosting-specific Apache/PHP settings before replacing server routing files.
 
 The production `.htaccess` redirects `theallinfamily.co.uk` to
 `https://www.theallinfamily.co.uk`, preserving the path and query, and disables
@@ -356,16 +376,27 @@ directory listings. Set the API's production `APP_ORIGIN` to that exact www
 origin. Clear cPanel's NGINX cache after uploading changed files; it can otherwise
 continue serving a pre-deployment page independently for the bare and www hosts.
 
-Deployment regression checks use disposable temp folders, never the actual live
-folder:
+Deployment regression checks use disposable temp folders, never the actual upload
+folders, server or database:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/deployment.test.ps1
+npm run test:deploy
 ```
 
-They cover spaces in paths, missing destination creation, verified runtime copy,
-hidden-file backup, stale-file removal, secret exclusion, failed builds/incomplete
-output/PHP validation, unsafe destinations, concurrent runs and final-move rollback.
+The original 12 checks plus 66 mode-specific checks cover all three package modes:
+exact file sets/copy hashes, unused build/PHP dependencies, missing destination
+creation, repeated-run hidden-file backups, unchanged sibling packages/source data,
+stale-file removal and secret/source-map/API-entry exclusion. Failure cases include
+build/output/PHP/copy errors, corrupt copies, backup writes/moves, final-move rollback,
+invalid modes/unsafe destinations, junctions (including backup access rules), lock
+recovery and cross-mode concurrent runs. Synthetic fault injection exercises errors
+without changing a real package or database. This suite does not upload to hosting.
+
+The three real npm commands were also exercised locally: API20/client96/full116
+files matched source hashes exactly, backups matched prior packages, and the other
+two packages stayed byte-for-byte unchanged after each run. Invalid batch mode
+returned exit1. These counts describe the current build and can change as features
+are added. Active server configuration and database migrations remain separate.
 
 npm run preview previews a build without the development API proxy. Use npm run
 dev for the integrated local app.

@@ -1,22 +1,29 @@
+param([ValidateSet('All', 'Client', 'Api')][string] $Mode = 'All')
+
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 try {
     . "$PSScriptRoot/deployment.ps1"
     $client = Split-Path $PSScriptRoot -Parent
     $api = Join-Path (Split-Path $client -Parent) 'api'
-    $target = 'C:\xampp\htdocs\WebSitesDesigns\live\theallinfamily'
-    $npm = (Get-Command npm.cmd -ErrorAction Stop).Source
-    $php = Get-Command php.exe -ErrorAction SilentlyContinue
-    $phpPath = if ($php) { $php.Source } else { 'C:\xampp\php\php.exe' }
-    if (-not (Test-Path -LiteralPath $phpPath -PathType Leaf)) {
-        throw 'PHP CLI is required to validate the packaged API. Add php.exe to PATH.'
+    $folder = Get-FamilyPackageName $Mode
+    $target = Join-Path 'C:\xampp\htdocs\WebSitesDesigns\live' $folder
+    if ($Mode -ne 'Api') {
+        $npm = (Get-Command npm.cmd -ErrorAction Stop).Source
+    }
+    if ($Mode -ne 'Client') {
+        $php = Get-Command php.exe -ErrorAction SilentlyContinue
+        $phpPath = if ($php) { $php.Source } else { 'C:\xampp\php\php.exe' }
+        if (-not (Test-Path -LiteralPath $phpPath -PathType Leaf)) {
+            throw 'PHP CLI is required to validate the packaged API. Add php.exe to PATH.'
+        }
     }
     Push-Location $client
     try {
         $previousApiBase = $env:VITE_API_BASE_URL
         $env:VITE_API_BASE_URL = '/api'
         try {
-            Invoke-FamilyDeployment -ClientRoot $client -ApiRoot $api -Destination $target -Build {
+            Invoke-FamilyDeployment -Mode $Mode -ClientRoot $client -ApiRoot $api -Destination $target -Build {
                 & $npm run build -- --base=/
                 if ($LASTEXITCODE -ne 0) { throw "React build failed (exit $LASTEXITCODE)." }
             } -ValidatePhp {

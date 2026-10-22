@@ -1,5 +1,14 @@
 Set-StrictMode -Version Latest
 
+function Get-FamilyPackageName {
+    param([ValidateSet('All', 'Client', 'Api')][string] $Mode = 'All')
+    switch ($Mode) {
+        'Client' { 'theallinfamily-client' }
+        'Api' { 'theallinfamily-api' }
+        default { 'theallinfamily' }
+    }
+}
+
 function Assert-OrdinaryPath([string] $Path) {
     $cursor = [IO.Path]::GetFullPath($Path)
     while ($cursor) {
@@ -33,6 +42,7 @@ function Copy-VerifiedFile([string] $Source, [string] $Target) {
 
 function Invoke-FamilyDeployment {
     param(
+        [ValidateSet('All', 'Client', 'Api')][string] $Mode = 'All',
         [Parameter(Mandatory)][string] $ClientRoot,
         [Parameter(Mandatory)][string] $ApiRoot,
         [Parameter(Mandatory)][string] $Destination,
@@ -44,9 +54,12 @@ function Invoke-FamilyDeployment {
     $api = [IO.Path]::GetFullPath($ApiRoot).TrimEnd('\')
     $target = [IO.Path]::GetFullPath($Destination).TrimEnd('\')
     $parent = Split-Path $target -Parent
-    if ((Split-Path $target -Leaf) -ne 'theallinfamily' -or
+    $packageName = Get-FamilyPackageName $Mode
+    $includeClient = $Mode -ne 'Api'
+    $includeApi = $Mode -ne 'Client'
+    if ((Split-Path $target -Leaf) -ne $packageName -or
         (Split-Path $parent -Leaf) -ne 'live') {
-        throw 'Destination must be a theallinfamily folder directly inside a live folder.'
+        throw "Destination for $Mode must be a $packageName folder directly inside a live folder."
     }
     foreach ($source in @($client, $api)) {
         if ($target -eq $source -or $target.StartsWith($source + '\', [StringComparison]::OrdinalIgnoreCase) -or
@@ -54,7 +67,9 @@ function Invoke-FamilyDeployment {
             throw 'Deployment destination must not overlap a source checkout.'
         }
     }
-    foreach ($path in @($client, $api, $target)) { Assert-OrdinaryPath $path }
+    Assert-OrdinaryPath $target
+    if ($includeClient) { Assert-OrdinaryPath $client }
+    if ($includeApi) { Assert-OrdinaryPath $api }
     if (-not (Test-Path -LiteralPath $parent -PathType Container)) { throw "Live parent folder does not exist: $parent" }
     if ((Test-Path -LiteralPath $target) -and -not (Test-Path -LiteralPath $target -PathType Container)) {
         throw 'Deployment destination is a file, not a folder.'
@@ -68,48 +83,62 @@ function Invoke-FamilyDeployment {
         $lockPath = Join-Path $parent '.theallinfamily.deploy.lock'
         Assert-OrdinaryPath $lockPath
         $lock = [IO.File]::Open($lockPath, [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
-        Write-Host 'Building React. Existing live files remain untouched until validation passes.'
-        & $Build
-        $dist = Join-Path $client 'dist'
-        foreach ($required in @('index.html', '.htaccess')) {
-            if (-not (Test-Path -LiteralPath (Join-Path $dist $required) -PathType Leaf)) { throw "Build output missing $required" }
+        Write-Host "Preparing $Mode package. Existing packages remain untouched until validation passes."
+        $runtimeRoots = @()
+        if ($includeClient) {
+            & $Build
+            $dist = Join-Path $client 'dist'
+            foreach ($required in @('index.html', '.htaccess')) {
+                if (-not (Test-Path -LiteralPath (Join-Path $dist $required) -PathType Leaf)) { throw "Build output missing $required" }
+            }
+            if (-not (Test-Path -LiteralPath (Join-Path $dist 'assets') -PathType Container)) { throw 'Build assets are missing.' }
+            if (Test-Path -LiteralPath (Join-Path $dist 'api')) { throw 'Client build must not contain an api entry.' }
+            $runtimeRoots += $dist
         }
-        if (-not (Test-Path -LiteralPath (Join-Path $dist 'assets') -PathType Container)) { throw 'Build assets are missing.' }
-        foreach ($required in @('index.php', '.htaccess', '.env.example', 'src/bootstrap.php')) {
-            if (-not (Test-Path -LiteralPath (Join-Path $api $required) -PathType Leaf)) { throw "API source missing $required" }
+        if ($includeApi) {
+            foreach ($required in @('index.php', '.htaccess', '.env.example', 'src/bootstrap.php')) {
+                if (-not (Test-Path -LiteralPath (Join-Path $api $required) -PathType Leaf)) { throw "API source missing $required" }
+            }
+            $runtimeRoots += Join-Path $api 'src'
         }
-        foreach ($root in @($dist, (Join-Path $api 'src'))) {
+        foreach ($root in $runtimeRoots) {
             Assert-OrdinaryPath $root
             foreach ($entry in Get-ChildItem -LiteralPath $root -Recurse -Force) { Assert-OrdinaryPath $entry.FullName }
         }
         $tag = (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [Guid]::NewGuid().ToString('N').Substring(0, 8)
-        $stage = Join-Path $parent ".theallinfamily-stage-$tag"
+        $stage = Join-Path $parent ".$packageName-stage-$tag"
         $null = New-Item -ItemType Directory -Path $stage
-        foreach ($file in Get-ChildItem -LiteralPath $dist -Recurse -Force -File) {
-            $relative = $file.FullName.Substring($dist.Length + 1)
-            if ($relative -match '(^|[\\/])(\.env[^\\/]*|\.git|node_modules)([\\/]|$)' -or $file.Extension -eq '.map') {
-                throw "Unexpected development file in build: $relative"
+        if ($includeClient) {
+            foreach ($file in Get-ChildItem -LiteralPath $dist -Recurse -Force -File) {
+                $relative = $file.FullName.Substring($dist.Length + 1)
+                if ($relative -match '(^|[\\/])(\.env[^\\/]*|\.git|node_modules)([\\/]|$)' -or $file.Extension -eq '.map') {
+                    throw "Unexpected development file in build: $relative"
+                }
+                Copy-VerifiedFile $file.FullName (Join-Path $stage $relative)
             }
-            Copy-VerifiedFile $file.FullName (Join-Path $stage $relative)
         }
-        foreach ($relative in @('index.php', '.htaccess', '.env.example')) {
-            Copy-VerifiedFile (Join-Path $api $relative) (Join-Path $stage "api/$relative")
-        }
-        foreach ($file in Get-ChildItem -LiteralPath (Join-Path $api 'src') -Recurse -Force -File) {
-            if ($file.Extension -ne '.php') { throw "Unexpected API runtime file: $($file.Name)" }
-            Copy-VerifiedFile $file.FullName (Join-Path $stage ('api/' + $file.FullName.Substring($api.Length + 1)))
-        }
-        foreach ($file in Get-ChildItem -LiteralPath (Join-Path $stage 'api') -Recurse -File -Filter '*.php') {
-            & $ValidatePhp $file.FullName
+        if ($includeApi) {
+            foreach ($relative in @('index.php', '.htaccess', '.env.example')) {
+                Copy-VerifiedFile (Join-Path $api $relative) (Join-Path $stage "api/$relative")
+            }
+            foreach ($file in Get-ChildItem -LiteralPath (Join-Path $api 'src') -Recurse -Force -File) {
+                if ($file.Extension -ne '.php') { throw "Unexpected API runtime file: $($file.Name)" }
+                Copy-VerifiedFile $file.FullName (Join-Path $stage ('api/' + $file.FullName.Substring($api.Length + 1)))
+            }
+            foreach ($file in Get-ChildItem -LiteralPath (Join-Path $stage 'api') -Recurse -File -Filter '*.php') {
+                & $ValidatePhp $file.FullName
+            }
         }
         # Keep all previous content outside the upload directory, including hidden files.
         $backupRoot = Join-Path $parent '.deploy-backups'
         Assert-OrdinaryPath $backupRoot
         $null = New-Item -ItemType Directory -Path $backupRoot -Force
-        Set-Content -LiteralPath (Join-Path $backupRoot '.htaccess') -Value 'Require all denied' -Encoding ASCII
+        $backupRules = Join-Path $backupRoot '.htaccess'
+        Assert-OrdinaryPath $backupRules
+        Set-Content -LiteralPath $backupRules -Value 'Require all denied' -Encoding ASCII
         Assert-OrdinaryPath $target
         if (Test-Path -LiteralPath $target) {
-            $backup = Join-Path $backupRoot "theallinfamily-$tag"
+            $backup = Join-Path $backupRoot "$packageName-$tag"
             Move-Item -LiteralPath $target -Destination $backup -ErrorAction Stop
         }
         try {
@@ -124,6 +153,9 @@ function Invoke-FamilyDeployment {
         }
         Write-Host "Upload package ready: $target"
         if ($backup) { Write-Host "Previous files backed up: $backup" }
+        Write-Host 'Upload only the CONTENTS of this package to public_html; do not delete or mirror the remote directory.'
+        if (-not $includeApi) { Write-Host 'Client-only package: the server api folder must be retained.' }
+        if (-not $includeClient) { Write-Host 'API-only package: merge the included api folder into public_html; retain existing client files and server api/.env.' }
         Write-Host 'Server environment, database migrations and private photo/session storage are managed separately; verify hosting setup before uploading.'
         Write-Host 'No database, credentials, local uploads, tests or development tools have been copied.'
     } catch {

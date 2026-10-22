@@ -5,5 +5,5 @@ if errorlevel 1 (
   echo ERROR: Windows PowerShell is required.
   exit /b 1
 )
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0build-deploy.ps1"
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0build-deploy.ps1" %*
 exit /b %errorlevel%
