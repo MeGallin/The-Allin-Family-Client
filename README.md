@@ -370,6 +370,15 @@ Apply required versioned migrations separately with a production backup, then de
 the matching runtime. Packaging never runs migrations or copies a local database.
 Review hosting-specific Apache/PHP settings before replacing server routing files.
 
+The API's [database-release runbook](../api/DATABASE-RELEASE.md) describes the separate
+private CLI workflow for a reviewed plan, enforced maintenance, fresh database/
+application/photo backup, actual scratch restore verification, checksummed pending
+SQL and explicit verified resume. Deploy its maintenance-capable API first, verify
+hosting CLI/permissions/storage prerequisites, and rehearse locally before any live
+schema change. Tools/migrations remain excluded from all three upload packages.
+`npm run test:database-release` exercises this workflow only on disposable local DBs;
+it is also part of `npm run test:all`. No production release has been run by these tests.
+
 The production `.htaccess` redirects `theallinfamily.co.uk` to
 `https://www.theallinfamily.co.uk`, preserving the path and query, and disables
 directory listings. Set the API's production `APP_ORIGIN` to that exact www

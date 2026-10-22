@@ -7,7 +7,9 @@ npm test                  # React/Redux and transport tests; no running server/d
 npm run test:watch        # Re-run affected client tests while developing
 npm run test:api          # New isolated real PHP/MySQL feature regression
 npm run test:auth         # Existing isolated authentication/security regression
-npm run test:all          # All three, stops on the first failing command
+npm run test:database-release # Backup/restore, migration and maintenance safeguards
+npm run test:all          # All four, stops on the first failing command
+npm run test:deploy       # Separate disposable file-packaging regression checks
 npm run build             # Type-check application, tests and configs; build production assets
 npm run format:check
 ```
@@ -34,6 +36,21 @@ See `../api/tests/README.md` for the server setup and recovery procedure. Start 
 The runner starts its own loopback PHP server on a free port. It never sends requests to port8000 or the internal browser. Its generated owner/member/admin accounts exist only in `theallinfamily_regression_test`, with separate least-privilege DB credentials, sessions and image storage. It applies every migration to an empty schema, tests the production API routes and removes its database/account/photos/sessions on completion or an ordinary test failure. A second run or wrong cleanup token is refused. Family users, Gary's saved input and production/local family configuration are not modified.
 
 The existing authentication suite uses its own `theallinfamily_auth_test` fixture, with the original setup/cleanup guards. Neither suite should be run against a production environment. Do not commit ignored credentials, session files, photos or fixture settings.
+
+The database-release suite uses random `allin_release_test_<token>` databases and
+random private fixture directories, plus `allin_restore_<token>` databases for
+actual dump/restore verification. It opens only the isolated local server on3307;
+its configuration guard rejects production. Tests cover explicit targets, plan and
+historical checksums, ordered pending migrations, separate deployment credentials,
+private database/photo/config/code backups, actual scratch restores, preservation
+of existing fields/owners, successful CLI plan/apply/resume, concurrent locks,
+later-statement SQL failures and failed backup/restore/process timeouts. Real HTTP
+requests prove maintenance rejects health, sessions, background presence and feature
+writes before DB access; an existing leased worker must finish before its saved
+row appears in the backup. A drain timeout fails closed. Failed releases cannot
+resume or rerun silently. Fixture databases/files are cleaned on ordinary failure.
+See the API's [DATABASE-RELEASE.md](../api/DATABASE-RELEASE.md) for hosting prerequisites
+and manual, explicitly authorised production recovery; tests never restore live.
 
 ## Boundaries
 

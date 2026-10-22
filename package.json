@@ -16,7 +16,8 @@
     "test:watch": "vitest",
     "test:deploy": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/deployment.test.ps1 && powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/deployment-modes.test.ps1",
     "test:api": "node --test ../api/tests/regression.test.mjs",
-    "test:all": "npm run test && npm run test:api && npm run test:auth",
+    "test:all": "npm run test && npm run test:api && npm run test:auth && npm run test:database-release",
+    "test:database-release": "node ../api/tests/run-database-release.mjs",
     "test:auth": "node ../api/tests/run-auth.mjs"
   },
   "dependencies": {
