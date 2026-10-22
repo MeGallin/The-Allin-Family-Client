@@ -1,6 +1,7 @@
+import { isPollClosed } from './poll-deadline'
 import type { FamilyPollRecord } from './types'
-export function pollLink(poll: Pick<FamilyPollRecord, 'id' | 'closed'>) {
-  return `/polls?show=${poll.closed ? 'closed' : 'open'}#poll-${poll.id}`
+export function pollLink(poll: Pick<FamilyPollRecord, 'id' | 'closed' | 'closesAt'>) {
+  return `/polls?show=${isPollClosed(poll) ? 'closed' : 'open'}#poll-${poll.id}`
 }
 export function pollActionPath(
   search: string,

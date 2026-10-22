@@ -145,3 +145,10 @@
   align-items: center;
   min-height: var(--control-min-height);
 }
+
+.poll-card__deadline {
+  margin: var(--space-2) 0;
+  font-size: var(--text-sm);
+  color: var(--color-link);
+  font-weight: var(--weight-heading);
+}

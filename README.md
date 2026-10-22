@@ -341,7 +341,7 @@ and UI; do not introduce another timer, countdown component or delay constant.
 
 Apply API migration 011. The lazy /polls page is linked from Home's Have a say
 shortcut and the desktop sidebar. The Home poll panel uses the same saved data
-and voting card. The existing five mobile navigation targets remain uncrowded;
+through a read-only summary linking to the source poll. Voting executes only on /polls. The existing five mobile navigation targets remain uncrowded;
 Home's shortcut and poll panel provide phone access to the full polls page.
 
 Any signed-in family member can create a poll with two to six distinct choices,
@@ -665,3 +665,32 @@ Run `npm run test:all` from this directory for client, feature API and existing 
 ## Shared scrollbar styling
 
 `src/styles/scrollbars.css` owns native scrollbar styling for the page and nested scroll containers. Semantic tokens in `tokens.css` provide the shared 8px width/height, minimum thumb length, navy track and Nimbus blue/cyan default/hover/active colours. Fine-pointer devices receive the styling; touch-only devices and forced-colour modes retain native scrollbars. Standard thin/colour properties cover browsers without WebKit scrollbar selectors; the supported WebKit branch resets those properties to allow explicit dimensions and thumb states. No scrolling behaviour or overflow rules are replaced.
+
+## Personal accent colours
+
+Your profile → Make it yours offers Turquoise (default), Orange, Gold, Purple, Pink and Green as native radio swatches. The palette uses circular satin samples with names underneath, a separate selection ring/check, three columns on phones and six on wider screens. Pointer hover is subtle, reduced motion is respected, and forced colours expose native controls. Selections apply immediately through the shared accent, action, link, focus, selected-state, priority, chart-created and scrollbar tokens. `styles/accent-tokens.css` owns the curated palette and its supporting shades; navy base surfaces, fixed blue background highlight, semantic success/error colours and the sticky-note paper palettes retain their own tokens. No component copies colour hex values.
+
+`features/appearance/` owns Redux preference state, account-change restoration and root theme application. `services/appearance-storage.ts` reads/writes only an allowlisted palette ID at `allin-family:accent:v1:user:<id>` in localStorage. Returning to Turquoise removes that account's override. Sign-out resets the visible theme while retaining the account's saved choice; another account loads its own choice. Same-account tabs synchronise via storage events. Profile refreshes do not overwrite in-memory choices. Storage failures apply the accent for the visit and explain that it could not be remembered. Choices are specific to this browser/origin and do not sync between devices. No API/database changes, account fields, credentials or private content are stored by this preference.
+
+The picker and its CSS are colocated in `components/profile/AccentPicker.*`. Six labelled options use a shared radio group, selected check mark, 48px minimum controls and two columns on small screens, expanding to three where space permits. Forced-colour mode exposes native radio controls.
+
+
+## Poll closing times
+
+Apply API migration 015 before this client. PollDeadlinePicker is a colocated mobile-first widget in the existing lazy poll editor. Every new poll has a concrete UTC closesAt, initially four hours from opening the form; shortcuts reset it to one, four or 24 hours from selection. Custom dates use the browser's local time with an explicit timezone label and an exact closing-time preview. Deadlines do not drift while a draft is being filled in.
+
+Poll cards display an updating countdown and exact cutoff. The shared PollsSync collection owns one boundary timer to update cached closed states; Home summaries, links and filters also evaluate the deadline. The API independently enforces the database clock when voting. Early closing remains available. Closed polls reopen through the editor using a future deadline and the explicit Reopen voting checkbox; saved votes remain intact. Deadline edits participate in the existing draft protection/version conflict flow and shared admin history. All colours follow Nimbus/personal accent tokens.
+
+Deadline regressions cover native custom-date input synchronisation, shortcuts/clearing and exact cache-boundary closure without fetching (PollDeadlinePicker.test.tsx and PollsSync.test.tsx). API regression cases cover persisted deadlines, expiry, late-vote rejection, reopening, permissions, idempotency and audit history in a disposable schema.
+
+
+## Home live-poll indicators
+
+HomeOverview adds a Live count/badge and next cutoff to the poll summary. FamilyPoll uses the shared homePolls projection for the next deadline and current-user unanswered count, alongside the existing stable featured question. PollTimeRemaining renders compact countdowns with exact-date tooltips/accessibility labels from the shared useNow clock. Existing PollsSync expiration updates and saved poll caches drive the UI; no additional polling, endpoint, storage or database writes are introduced. Styling remains colocated and follows personal accent tokens.
+
+
+## Read-only Home poll brief
+
+HomePollSummary is a colocated presentational link: title, remaining time, participation, saved choice and a route to voting/results. It has no mutation hooks or ballots. PollCard is used only by the Polls route; its former Home preview mode has been removed. Home's next-deadline link targets the soonest poll independently of the stable newest featured summary. When all polls expire, the live badge/reminder disappears and the latest result remains linked with show=closed.
+
+All poll countdowns use pollTimeLeft, including compact text and expanded accessible names, so rounding agrees across Home and Polls. home-polls.test.tsx covers nearest/featured ordering, immutable projections, deadline boundaries, singular/zero transitions, links and the absence of Home voting controls, using the real Redux expiry timer without network calls.

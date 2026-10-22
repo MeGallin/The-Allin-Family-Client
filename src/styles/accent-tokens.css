@@ -1,0 +1,50 @@
+/* Personal accent palettes. Navy surfaces and semantic success/error colours stay shared. */
+:root {
+  --accent-cyan: #22d3ee;
+  --accent-cyan-highlight: #67e8f9;
+  --accent-cyan-soft: #10354b;
+  --accent-orange: #fb923c;
+  --accent-orange-highlight: #fdba74;
+  --accent-orange-soft: #3a241b;
+  --accent-gold: #facc15;
+  --accent-gold-highlight: #fde047;
+  --accent-gold-soft: #332d14;
+  --accent-purple: #c4b5fd;
+  --accent-purple-highlight: #ddd6fe;
+  --accent-purple-soft: #29243f;
+  --accent-pink: #f9a8d4;
+  --accent-pink-highlight: #fbcfe8;
+  --accent-pink-soft: #382238;
+  --accent-green: #6ee7b7;
+  --accent-green-highlight: #a7f3d0;
+  --accent-green-soft: #12332f;
+}
+/* Keep personalised scrollbar thumbs in the chosen hue; the default Nimbus mix stays in tokens.css. */
+:root[data-accent] {
+  --color-scrollbar-thumb: color-mix(in srgb, var(--color-accent) 80%, var(--color-surface-muted));
+}
+:root[data-accent='orange'] {
+  --color-accent: var(--accent-orange);
+  --color-accent-highlight: var(--accent-orange-highlight);
+  --color-accent-soft: var(--accent-orange-soft);
+}
+:root[data-accent='gold'] {
+  --color-accent: var(--accent-gold);
+  --color-accent-highlight: var(--accent-gold-highlight);
+  --color-accent-soft: var(--accent-gold-soft);
+}
+:root[data-accent='purple'] {
+  --color-accent: var(--accent-purple);
+  --color-accent-highlight: var(--accent-purple-highlight);
+  --color-accent-soft: var(--accent-purple-soft);
+}
+:root[data-accent='pink'] {
+  --color-accent: var(--accent-pink);
+  --color-accent-highlight: var(--accent-pink-highlight);
+  --color-accent-soft: var(--accent-pink-soft);
+}
+:root[data-accent='green'] {
+  --color-accent: var(--accent-green);
+  --color-accent-highlight: var(--accent-green-highlight);
+  --color-accent-soft: var(--accent-green-soft);
+}

@@ -1,3 +1,4 @@
+import { isPollClosed } from '../polls/poll-deadline'
 import type { FamilyMemory } from '../memories/types'
 import type { FamilyPollRecord } from '../polls/types'
 
@@ -11,12 +12,16 @@ function newest(a: { id: string; createdAt: string }, b: { id: string; createdAt
 export function recentMemories(memories: FamilyMemory[]) {
   return [...memories].sort(newest).slice(0, 3)
 }
-export function homePolls(polls: FamilyPollRecord[]) {
-  const open = polls.filter((poll) => !poll.closed).sort(newest)
+export function homePolls(polls: FamilyPollRecord[], now = Date.now()) {
+  const open = polls.filter((poll) => !isPollClosed(poll, now)).sort(newest)
   return {
     open,
     // Keep the featured question stable while a person votes or withdraws.
     featured: open[0],
-    recentResult: polls.filter((poll) => poll.closed).sort(newest)[0],
+    nextClosing: [...open].sort(
+      (a, b) => Date.parse(a.closesAt) - Date.parse(b.closesAt) || newest(a, b),
+    )[0],
+    awaitingVote: open.filter((poll) => !poll.ownOptionId).length,
+    recentResult: polls.filter((poll) => isPollClosed(poll, now)).sort(newest)[0],
   }
 }

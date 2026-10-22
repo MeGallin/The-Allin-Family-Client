@@ -1,38 +1,59 @@
+import { PollTimeRemaining } from './PollTimeRemaining'
+import { useNow } from '../../../hooks/useNow'
 import { pollLink } from '../../../features/polls/poll-links'
 import { Link } from 'react-router'
 import { usePolls } from '../../../features/polls/usePolls'
 import { homePolls } from '../../../features/family/home-view'
 import { Panel } from '../../ui/Panel'
 import { LoadingState } from '../../ui/LoadingState'
-import { PollCard } from './PollCard'
+import { HomePollSummary } from './HomePollSummary'
 import './FamilyPoll.css'
 export function FamilyPoll() {
-  const { polls, loading, pending, feedback, error, refresh } = usePolls()
-  const { open, featured, recentResult } = homePolls(polls)
+  const { polls, loading, pending, error, refresh } = usePolls()
+  const { open, featured, recentResult, nextClosing, awaitingVote } = homePolls(polls, useNow())
   const poll = featured ?? recentResult
   return (
     <div id="family-poll" tabIndex={-1} className="family-poll">
       <Panel title="Polls" action={<Link to={poll ? pollLink(poll) : '/polls'}>View polls</Link>}>
-        {!loading && !error && (
-          <p className="note">
-            {open.length
-              ? `${open.length} ${open.length === 1 ? 'question is' : 'questions are'} open for votes.`
-              : 'No open polls right now.'}
-          </p>
-        )}
+        {!loading &&
+          !error &&
+          (open.length && nextClosing ? (
+            <div className="family-poll__live">
+              <div className="family-poll__live-heading">
+                <span className="family-poll__live-label">Live</span>
+                <strong>
+                  {open.length} {open.length === 1 ? 'poll' : 'polls'} open
+                </strong>
+              </div>
+              <Link className="family-poll__next" to={pollLink(nextClosing)}>
+                <span>
+                  Next closes<span className="sr-only">: {nextClosing.title}. </span>
+                </span>
+                <PollTimeRemaining value={nextClosing.closesAt} />
+              </Link>
+              <p>
+                {awaitingVote
+                  ? `${awaitingVote} ${awaitingVote === 1 ? 'question needs' : 'questions need'} your vote.`
+                  : 'You’re up to date. Your votes are saved.'}
+              </p>
+            </div>
+          ) : (
+            <p className="note">No open polls right now.</p>
+          ))}
         {loading ? (
           <LoadingState label="Loading family polls…" />
         ) : poll ? (
           <>
             {!featured && <p className="family-poll__result">Latest result · voting closed</p>}
-            <PollCard poll={poll} preview />
+            <HomePollSummary poll={poll} />
             {open.length > 1 && (
               <ul className="family-poll__others" aria-label="More open polls">
                 {open.slice(1, 3).map((entry) => (
                   <li key={entry.id}>
                     <Link to={pollLink(entry)}>{entry.title}</Link>
                     <span>
-                      {entry.totalVotes} {entry.totalVotes === 1 ? 'vote' : 'votes'}
+                      <PollTimeRemaining value={entry.closesAt} /> · {entry.totalVotes}{' '}
+                      {entry.totalVotes === 1 ? 'vote' : 'votes'}
                       {entry.ownOptionId ? ' · Your vote is saved' : ' · Have your say'}
                     </span>
                   </li>
@@ -56,16 +77,6 @@ export function FamilyPoll() {
           <Link className="button-link" to="/polls?compose=poll">
             Create a poll
           </Link>
-        )}
-        {pending && (
-          <p role="status" className="note">
-            Saving…
-          </p>
-        )}
-        {feedback && (
-          <p role="status" className="note">
-            {feedback}
-          </p>
         )}
         {error && (
           <div>

@@ -5,11 +5,6 @@
 .family-poll > .panel {
   height: 100%;
 }
-.family-poll .poll-card {
-  padding: 0;
-  border: 0;
-  background: transparent;
-}
 .family-poll__others {
   display: grid;
   list-style: none;
@@ -37,4 +32,67 @@
   margin: 0 0 var(--space-3);
   font-size: var(--text-sm);
   color: var(--color-text-muted);
+}
+
+.family-poll__live {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  border-left: 2px solid var(--color-accent);
+  background: var(--color-accent-soft);
+}
+.family-poll__live-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+.family-poll__live-label {
+  color: var(--color-link);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.family-poll__next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: var(--control-min-height);
+  font-size: var(--text-sm);
+  text-decoration: none;
+}
+.family-poll__next span {
+  color: var(--color-text-muted);
+}
+.family-poll__next time {
+  font-weight: var(--weight-heading);
+  font-variant-numeric: tabular-nums;
+}
+.family-poll__next:hover time {
+  text-decoration: underline;
+}
+.family-poll__live p {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+@container family-content (min-width: 40rem) {
+  .family-poll__live {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-4);
+  }
+  .family-poll__next {
+    grid-column: 2;
+    grid-row: 1;
+    gap: var(--space-3);
+  }
+  .family-poll__live p {
+    grid-column: 1 / -1;
+  }
 }

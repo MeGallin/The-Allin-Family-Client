@@ -1,3 +1,5 @@
+import { useNow } from '../../hooks/useNow'
+import { isPollClosed } from '../../features/polls/poll-deadline'
 import { useCollectionWindow } from '../../hooks/useCollectionWindow'
 import { CollectionMore } from '../../components/ui/CollectionMore'
 import { useEditingRecord } from '../../hooks/useEditingRecord'
@@ -19,6 +21,7 @@ const PollComposer = lazy(() => import('../../components/family/polls/PollCompos
 const PollRemoval = lazy(() => import('../../components/family/polls/PollRemoval'))
 export default function PollsPage() {
   const { polls, loading, pending, error, feedback, refresh, clearError } = usePolls()
+  const now = useNow()
   const user = useAppSelector((state) => state.auth.user)
   const [params] = useSearchParams()
   const location = useLocation()
@@ -34,7 +37,8 @@ export default function PollsPage() {
     !loading && !error && (params.has('edit') || params.has('remove')) && !editing && !removing
   const visible = polls.filter(
     (poll) =>
-      (status === 'all' || (status === 'open' ? !poll.closed : poll.closed)) &&
+      (status === 'all' ||
+        (status === 'open' ? !isPollClosed(poll, now) : isPollClosed(poll, now))) &&
       (poll.title + ' ' + poll.detail + ' ' + poll.createdBy.displayName)
         .toLocaleLowerCase()
         .includes(query.trim().toLocaleLowerCase()),
@@ -52,13 +56,14 @@ export default function PollsPage() {
     if (loading || !requested || targetVisible || composing || editing || removing) return
     const next = new URLSearchParams(params)
     next.delete('q')
-    next.set('show', requested.closed ? 'closed' : 'open')
+    next.set('show', isPollClosed(requested, now) ? 'closed' : 'open')
     void navigate(
       { pathname: '/polls', search: next.toString(), hash: location.hash },
       { replace: true },
     )
   }, [
     loading,
+    now,
     requested,
     targetVisible,
     composing,

@@ -17,28 +17,33 @@
   --color-text-on-action: #041925;
   --color-border: #293c56;
   --color-border-strong: #5b7595;
-  --color-accent: #22d3ee;
+  --color-accent: var(--accent-cyan);
+  --color-accent-highlight: var(--accent-cyan-highlight);
   --color-accent-deep: #0e74e9;
-  --color-accent-soft: #10354b;
-  /* Shared shopping priority uses the Nimbus cyan palette. */
+  --color-accent-soft: var(--accent-cyan-soft);
+  /* Shared shopping priority follows the personal accent. */
   --color-important: var(--color-accent);
   --color-important-surface: var(--color-accent-soft);
   --color-important-text: var(--color-link);
-  --color-action: #22d3ee;
-  --color-action-hover: #67e8f9;
-  --color-link: #67e8f9;
+  --color-action: var(--color-accent);
+  --color-action-hover: var(--color-accent-highlight);
+  --color-link: var(--color-accent-highlight);
   --color-success: #6ee7b7;
   --color-error: #fda4af;
   --color-error-soft: #351a2c;
   --color-backdrop: rgb(3 8 16 / 78%);
-  --color-focus: #67e8f9;
+  --color-focus: var(--color-accent-highlight);
   --color-scrollbar-track: var(--color-surface-muted);
   --color-scrollbar-thumb: color-mix(in srgb, var(--color-accent) 60%, var(--color-accent-deep));
   --color-scrollbar-thumb-hover: var(--color-accent);
   --color-scrollbar-thumb-active: var(--color-action-hover);
   --background-page:
     radial-gradient(ellipse at 10% 0%, rgb(14 116 233 / 18%), transparent 48%),
-    radial-gradient(ellipse at 100% 60%, rgb(34 211 238 / 7%), transparent 48%);
+    radial-gradient(
+      ellipse at 100% 60%,
+      color-mix(in srgb, var(--color-accent) 7%, transparent),
+      transparent 48%
+    );
 
   /* Inter is self-hosted through fonts.css; no third-party font requests. */
   --font-body: 'Inter Variable', 'Segoe UI', system-ui, sans-serif;
@@ -81,7 +86,7 @@
   --section-gap: clamp(1.5rem, 2vw, 2rem);
   --text-key-date: clamp(2.75rem, 6vw, 4rem);
   --shadow-raised: 0 24px 56px rgb(0 0 0 / 36%);
-  --shadow-action: 0 4px 20px rgb(34 211 238 / 16%);
+  --shadow-action: 0 4px 20px color-mix(in srgb, var(--color-accent) 16%, transparent);
   --content-width: 45rem;
   --dashboard-width: 82rem;
   --sidebar-width: 14rem;
@@ -90,7 +95,7 @@
   --icon-size: 1.25rem;
   --page-gutter: clamp(1.25rem, 5vw, 2rem);
   --control-min-height: 3rem;
-  --focus-ring: 0 0 0 5px rgb(34 211 238 / 18%);
+  --focus-ring: 0 0 0 5px color-mix(in srgb, var(--color-accent) 18%, transparent);
   --motion-fast: 150ms;
   --motion-medium: 220ms;
   --motion-loading: 900ms;

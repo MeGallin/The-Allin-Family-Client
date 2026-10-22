@@ -1,3 +1,4 @@
+import { homePolls } from './home-view'
 import { calendarApi } from '../../services/calendar-query'
 import { memoriesApi } from '../../services/memories-query'
 import { pollsApi } from '../../services/polls-query'
@@ -12,6 +13,7 @@ export function useHomeOverview() {
   const shopping = shoppingApi.endpoints.getShopping.useQueryState(undefined)
   const polls = pollsApi.endpoints.getPolls.useQueryState(undefined)
   const now = useNow()
+  const livePolls = homePolls(polls.data?.polls ?? [], now)
   return [
     {
       kind: 'shopping' as const,
@@ -30,8 +32,14 @@ export function useHomeOverview() {
     {
       kind: 'polls' as const,
       to: '/polls',
-      label: 'Open polls',
-      count: polls.data ? polls.data.polls.filter((poll) => !poll.closed).length : null,
+      label: livePolls.open.length
+        ? livePolls.open.length === 1
+          ? 'Live poll'
+          : 'Live polls'
+        : 'Open polls',
+      count: polls.data ? livePolls.open.length : null,
+      live: !!livePolls.open.length && !polls.error,
+      deadline: !polls.error ? livePolls.nextClosing?.closesAt : undefined,
       error: !!polls.error,
     },
     {

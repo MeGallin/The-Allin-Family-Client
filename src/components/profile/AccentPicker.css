@@ -1,0 +1,151 @@
+.accent-picker {
+  --swatch-size: 3rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.accent-picker legend {
+  padding: 0;
+  color: var(--color-text);
+  font-size: var(--text-md);
+  font-weight: var(--weight-heading);
+}
+.accent-picker__choices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-2);
+  padding-block: var(--space-5) var(--space-3);
+}
+.accent-picker__choice {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  min-height: var(--control-min-height);
+  padding: var(--space-2) 0;
+  border-radius: var(--radius-control);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.accent-picker__choice input {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.accent-picker__swatch {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--swatch-size);
+  height: var(--swatch-size);
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 30%), transparent 48%, rgb(0 0 0 / 14%)),
+    var(--choice-colour);
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 55%),
+    inset 0 -2px 3px rgb(0 0 0 / 12%),
+    0 5px 10px rgb(0 0 0 / 24%);
+  transition:
+    transform var(--control-transition),
+    box-shadow var(--control-transition);
+}
+/* A separate ring leaves a navy gap around the colour, like a mounted paint sample. */
+.accent-picker__swatch::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border: 2px solid transparent;
+  border-radius: inherit;
+  transition: border-color var(--control-transition);
+}
+.accent-picker__choice.is-selected .accent-picker__swatch::before {
+  border-color: var(--choice-colour);
+}
+.accent-picker__choice.is-selected .accent-picker__swatch {
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 55%),
+    inset 0 -2px 3px rgb(0 0 0 / 12%),
+    0 6px 18px color-mix(in srgb, var(--choice-colour) 22%, transparent);
+}
+.accent-picker__label {
+  font-size: var(--text-xs);
+  line-height: var(--line-compact);
+  text-align: center;
+}
+.accent-picker__choice.is-selected .accent-picker__label {
+  color: var(--choice-colour);
+  font-weight: var(--weight-heading);
+}
+.accent-picker__check {
+  display: grid;
+  place-items: center;
+  width: var(--space-5);
+  height: var(--space-5);
+  border-radius: 50%;
+  background: var(--color-page);
+  color: var(--choice-colour);
+}
+.accent-picker__check .icon {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+.accent-picker__choice:has(input:focus-visible) {
+  outline: 2px solid var(--color-focus);
+  outline-offset: var(--space-1);
+}
+.accent-picker__feedback {
+  margin-top: var(--space-3);
+  margin-bottom: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+@media (hover: hover) {
+  .accent-picker__choice:hover .accent-picker__swatch {
+    transform: translateY(-3px);
+  }
+  .accent-picker__choice:hover .accent-picker__label {
+    color: var(--color-text);
+  }
+}
+@media (min-width: 40rem) {
+  .accent-picker {
+    --swatch-size: 3.5rem;
+  }
+  .accent-picker__choices {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    padding-block: var(--space-6) var(--space-4);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .accent-picker__swatch,
+  .accent-picker__swatch::before {
+    transition: none;
+  }
+  .accent-picker__choice:hover .accent-picker__swatch {
+    transform: none;
+  }
+}
+@media (forced-colors: active) {
+  .accent-picker__choice input {
+    position: static;
+    width: auto;
+    height: auto;
+    opacity: 1;
+  }
+  .accent-picker__swatch {
+    display: none;
+  }
+  .accent-picker__choice.is-selected .accent-picker__label {
+    color: Highlight;
+  }
+}

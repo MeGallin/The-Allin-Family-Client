@@ -20,11 +20,13 @@ const labels: Record<string, string> = {
   photoKey: 'Photo',
   photoAlt: 'Photo description',
   closed: 'Voting closed',
+  closesAt: 'Voting closes',
   choices: 'Choices',
   choice: 'Vote',
 }
 function display(value: unknown, key: string): string {
-  if (key === 'startsAt' && typeof value === 'string') return exactDate(value)
+  if ((key === 'startsAt' || key === 'closesAt') && typeof value === 'string')
+    return exactDate(value)
   if (key === 'photoKey') return value ? 'Photo attached' : 'No photo'
   if (value === null || value === undefined || value === '') return 'None'
   if (typeof value === 'boolean') return value ? 'Yes' : 'No'

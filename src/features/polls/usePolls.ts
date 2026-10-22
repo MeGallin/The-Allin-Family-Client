@@ -27,7 +27,10 @@ export function usePolls() {
     },
     add: (draft: PollDraft, requestKey: string) =>
       dispatch(executePollWrite({ action: 'add', body: { ...draft, requestKey } })),
-    edit: (poll: FamilyPollRecord, draft: Pick<PollDraft, 'title' | 'detail'>) =>
+    edit: (
+      poll: FamilyPollRecord,
+      draft: Pick<PollDraft, 'title' | 'detail' | 'closesAt' | 'reopen'>,
+    ) =>
       dispatch(
         executePollWrite({
           action: 'edit',
@@ -45,7 +48,7 @@ export function usePolls() {
       dispatch(
         executePollWrite({
           action: 'close',
-          body: { id: poll.id, version: poll.version, closed: !poll.closed },
+          body: { id: poll.id, version: poll.version, closed: true },
         }),
       ),
     ...removal,

@@ -1,5 +1,6 @@
 @import './fonts.css';
 @import './tokens.css';
+@import './accent-tokens.css';
 @import './chart-tokens.css';
 @import './note-tokens.css';
 @import './global.css';

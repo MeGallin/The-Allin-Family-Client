@@ -1,6 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
 import auth from '../features/auth/auth-slice'
+import appearance from '../features/appearance/appearance-slice'
+import { appearanceListener } from '../features/appearance/appearance-listener'
 import pollsUi from '../features/polls/polls-ui-slice'
 import shoppingUi from '../features/shopping/shopping-ui-slice'
 import calendarUi from '../features/calendar/calendar-ui-slice'
@@ -15,6 +17,7 @@ export const createAppStore = () =>
   configureStore({
     reducer: {
       auth,
+      appearance,
       pollsUi,
       shoppingUi,
       calendarUi,
@@ -25,7 +28,9 @@ export const createAppStore = () =>
       [shoppingApi.reducerPath]: shoppingApi.reducer,
     },
     middleware: (getDefault) =>
-      getDefault().prepend(removalListener.middleware).concat(shoppingApi.middleware),
+      getDefault()
+        .prepend(appearanceListener.middleware, removalListener.middleware)
+        .concat(shoppingApi.middleware),
     devTools: import.meta.env.DEV,
   })
 export const store = createAppStore()

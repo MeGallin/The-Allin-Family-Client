@@ -28,3 +28,14 @@
 .poll-composer input[readonly] {
   color: var(--color-text-muted);
 }
+
+.poll-composer__reopen {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding-block: var(--space-3);
+}
+.poll-composer__reopen .note {
+  display: block;
+  margin-top: var(--space-1);
+}

@@ -8,6 +8,7 @@ import './App.css'
 import { useAppDispatch, useAppSelector } from './app/store-hooks'
 import { userReceived } from './features/auth/auth-slice'
 import { clearPrivateState } from './app/session-actions'
+import { useAppearanceTheme } from './features/appearance/useAppearance'
 
 const FamilyApp = lazy(() => import('./app/FamilyApp'))
 const PasswordForm = lazy(() =>
@@ -15,6 +16,7 @@ const PasswordForm = lazy(() =>
 )
 
 export default function App() {
+  useAppearanceTheme()
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.auth.user)
   const [loading, setLoading] = useState(true)

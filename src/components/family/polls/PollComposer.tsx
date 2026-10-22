@@ -1,3 +1,5 @@
+import { deadlineFromHours } from '../../../features/polls/poll-deadline'
+import { PollDeadlinePicker } from './PollDeadlinePicker'
 import { useId, useRef, useState, type FormEvent } from 'react'
 import type { FamilyPollRecord } from '../../../features/polls/types'
 import { usePolls } from '../../../features/polls/usePolls'
@@ -16,14 +18,18 @@ export default function PollComposer({
   const [original, setOriginal] = useState(poll)
   const [title, setTitle] = useState(poll?.title ?? '')
   const [detail, setDetail] = useState(poll?.detail ?? '')
+  const [closesAt, setClosesAt] = useState(() => poll?.closesAt ?? deadlineFromHours())
+  const [reopen, setReopen] = useState(false)
   const [options, setOptions] = useState(poll?.options.map((option) => option.label) ?? ['', ''])
   const [baseline, setBaseline] = useState({
     title: poll?.title ?? '',
     detail: poll?.detail ?? '',
+    closesAt,
+    reopen: false,
     options: poll?.options.map((option) => option.label) ?? ['', ''],
   })
   const guard = useDraftGuard(
-    JSON.stringify({ title, detail, options }) !== JSON.stringify(baseline),
+    JSON.stringify({ title, detail, closesAt, reopen, options }) !== JSON.stringify(baseline),
     pending,
   )
   const close = () => guard.close(onClose)
@@ -61,8 +67,17 @@ export default function PollComposer({
       requestAnimationFrame(() => errorRef.current?.focus())
       return
     }
+    const deadline = Date.parse(closesAt)
+    if (
+      !Number.isFinite(deadline) ||
+      ((!original || reopen || closesAt !== original.closesAt) && deadline <= Date.now())
+    ) {
+      setProblem('Choose a closing time in the future.')
+      requestAnimationFrame(() => errorRef.current?.focus())
+      return
+    }
     setProblem('')
-    const draft = { title: title.trim(), detail: detail.trim(), options: choices }
+    const draft = { title: title.trim(), detail: detail.trim(), options: choices, closesAt, reopen }
     const signature = JSON.stringify(draft)
     if (!addition.current || addition.current.signature !== signature)
       addition.current = { signature, key: crypto.randomUUID() }
@@ -79,19 +94,23 @@ export default function PollComposer({
       {stale && latest && (
         <DraftConflict
           key={latest.version}
-          before={{ title: baseline.title, detail: baseline.detail }}
-          mine={{ title, detail }}
-          latest={{ title: latest.title, detail: latest.detail }}
-          labels={{ title: 'Question', detail: 'Details' }}
+          before={{ title: baseline.title, detail: baseline.detail, closesAt: baseline.closesAt }}
+          mine={{ title, detail, closesAt }}
+          latest={{ title: latest.title, detail: latest.detail, closesAt: latest.closesAt }}
+          labels={{ title: 'Question', detail: 'Details', closesAt: 'Closing time' }}
           onResolve={(merged) => {
             setOriginal(latest)
             setBaseline({
               title: latest.title,
               detail: latest.detail,
+              closesAt: latest.closesAt,
+              reopen: false,
               options: latest.options.map((option) => option.label),
             })
             setTitle(merged.title)
             setDetail(merged.detail)
+            setClosesAt(merged.closesAt)
+            setReopen(false)
             setOptions(latest.options.map((option) => option.label))
             setProblem('')
             clearError()
@@ -117,6 +136,27 @@ export default function PollComposer({
           rows={3}
           disabled={pending}
         />
+        <PollDeadlinePicker
+          key={original?.version ?? 'new'}
+          value={closesAt}
+          onChange={setClosesAt}
+          disabled={pending}
+          editing={!!original}
+        />
+        {original?.closed && (
+          <label className="poll-composer__reopen">
+            <input
+              type="checkbox"
+              checked={reopen}
+              disabled={pending}
+              onChange={(e) => setReopen(e.target.checked)}
+            />
+            <span>
+              Reopen voting with this closing time
+              <span className="note">Choose a future time above. Existing votes are kept.</span>
+            </span>
+          </label>
+        )}
         <fieldset disabled={pending}>
           <legend>Choices</legend>
           {options.map((option, index) => (
@@ -158,7 +198,7 @@ export default function PollComposer({
         </fieldset>
         <p className="note">
           Choices stay fixed once a poll is created, so existing votes keep their meaning. You can
-          edit the question and details.
+          edit the question, details and closing time.
         </p>
         {(stale || problem || error) && (
           <p ref={errorRef} role="alert" tabIndex={-1} className="error">

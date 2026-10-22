@@ -1,3 +1,6 @@
+import { useNow } from '../../../hooks/useNow'
+import { formatPollDeadline, isPollClosed } from '../../../features/polls/poll-deadline'
+import { PollTimeRemaining } from './PollTimeRemaining'
 import { useId } from 'react'
 import { Link, useLocation } from 'react-router'
 import { pollActionPath } from '../../../features/polls/poll-links'
@@ -7,12 +10,13 @@ import type { FamilyPollRecord } from '../../../features/polls/types'
 import { FriendlyTime } from '../../ui/FriendlyTime'
 import { RemovalNotice } from '../../removals/RemovalNotice'
 import './PollCard.css'
-export function PollCard({ poll, preview = false }: { poll: FamilyPollRecord; preview?: boolean }) {
+export function PollCard({ poll }: { poll: FamilyPollRecord }) {
   const { vote, close, pending, removals, clearError } = usePolls()
   const user = useAppSelector((state) => state.auth.user)
   const location = useLocation()
   const group = useId()
-  const Heading = preview ? 'h3' : 'h2'
+  const now = useNow()
+  const closed = isPollClosed(poll, now)
   const removal = removals[poll.id]
   const manage = user?.role === 'admin' || user?.id === poll.createdBy.id
   return (
@@ -23,16 +27,27 @@ export function PollCard({ poll, preview = false }: { poll: FamilyPollRecord; pr
       aria-labelledby={group + '-title'}
     >
       <header className="poll-card__header">
-        <Heading id={group + '-title'}>{poll.title}</Heading>
-        <span className="status-label">{poll.closed ? 'Voting closed' : 'Open for votes'}</span>
+        <h2 id={group + '-title'}>{poll.title}</h2>
+        <span className="status-label">{closed ? 'Voting closed' : 'Open for votes'}</span>
       </header>
+      <p className="poll-card__deadline">
+        {!closed && (
+          <>
+            <PollTimeRemaining value={poll.closesAt} /> ·{' '}
+          </>
+        )}
+        <time dateTime={poll.closesAt}>
+          {closed && 'Scheduled cutoff · '}
+          {formatPollDeadline(poll.closesAt)}
+        </time>
+      </p>
       {poll.detail && <p className="poll-card__detail">{poll.detail}</p>}
       <p className="note">
-        {poll.closed
+        {closed
           ? 'The final results are below.'
           : 'Choose an option to save your vote. You can change it while voting is open.'}
       </p>
-      <fieldset className="poll-card__choices" disabled={pending || poll.closed || !!removal}>
+      <fieldset className="poll-card__choices" disabled={pending || closed || !!removal}>
         <legend className="sr-only">{'Vote on ' + poll.title}</legend>
         {poll.options.map((option) => {
           const percentage = poll.totalVotes
@@ -83,7 +98,7 @@ export function PollCard({ poll, preview = false }: { poll: FamilyPollRecord; pr
         {poll.totalVotes} {poll.totalVotes === 1 ? 'family member has' : 'family members have'}{' '}
         voted.
       </p>
-      {!poll.closed && poll.ownOptionId && !removal && (
+      {!closed && poll.ownOptionId && !removal && (
         <button
           className="secondary"
           type="button"
@@ -114,7 +129,7 @@ export function PollCard({ poll, preview = false }: { poll: FamilyPollRecord; pr
         )}
       </p>
       <RemovalNotice removal={removal} />
-      {manage && !removal && !preview && (
+      {manage && !removal && (
         <footer className="poll-card__actions">
           <Link
             to={pollActionPath(location.search, location.hash, 'edit', poll.id)}
@@ -122,20 +137,29 @@ export function PollCard({ poll, preview = false }: { poll: FamilyPollRecord; pr
           >
             Edit poll
           </Link>
-          <button
-            className="secondary"
-            disabled={pending}
-            type="button"
-            onClick={async (event) => {
-              const button = event.currentTarget
-              if (await close(poll)) {
-                if (button.isConnected) button.focus()
-                else document.getElementById('family-content')?.focus()
-              }
-            }}
-          >
-            {poll.closed ? 'Reopen voting' : 'Close voting'}
-          </button>
+          {closed ? (
+            <Link
+              to={pollActionPath(location.search, location.hash, 'edit', poll.id)}
+              onClick={clearError}
+            >
+              Reopen voting
+            </Link>
+          ) : (
+            <button
+              className="secondary"
+              disabled={pending}
+              type="button"
+              onClick={async (event) => {
+                const button = event.currentTarget
+                if (await close(poll)) {
+                  if (button.isConnected) button.focus()
+                  else document.getElementById('family-content')?.focus()
+                }
+              }}
+            >
+              Close voting
+            </button>
+          )}
           <Link
             id={'polls-remove-' + poll.id}
             to={pollActionPath(location.search, location.hash, 'remove', poll.id)}
