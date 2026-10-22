@@ -1,3 +1,5 @@
+import { useCollectionWindow } from '../../hooks/useCollectionWindow'
+import { CollectionMore } from '../../components/ui/CollectionMore'
 import { useEditingRecord } from '../../hooks/useEditingRecord'
 import { pollActionPath, pollStatus } from '../../features/polls/poll-links'
 import { lazy, Suspense, useEffect } from 'react'
@@ -38,6 +40,10 @@ export default function PollsPage() {
         .includes(query.trim().toLocaleLowerCase()),
   )
   const requestedId = /^#poll-(\d+)$/.exec(location.hash)?.[1]
+  const collection = useCollectionWindow(visible, {
+    viewKey: status + ':' + query,
+    targetId: requestedId,
+  })
   const requested = polls.find((poll) => poll.id === requestedId)
   const targetVisible = !requestedId || visible.some((poll) => poll.id === requestedId)
   const composing = params.get('compose') === 'poll'
@@ -145,11 +151,14 @@ export default function PollsPage() {
       {loading ? (
         <LoadingState label="Loading family polls…" />
       ) : visible.length ? (
-        <div className="polls-page__grid">
-          {visible.map((poll) => (
-            <PollCard key={poll.id} poll={poll} />
-          ))}
-        </div>
+        <>
+          <div className="polls-page__grid">
+            {collection.items.map((poll) => (
+              <PollCard key={poll.id} poll={poll} />
+            ))}
+          </div>
+          <CollectionMore {...collection} label="polls" />
+        </>
       ) : (
         !error && (
           <EmptyState

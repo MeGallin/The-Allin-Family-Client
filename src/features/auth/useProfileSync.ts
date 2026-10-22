@@ -1,3 +1,4 @@
+import { useLiveQueryOptions } from '../../hooks/useLiveQueryOptions'
 import { useEffect } from 'react'
 import { useAppDispatch } from '../../app/store-hooks'
 import { profileApi } from '../../services/profile-query'
@@ -5,10 +6,10 @@ import { shoppingError } from '../../services/shopping-query'
 import { userReceived } from './auth-slice'
 export function useProfileSync(onSessionExpired: () => void) {
   const dispatch = useAppDispatch()
-  const { data, error } = profileApi.useGetProfileQuery(undefined, {
-    pollingInterval: 15000,
-    skipPollingIfUnfocused: true,
-  })
+  const { data, error } = profileApi.useGetProfileQuery(
+    undefined,
+    useLiveQueryOptions('/profile', false, true),
+  )
   const failure = shoppingError(error)
   useEffect(() => {
     if (data) dispatch(userReceived(data.profile))

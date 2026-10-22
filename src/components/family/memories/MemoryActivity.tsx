@@ -36,8 +36,10 @@ export function MemoryActivity() {
                       Title: {entry.before?.title} → {entry.after?.title}
                     </p>
                   )}
-                  {entry.before?.story !== entry.after?.story && <p>The story was updated.</p>}
-                  {entry.before?.photoKey !== entry.after?.photoKey && (
+                  {(entry.changes?.story ?? entry.before?.story !== entry.after?.story) && (
+                    <p>The story was updated.</p>
+                  )}
+                  {(entry.changes?.photo ?? entry.before?.photoKey !== entry.after?.photoKey) && (
                     <p>The photo was changed.</p>
                   )}
                   <p>

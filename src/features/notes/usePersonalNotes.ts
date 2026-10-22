@@ -1,3 +1,4 @@
+import { useLiveQueryOptions } from '../../hooks/useLiveQueryOptions'
 import { useRemovals } from '../removals/useRemovals'
 import { useAppDispatch, useAppSelector } from '../../app/store-hooks'
 import { notesApi } from '../../services/notes-query'
@@ -9,10 +10,10 @@ export function usePersonalNotes() {
   const dispatch = useAppDispatch()
   const ownerId = useAppSelector((state) => state.auth.user?.id)
   const ui = useAppSelector((state) => state.notesUi)
+  const live = useLiveQueryOptions('/notes', ui.busy)
   const query = notesApi.useGetNotesQuery(ownerId ?? 0, {
-    skip: !ownerId,
-    pollingInterval: ui.busy ? 0 : 15000,
-    skipPollingIfUnfocused: true,
+    ...live,
+    skip: !ownerId || live.skip,
   })
   const [, mutation] = notesApi.useChangeNoteMutation({ fixedCacheKey: 'private-note-write' })
   const failure = shoppingError(mutation.error) ?? shoppingError(query.error)

@@ -5,7 +5,7 @@ import { Heart, Pencil } from 'lucide-react'
 import type { FamilyMemory } from '../../../features/memories/types'
 import { useMemories } from '../../../features/memories/useMemories'
 import { useAppSelector } from '../../../app/store-hooks'
-import { memoryPhotoUrl } from '../../../services/memories-api'
+import { memoryPhotoSources, memoryPhotoUrl } from '../../../services/memories-api'
 import { exactDate } from '../../../lib/friendly-dates'
 import { FriendlyTime } from '../../ui/FriendlyTime'
 import { Icon } from '../../ui/Icon'
@@ -43,7 +43,7 @@ export function MemoryCard({
       {memory.photoKey && (
         <FamilyImage
           key={memory.photoKey}
-          src={memoryPhotoUrl(memory)}
+          {...memoryPhotoSources(memory)}
           alt={memory.photoAlt || memory.title}
           eager={featured}
         />

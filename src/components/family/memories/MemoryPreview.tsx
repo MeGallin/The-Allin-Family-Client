@@ -2,7 +2,7 @@ import { Link } from 'react-router'
 import { Images } from 'lucide-react'
 import { useMemories } from '../../../features/memories/useMemories'
 import { recentMemories } from '../../../features/family/home-view'
-import { memoryPhotoUrl } from '../../../services/memories-api'
+import { memoryPhotoSources } from '../../../services/memories-api'
 import { FamilyImage } from './FamilyImage'
 import { FriendlyTime } from '../../ui/FriendlyTime'
 import { Icon } from '../../ui/Icon'
@@ -41,7 +41,7 @@ export function MemoryPreview() {
               >
                 <span className="memory-preview__thumbnail">
                   {memory.photoKey ? (
-                    <FamilyImage src={memoryPhotoUrl(memory)} alt="" />
+                    <FamilyImage {...memoryPhotoSources(memory, true)} alt="" />
                   ) : (
                     <Icon icon={Images} />
                   )}

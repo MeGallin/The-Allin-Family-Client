@@ -95,7 +95,7 @@ export default function MemoryComposer({
     if (saved) guard.complete(onClose)
     else focusFailure()
   }
-  const photo = preview || (!removePhoto && original?.photoKey ? memoryPhotoUrl(original) : '')
+  const photo = preview || (!removePhoto && original?.photoKey ? memoryPhotoUrl(original, 960) : '')
   const problem =
     validation ||
     (stale

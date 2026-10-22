@@ -133,7 +133,12 @@ export default function ListsPage() {
             onChange={setImportant}
           />
         </form>
-        <ShoppingList removable view={visible} onReset={resetView} />
+        <ShoppingList
+          viewKey={query + ':' + sort + ':' + filter}
+          removable
+          view={visible}
+          onReset={resetView}
+        />
 
         <p className="lists-page__feedback" role="status">
           {feedback}

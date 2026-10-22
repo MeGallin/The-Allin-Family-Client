@@ -1,3 +1,5 @@
+import { useCollectionWindow } from '../../hooks/useCollectionWindow'
+import { CollectionMore } from '../../components/ui/CollectionMore'
 import { useEditingRecord } from '../../hooks/useEditingRecord'
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
@@ -28,6 +30,10 @@ export default function PersonalNotesPage({ onSessionExpired }: { onSessionExpir
     if (failure?.status === 401 || failure?.code === 'password_change_required') onSessionExpired()
   }, [failure?.status, failure?.code, onSessionExpired])
   const visible = notesView(notes, query, sort)
+  const collection = useCollectionWindow(visible, {
+    viewKey: query + ':' + sort,
+    targetId: search.get('edit') ?? search.get('remove'),
+  })
   const editing = useEditingRecord(notes, search.get('edit'))
   const removing = notes.find((note) => note.id === search.get('remove'))
   const missing =
@@ -121,11 +127,14 @@ export default function PersonalNotesPage({ onSessionExpired }: { onSessionExpir
           </button>
         </EmptyState>
       ) : (
-        <div className="personal-notes-page__list">
-          {visible.map((note) => (
-            <NoteCard key={note.id} note={note} onAction={clearError} />
-          ))}
-        </div>
+        <>
+          <div className="personal-notes-page__list">
+            {collection.items.map((note) => (
+              <NoteCard key={note.id} note={note} onAction={clearError} />
+            ))}
+          </div>
+          <CollectionMore {...collection} label="notes" />
+        </>
       )}
       <NoteHistory activity={activity} />
       {missing && (

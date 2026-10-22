@@ -3,15 +3,28 @@ import { ImageOff } from 'lucide-react'
 import { Icon } from '../../ui/Icon'
 import './FamilyImage.css'
 
-export function FamilyImage({
-  src,
-  alt,
-  eager = false,
-}: {
+type Props = {
   src: string
   alt: string
   eager?: boolean
-}) {
+  srcSet?: string
+  sizes?: string
+  width?: number
+  height?: number
+}
+export function FamilyImage(props: Props) {
+  // A replaced photo gets a new loading/error lifecycle, even in the same card.
+  return <ImageContent key={props.src} {...props} />
+}
+function ImageContent({
+  src,
+  alt,
+  eager = false,
+  srcSet,
+  sizes,
+  width = 1200,
+  height = 700,
+}: Props) {
   const [loaded, setLoaded] = useState(false)
   const [failed, setFailed] = useState(false)
   return (
@@ -28,9 +41,11 @@ export function FamilyImage({
       ) : (
         <img
           src={src}
+          srcSet={srcSet}
+          sizes={sizes}
           alt={alt}
-          width={1200}
-          height={700}
+          width={width}
+          height={height}
           loading={eager ? 'eager' : 'lazy'}
           fetchPriority={eager ? 'high' : 'auto'}
           decoding="async"

@@ -1,3 +1,4 @@
+import { clearSnapshotResponses } from '../services/api-client'
 import { removalsReset } from '../features/removals/removals-slice'
 import type { AppDispatch } from './store'
 import { shoppingApi } from '../services/shopping-query'
@@ -11,6 +12,7 @@ import { notesUiReset } from '../features/notes/notes-ui-slice'
 import { membersUiReset } from '../features/members/members-ui-slice'
 
 export function clearPrivateState(dispatch: AppDispatch) {
+  clearSnapshotResponses()
   dispatch(removalsReset())
   abortMemoryWrites()
   dispatch(shoppingApi.util.getRunningQueriesThunk()).forEach((request) => request.abort())

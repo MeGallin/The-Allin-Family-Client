@@ -1,6 +1,8 @@
+import { useCollectionWindow } from '../../hooks/useCollectionWindow'
+import { CollectionMore } from '../../components/ui/CollectionMore'
 import { useEditingRecord } from '../../hooks/useEditingRecord'
 import { lazy, Suspense } from 'react'
-import { Link, useSearchParams } from 'react-router'
+import { Link, useLocation, useSearchParams } from 'react-router'
 import { Camera, Images } from 'lucide-react'
 import { useMemories } from '../../features/memories/useMemories'
 import { PageHeader } from '../../components/ui/PageHeader'
@@ -18,7 +20,9 @@ const MemoryRemoval = lazy(() => import('../../components/family/memories/Memory
 export default function MemoriesPage() {
   const { memories, loading, error, feedback, pending, refresh, clearError } = useMemories()
   const [search, setSearch] = useSearchParams()
-  useHashTarget(!loading)
+  const targetId = /^#memory-(\d+)$/.exec(useLocation().hash)?.[1]
+  const collection = useCollectionWindow(memories, { targetId })
+  useHashTarget(!loading && (!targetId || collection.items.some((item) => item.id === targetId)))
   const editing = useEditingRecord(memories, search.get('edit'))
   const removing = memories.find((memory) => memory.id === search.get('remove'))
   const missing = !loading && (search.has('edit') || search.has('remove')) && !editing && !removing
@@ -64,11 +68,14 @@ export default function MemoriesPage() {
       {loading ? (
         <LoadingState label="Loading family memories…" />
       ) : memories.length ? (
-        <div className="memories-grid">
-          {memories.map((memory, index) => (
-            <MemoryCard key={memory.id} memory={memory} featured={index === 0} />
-          ))}
-        </div>
+        <>
+          <div className="memories-grid">
+            {collection.items.map((memory, index) => (
+              <MemoryCard key={memory.id} memory={memory} featured={index === 0} />
+            ))}
+          </div>
+          <CollectionMore {...collection} label="memories" />
+        </>
       ) : (
         !error && (
           <EmptyState icon={Images} title="Make room for a memory">

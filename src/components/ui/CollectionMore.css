@@ -1,0 +1,15 @@
+.collection-more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+.collection-more p {
+  margin: 0;
+}
+.collection-more button {
+  min-height: var(--control-min-height);
+}

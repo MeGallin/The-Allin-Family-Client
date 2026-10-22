@@ -470,8 +470,8 @@ fields even when a direct service throws ApiError, keeping Redux state serializa
 ## Home and real saved data
 
 Home reads the same authenticated shopping/calendar/memories/polls RTK Query caches
-as their full pages. The existing family sync subscribers refresh every15 seconds
-while focused and invalidate after writes; no duplicate Home API or snapshot store
+as their full pages. Shared sync subscribers refresh needed routes every15 seconds
+while visible/online and invalidate after writes; no duplicate Home API or snapshot store
 is introduced. Session clearing resets the same private caches. The /family request
 remains an authenticated bootstrap, not a source of sample content.
 
@@ -618,3 +618,42 @@ changed votes and closed-result links, plus photo/story album anchors. Checked32
 have explicit concise accessible names, so a clamped story is not read in full as
 part of the link label. Disposable Gary-owned records and their audit/photo data
 were cleaned; original saved content, identities and history matched the baseline.
+
+## Shared performance policies
+
+- useLiveQueryOptions owns route/visibility/connectivity refresh policy. Home reads
+  its four shared features; other routes subscribe only to their own feature.
+  Hidden/offline views stop automatic reads and resubscribe/refetch on return.
+  Queued removals retain their snapshots even away from a feature or while hidden;
+  busy writes pause their polling. The identity profile refreshes every60seconds;
+  the existing usage presence tracker is unchanged. Private notes remain owner-scoped.
+- Unused RTK Query entries survive60seconds for return navigation and delayed removal
+  safety. Sign-out/session reset still aborts requests and clears every private cache.
+  The transport conditionally revalidates the five snapshot endpoints, keeping their
+  last ETag/data only in memory. Responses from an older session generation are
+  discarded, including during JSON parsing. No localStorage cache is introduced.
+- useCollectionWindow and colocated CollectionMore mount20 memory/poll/note cards
+  or20 events per agenda group; Shopping mounts30 rows. Filters/sorting apply to
+  the complete saved collection before windowing. Show more adds a window and focuses
+  the first new entry. Changed filters reset the window. Direct memory/poll anchors
+  also mount their target without requiring every preceding record. Active shopping
+  editors remain pinned when a filtered/background update would otherwise hide them.
+- FamilyImage accepts responsive srcSet/sizes and stored intrinsic dimensions, retains
+  lazy loading/fallback feedback and resets image state when the photo changes.
+  memoryPhotoSources supplies160/480 thumbnails with4rem display size and responsive
+  album candidates up to1600px. Originals remain accessible via View full photo.
+  Editor previews use960px delivery; local unsaved file previews remain in memory.
+- Family memory activity reads compact change flags; complete exact history remains
+  available through existing admin audit handling. No new client package is needed.
+
+These are bounded render windows, not a truncated API result: initial/changed reads
+still contain complete active collections, and sorting/search/counts remain global.
+Migration014 and the API's metadata job must precede deployment of this client.
+
+### Performance browser regression — 22 October 2026
+
+Tested in the internal browser as Gary/Dad using 166 disposable records across shopping, plans, memories, private notes and polls, including two image uploads. Verified bounded batches, full-collection search, older-record deep links, keyboard focus, saved edits/votes after refresh and Undo across navigation. Fixed the shared window reset so returning to an earlier filter cannot revive an expanded batch. Retested 60 rows → alphabetical 30 → original filter 30. Phone layouts at 320/390px and wide layout remained within document width.
+
+Recorded private responsive-image requests (36 KB mobile / 111 KB desktop for the existing 2.9 MB photo), lazy loading of an offscreen uploaded image and authenticated original/preview revalidation. Unauthenticated photo access returns 401. Per-page request logs confirmed unrelated feature collections do not poll on Shopping. Unchanged snapshots return 304 with no body. Background/offline pause and return/reconnect refresh passed using temporary local UI controls that simulated platform events; native IAB hiding does not change page visibility, so this is not an OS-level offline/background check. Diagnostic controls were removed.
+
+All fixtures, uploaded fixture photos/derivatives and associated audit/vote/option records were removed with a private recovery copy. Original domain records, identity fields and history exactly matched the baseline afterwards; real usage tracking remains. Evidence and focused QA scripts are in the shared project workspace, outside this repository. Production build, source formatting and PHP syntax checks pass.

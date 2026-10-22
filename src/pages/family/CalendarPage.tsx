@@ -1,3 +1,5 @@
+import { useCollectionWindow } from '../../hooks/useCollectionWindow'
+import { CollectionMore } from '../../components/ui/CollectionMore'
 import { lazy, Suspense, useState } from 'react'
 import { useNow } from '../../hooks/useNow'
 import { CalendarDays, CalendarPlus } from 'lucide-react'
@@ -32,6 +34,8 @@ export default function CalendarPage() {
   const sort = calendarSort(search.get('sort'))
   const shownUpcoming = calendarView(upcoming, query, sort)
   const shownPast = calendarView(past, query, sort === 'soonest' ? 'latest' : sort)
+  const upcomingWindow = useCollectionWindow(shownUpcoming, { viewKey: query + ':' + sort })
+  const pastWindow = useCollectionWindow(shownPast, { viewKey: query + ':' + sort })
   function viewParam(key: string, value: string) {
     setSearch(
       (current) => {
@@ -110,7 +114,15 @@ export default function CalendarPage() {
         {loading ? (
           <LoadingState label="Loading the family calendar…" />
         ) : shownUpcoming.length ? (
-          <EventList events={shownUpcoming} onEdit={setEditing} disabled={pending} blocks />
+          <>
+            <EventList
+              events={upcomingWindow.items}
+              onEdit={setEditing}
+              disabled={pending}
+              blocks
+            />
+            <CollectionMore {...upcomingWindow} label="upcoming plans" />
+          </>
         ) : (
           !error && (
             <EmptyState
@@ -136,7 +148,8 @@ export default function CalendarPage() {
       </Panel>
       {shownPast.length > 0 && (
         <Panel title="Earlier plans">
-          <EventList events={shownPast} onEdit={setEditing} disabled={pending} blocks />
+          <EventList events={pastWindow.items} onEdit={setEditing} disabled={pending} blocks />
+          <CollectionMore {...pastWindow} label="earlier plans" />
         </Panel>
       )}
       <Panel title="Calendar history">

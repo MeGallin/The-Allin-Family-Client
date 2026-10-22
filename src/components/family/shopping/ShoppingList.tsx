@@ -1,3 +1,5 @@
+import { useCollectionWindow } from '../../../hooks/useCollectionWindow'
+import { CollectionMore } from '../../ui/CollectionMore'
 import { useCallback, useState } from 'react'
 import { ShoppingBasket } from 'lucide-react'
 import { useShopping } from '../../../features/shopping/useShopping'
@@ -12,10 +14,12 @@ export function ShoppingList({
   removable = false,
   view,
   onReset,
+  viewKey = '',
 }: {
   limit?: number
   removable?: boolean
   view?: ShoppingItem[]
+  viewKey?: string
   onReset?: () => void
 }) {
   const { items: shopping, loading, error, pending, refresh } = useShopping()
@@ -28,7 +32,8 @@ export function ShoppingList({
       return next
     })
   }, [])
-  const displayed = (view ?? shopping).slice(0, limit)
+  const collection = useCollectionWindow(view ?? shopping, { viewKey, pageSize: limit ?? 30 })
+  const displayed = collection.items
   const retained = Object.values(editingRows).filter(
     (item) => !displayed.some((row) => row.id === item.id),
   )
@@ -66,17 +71,20 @@ export function ShoppingList({
       </EmptyState>
     )
   return (
-    <ul className="shopping-list">
-      {rows.map((item) => (
-        <ShoppingRow
-          key={item.id}
-          item={item}
-          editable={removable}
-          disabled={pending}
-          missing={!shopping.some((row) => row.id === item.id)}
-          onEditingChange={trackEditing}
-        />
-      ))}
-    </ul>
+    <>
+      <ul className="shopping-list">
+        {rows.map((item) => (
+          <ShoppingRow
+            key={item.id}
+            item={item}
+            editable={removable}
+            disabled={pending}
+            missing={!shopping.some((row) => row.id === item.id)}
+            onEditingChange={trackEditing}
+          />
+        ))}
+      </ul>
+      {!limit && <CollectionMore {...collection} label="items" />}
+    </>
   )
 }

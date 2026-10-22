@@ -48,7 +48,7 @@ export const shoppingApi = createApi({
   ],
   refetchOnFocus: true,
   refetchOnReconnect: true,
-  keepUnusedDataFor: 0,
+  keepUnusedDataFor: 60,
   endpoints: (builder) => ({
     getShopping: builder.query<ShoppingSnapshot, void>({
       async queryFn(_, { signal }) {

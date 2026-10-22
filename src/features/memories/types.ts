@@ -4,6 +4,8 @@ export type FamilyMemory = {
   id: string
   title: string
   story: string
+  photoWidth: number | null
+  photoHeight: number | null
   photoKey: string | null
   photoAlt: string
   version: number
@@ -17,6 +19,7 @@ export type FamilyMemory = {
 export type MemoryActivity = {
   id: string
   memoryId: string
+  changes?: { story: boolean; photo: boolean; description: boolean }
   action: 'created' | 'edited' | 'removed' | 'liked' | 'unliked'
   actor: Actor
   occurredAt: string

@@ -1,3 +1,4 @@
+import { useLiveQueryOptions } from '../../hooks/useLiveQueryOptions'
 import { useEffect, type ReactNode } from 'react'
 import { shoppingApi } from '../../services/shopping-query'
 import { useShopping } from './useShopping'
@@ -20,10 +21,7 @@ export function ShoppingSync({
     },
     [dispatch],
   )
-  shoppingApi.useGetShoppingQuery(undefined, {
-    pollingInterval: pending ? 0 : 15000,
-    skipPollingIfUnfocused: true,
-  })
+  shoppingApi.useGetShoppingQuery(undefined, useLiveQueryOptions('/lists', pending))
   useEffect(() => {
     if (failure?.status === 401 || failure?.code === 'password_change_required') onSessionExpired()
   }, [failure?.status, failure?.code, onSessionExpired])
