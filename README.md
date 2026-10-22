@@ -291,10 +291,81 @@ than localhost, which is a different origin.
 npm run build
 ```
 
-This checks TypeScript and creates static files in dist. Upload only the contents
-of dist to Trilogy's website directory. The PHP API is deployed independently
-under /api on the same domain, with HTTPS and production cookie settings.
-Vite's development proxy is not included in a production build.
+This checks TypeScript and creates static files in dist. Vite's development proxy
+is not included in a production build.
+
+### Prepare the Windows upload folder
+
+From this client directory, run:
+
+```powershell
+npm run build:deploy
+```
+
+The batch entry point `scripts/build-deploy.cmd` calls Windows PowerShell for
+checked file operations. It works from npm or by double-clicking the batch file;
+Node/npm, installed client dependencies and PHP CLI are required. PHP is resolved
+from PATH, falling back to `C:\xampp\php\php.exe`.
+
+The fixed destination is `C:\xampp\htdocs\WebSitesDesigns\live\theallinfamily`.
+Its `live` parent must exist; the final folder is created if missing. The command:
+
+1. Validates the destination, rejects source overlap and junctions/symbolic links,
+   and locks out another deployment to that folder.
+2. Runs the normal TypeScript/Vite build, with root hosting (`/`) and same-origin
+   API (`/api`) explicitly selected. Normal `npm run build` remains available.
+3. Copies all dist files (including the production `.htaccess`) to a fresh sibling
+   staging folder, then adds `api/index.php`, `api/.htaccess`, `api/.env.example`
+   and PHP runtime files under `api/src`. Verifies each copy with SHA-256 and
+   checks every packaged PHP file with `php -l`.
+4. Moves the entire previous destination, including hidden/stale files, into
+   `live\.deploy-backups\theallinfamily-<timestamp>-<id>`, then moves the validated
+   staging folder into its place. A failed final move restores the previous folder.
+
+A build/copy/validation error exits nonzero without replacing the live folder.
+Failed staging folders remain outside the upload folder for diagnosis; their
+paths are printed. Backups are retained until manually reviewed/removed and are
+blocked from Apache access with their own `.htaccess`. Only one deployment to
+this destination can run at a time. No server upload or database changes occur.
+
+The resulting folder contains the built client and PHP runtime, not a configured
+production installation. Development `.env`, Git metadata, node_modules, tests,
+CLI tools, migrations, database data, photos and sessions are excluded. Any config
+or media manually put in the local destination is replaced on the next run and
+retained only in that run's backup. Keep deployment credentials/private data
+separate from this generated folder.
+
+Before the first server upload, complete the API README's hosting setup: provision
+the database, apply migrations through 015 using separate deployment access,
+configure production environment values (`APP_ENV`, HTTPS origin, a private app
+key, secure cookies and database credentials), and provide private writable
+photo/session storage. `api/.env.example` is a reference with local defaults,
+not production credentials; do not rename it unchanged. Existing database content
+and private photos require a separate transfer plan. These are subsequent server
+setup steps, not actions performed by this packaging command.
+
+Upload the **contents** of the generated `theallinfamily` folder using FileZilla,
+including `.htaccess` files. FileZilla copying does not remove obsolete files on
+the remote server: arrange a remote backup and replacement separately. Preserve
+server-only configuration/private storage outside the generated upload content.
+Review hosting-specific Apache/PHP settings before replacing the old server site.
+
+The production `.htaccess` redirects `theallinfamily.co.uk` to
+`https://www.theallinfamily.co.uk`, preserving the path and query, and disables
+directory listings. Set the API's production `APP_ORIGIN` to that exact www
+origin. Clear cPanel's NGINX cache after uploading changed files; it can otherwise
+continue serving a pre-deployment page independently for the bare and www hosts.
+
+Deployment regression checks use disposable temp folders, never the actual live
+folder:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/deployment.test.ps1
+```
+
+They cover spaces in paths, missing destination creation, verified runtime copy,
+hidden-file backup, stale-file removal, secret exclusion, failed builds/incomplete
+output/PHP validation, unsafe destinations, concurrent runs and final-move rollback.
 
 npm run preview previews a build without the development API proxy. Use npm run
 dev for the integrated local app.
@@ -302,7 +373,7 @@ dev for the integrated local app.
 The repository-root .htaccess prevents XAMPP Apache from serving client source
 or environment files. It is not included in dist. Do not deploy the source folder,
 Git metadata or .env. `public/.htaccess` is copied into dist and provides Apache
-SPA route fallback while leaving `/api` to the separately deployed API. Enable
+SPA route fallback while leaving `/api` to its own PHP routing. Enable
 Apache rewrite support, or configure equivalent fallback rules on another host.
 
 Repository: https://github.com/MeGallin/The-Allin-Family-Client
