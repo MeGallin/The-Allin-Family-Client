@@ -8,6 +8,20 @@ vi.mock('../../services/auth-api', () => auth)
 beforeEach(() => vi.resetAllMocks())
 
 describe('family sign-in', () => {
+  it('shows and hides the same typed password without submitting the form', () => {
+    render(<LoginForm onSession={vi.fn()} />)
+    const password = screen.getByLabelText('Password') as HTMLInputElement
+    fireEvent.change(password, { target: { value: 'Visibility-check-123' } })
+    expect(password.type).toBe('password')
+    fireEvent.click(screen.getByRole('button', { name: 'Show password' }))
+    expect(password.type).toBe('text')
+    expect(password.value).toBe('Visibility-check-123')
+    fireEvent.click(screen.getByRole('button', { name: 'Hide password' }))
+    expect(password.type).toBe('password')
+    expect(password.value).toBe('Visibility-check-123')
+    expect(auth.signIn).not.toHaveBeenCalled()
+  })
+
   it('shows one wordmark, labelled required fields and quiet account guidance', () => {
     render(<LoginForm onSession={vi.fn()} />)
     expect(screen.getAllByRole('img', { name: 'The Allin Family' })).toHaveLength(1)

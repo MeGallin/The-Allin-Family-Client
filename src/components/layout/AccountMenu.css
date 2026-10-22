@@ -28,9 +28,6 @@
   color: var(--color-text);
   font-weight: 600;
 }
-.account-menu__name {
-  display: none;
-}
 .account-menu__popover {
   position: absolute;
   z-index: 60;
@@ -74,11 +71,4 @@
 .account-menu__popover a:hover,
 .account-menu__popover button:hover:not(:disabled) {
   background: var(--color-accent-soft);
-}
-@media (min-width: 40rem) {
-  .account-menu__name {
-    display: inline;
-    max-width: 12rem;
-    overflow-wrap: anywhere;
-  }
 }

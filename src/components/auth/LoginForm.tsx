@@ -4,6 +4,7 @@ import { getSession, signIn } from '../../services/auth-api'
 import type { FamilySession } from '../../types/auth'
 import { messageFor } from '../../lib/errors'
 import { FamilyBrand } from '../brand/FamilyBrand'
+import { PasswordInput } from '../ui/PasswordInput'
 import './LoginForm.css'
 
 type LoginFormProps = {
@@ -68,10 +69,9 @@ export function LoginForm({ onSession }: LoginFormProps) {
           </div>
           <div className="login-field">
             <label htmlFor="password">Password</label>
-            <input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               autoComplete="current-password"
               required
               maxLength={128}

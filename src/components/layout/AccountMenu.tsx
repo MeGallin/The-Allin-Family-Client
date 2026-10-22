@@ -41,7 +41,6 @@ export function AccountMenu({ user, onChangePassword, onLogout, loggingOut }: Pr
         <span className="account-menu__avatar">
           {Array.from(user.familyName)[0]?.toUpperCase() || 'A'}
         </span>
-        <span className="account-menu__name">{user.familyName}</span>
       </summary>
       <div className="account-menu__popover">
         <p className="account-menu__identity">
