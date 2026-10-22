@@ -1,3 +1,4 @@
+import { createSearchMatcher, filterOption } from '../../lib/search'
 import type { FamilyEvent } from './types'
 import { eventDate } from '../../lib/dates'
 export const calendarSorts = [
@@ -10,21 +11,17 @@ export const calendarSorts = [
 ] as const
 export type CalendarSort = (typeof calendarSorts)[number][0]
 export function calendarSort(value: string | null): CalendarSort {
-  return calendarSorts.some(([key]) => key === value) ? (value as CalendarSort) : 'soonest'
+  return filterOption(value, calendarSorts, 'soonest')
 }
 export function calendarView(
   events: FamilyEvent[],
   query: string,
   sort: CalendarSort,
 ): FamilyEvent[] {
-  const text = query.trim().toLocaleLowerCase('en-GB')
+  const matches = createSearchMatcher(query)
   return events
-    .filter(
-      (event) =>
-        !text ||
-        [event.title, event.createdBy.displayName, event.updatedBy.displayName].some((value) =>
-          value.toLocaleLowerCase('en-GB').includes(text),
-        ),
+    .filter((event) =>
+      matches([event.title, event.createdBy.displayName, event.updatedBy.displayName]),
     )
     .sort((a, b) => {
       let result = 0

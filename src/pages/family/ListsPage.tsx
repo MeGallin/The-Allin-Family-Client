@@ -12,36 +12,15 @@ import './ListsPage.css'
 import { ImportanceOption } from '../../components/family/shopping/ImportanceOption'
 import { ShoppingControls } from '../../components/family/shopping/ShoppingControls'
 import { shoppingSort, shoppingFilter, shoppingView } from '../../features/shopping/shopping-view'
-import { useSearchParams } from 'react-router'
+import { useCollectionFilters } from '../../hooks/useCollectionFilters'
 
 export default function ListsPage() {
   const { items: shopping, add, pending, loading, error, refresh, feedback } = useShopping()
-  const [search, setSearch] = useSearchParams()
-  const query = (search.get('q') ?? '').slice(0, 100)
-  const sort = shoppingSort(search.get('sort'))
-  const filter = shoppingFilter(search.get('show'))
+  const { query, sort, filter, setQuery, setSort, setFilter, reset } = useCollectionFilters({
+    sort: shoppingSort,
+    filter: shoppingFilter,
+  })
   const visible = shoppingView(shopping, query, sort, filter)
-  function viewParam(key: string, value: string) {
-    setSearch(
-      (current) => {
-        const next = new URLSearchParams(current)
-        if (value) next.set(key, value)
-        else next.delete(key)
-        return next
-      },
-      { replace: true },
-    )
-  }
-  function resetView() {
-    setSearch(
-      (current) => {
-        const next = new URLSearchParams(current)
-        ;['q', 'sort', 'show'].forEach((key) => next.delete(key))
-        return next
-      },
-      { replace: true },
-    )
-  }
   const [title, setTitle] = useState('')
   const [important, setImportant] = useState(false)
   const guard = useDraftGuard(!!title || important, pending && (!!title || important))
@@ -76,10 +55,10 @@ export default function ListsPage() {
         query={query}
         sort={sort}
         filter={filter}
-        onQuery={(value) => viewParam('q', value)}
-        onSort={(value) => viewParam('sort', value === 'priority' ? '' : value)}
-        onFilter={(value) => viewParam('show', value === 'all' ? '' : value)}
-        onReset={resetView}
+        onQuery={setQuery}
+        onSort={setSort}
+        onFilter={setFilter}
+        onReset={reset}
         count={visible.length}
         total={shopping.length}
       />
@@ -137,7 +116,7 @@ export default function ListsPage() {
           viewKey={query + ':' + sort + ':' + filter}
           removable
           view={visible}
-          onReset={resetView}
+          onReset={reset}
         />
 
         <p className="lists-page__feedback" role="status">

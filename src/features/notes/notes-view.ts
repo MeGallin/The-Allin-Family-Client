@@ -1,3 +1,4 @@
+import { createSearchMatcher, filterOption } from '../../lib/search'
 import type { PersonalNote } from './types'
 export const noteSorts = [
   ['updated', 'Recently edited'],
@@ -7,16 +8,13 @@ export const noteSorts = [
   ['name', 'Title A–Z'],
 ] as const
 export type NoteSort = (typeof noteSorts)[number][0]
+export function noteSort(value: string | null): NoteSort {
+  return filterOption(value, noteSorts, 'updated')
+}
 export function notesView(notes: PersonalNote[], query: string, sort: NoteSort) {
-  const text = query.trim().toLocaleLowerCase('en-GB')
+  const matches = createSearchMatcher(query)
   return notes
-    .filter(
-      (note) =>
-        !text ||
-        [note.title, note.header, note.body, note.footer].some((value) =>
-          value.toLocaleLowerCase('en-GB').includes(text),
-        ),
-    )
+    .filter((note) => matches([note.title, note.header, note.body, note.footer]))
     .sort((a, b) => {
       const order =
         sort === 'name'

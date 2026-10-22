@@ -1,3 +1,4 @@
+import { useCollectionFilters } from '../../hooks/useCollectionFilters'
 import { useCollectionWindow } from '../../hooks/useCollectionWindow'
 import { CollectionMore } from '../../components/ui/CollectionMore'
 import { lazy, Suspense, useState } from 'react'
@@ -30,34 +31,11 @@ export default function CalendarPage() {
     .filter((event) => !isUpcomingEvent(event, now))
     .sort((a, b) => eventDate(b).getTime() - eventDate(a).getTime())
   const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
-  const query = (search.get('q') ?? '').slice(0, 100)
-  const sort = calendarSort(search.get('sort'))
+  const { query, sort, setQuery, setSort, reset } = useCollectionFilters({ sort: calendarSort })
   const shownUpcoming = calendarView(upcoming, query, sort)
   const shownPast = calendarView(past, query, sort === 'soonest' ? 'latest' : sort)
   const upcomingWindow = useCollectionWindow(shownUpcoming, { viewKey: query + ':' + sort })
   const pastWindow = useCollectionWindow(shownPast, { viewKey: query + ':' + sort })
-  function viewParam(key: string, value: string) {
-    setSearch(
-      (current) => {
-        const next = new URLSearchParams(current)
-        if (value) next.set(key, value)
-        else next.delete(key)
-        return next
-      },
-      { replace: true },
-    )
-  }
-  function resetView() {
-    setSearch(
-      (current) => {
-        const next = new URLSearchParams(current)
-        next.delete('q')
-        next.delete('sort')
-        return next
-      },
-      { replace: true },
-    )
-  }
   function closeComposer() {
     setEditing(null)
     setSearch(
@@ -90,9 +68,9 @@ export default function CalendarPage() {
       <CalendarControls
         query={query}
         sort={sort}
-        onQuery={(value) => viewParam('q', value)}
-        onSort={(value) => viewParam('sort', value === 'soonest' ? '' : value)}
-        onReset={resetView}
+        onQuery={setQuery}
+        onSort={setSort}
+        onReset={reset}
         count={shownUpcoming.length + shownPast.length}
         total={events.length}
       />
@@ -135,7 +113,7 @@ export default function CalendarPage() {
                   : 'Make a plan and give everyone something to look forward to.'}
               </p>
               {query && (
-                <button type="button" className="button-link" onClick={resetView}>
+                <button type="button" className="button-link" onClick={reset}>
                   Reset view
                 </button>
               )}

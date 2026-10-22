@@ -1,3 +1,4 @@
+import { createSearchMatcher, filterOption } from '../../lib/search'
 import type { ShoppingItem } from './types'
 export const shoppingSorts = [
   ['priority', 'Important first'],
@@ -17,10 +18,10 @@ export const shoppingFilters = [
 export type ShoppingSort = (typeof shoppingSorts)[number][0]
 export type ShoppingFilter = (typeof shoppingFilters)[number][0]
 export function shoppingSort(value: string | null): ShoppingSort {
-  return shoppingSorts.some(([key]) => key === value) ? (value as ShoppingSort) : 'priority'
+  return filterOption(value, shoppingSorts, 'priority')
 }
 export function shoppingFilter(value: string | null): ShoppingFilter {
-  return shoppingFilters.some(([key]) => key === value) ? (value as ShoppingFilter) : 'all'
+  return filterOption(value, shoppingFilters, 'all')
 }
 export function shoppingView(
   items: ShoppingItem[],
@@ -28,14 +29,11 @@ export function shoppingView(
   sort: ShoppingSort,
   filter: ShoppingFilter,
 ): ShoppingItem[] {
-  const text = query.trim().toLocaleLowerCase('en-GB')
+  const matches = createSearchMatcher(query)
   return items
     .filter(
       (item) =>
-        (!text ||
-          [item.title, item.createdBy.displayName, item.updatedBy.displayName].some((value) =>
-            value.toLocaleLowerCase('en-GB').includes(text),
-          )) &&
+        matches([item.title, item.createdBy.displayName, item.updatedBy.displayName]) &&
         (filter === 'all' ||
           (filter === 'needed' && !item.checked) ||
           (filter === 'picked' && item.checked) ||

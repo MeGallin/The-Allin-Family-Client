@@ -1,12 +1,13 @@
+import { useCollectionFilters } from '../../hooks/useCollectionFilters'
 import { useCollectionWindow } from '../../hooks/useCollectionWindow'
 import { CollectionMore } from '../../components/ui/CollectionMore'
 import { useEditingRecord } from '../../hooks/useEditingRecord'
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { LockKeyhole, NotebookPen, Plus } from 'lucide-react'
 import { useAppSelector } from '../../app/store-hooks'
 import { usePersonalNotes } from '../../features/notes/usePersonalNotes'
-import { noteSorts, notesView, type NoteSort } from '../../features/notes/notes-view'
+import { noteSorts, notesView, noteSort } from '../../features/notes/notes-view'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { CollectionToolbar } from '../../components/ui/CollectionToolbar'
 import { Icon } from '../../components/ui/Icon'
@@ -24,8 +25,10 @@ export default function PersonalNotesPage({ onSessionExpired }: { onSessionExpir
   const user = useAppSelector((state) => state.auth.user)
   const [search, setSearch] = useSearchParams()
   // Search text stays in memory rather than exposing private text in URLs/history.
-  const [query, setQuery] = useState('')
-  const [sort, setSort] = useState<NoteSort>('updated')
+  const { query, sort, setQuery, setSort, reset } = useCollectionFilters({
+    sort: noteSort,
+    storage: 'memory',
+  })
   useEffect(() => {
     if (failure?.status === 401 || failure?.code === 'password_change_required') onSessionExpired()
   }, [failure?.status, failure?.code, onSessionExpired])
@@ -38,10 +41,6 @@ export default function PersonalNotesPage({ onSessionExpired }: { onSessionExpir
   const removing = notes.find((note) => note.id === search.get('remove'))
   const missing =
     !loading && !error && (search.has('edit') || search.has('remove')) && !editing && !removing
-  function resetView() {
-    setQuery('')
-    setSort('updated')
-  }
   function close() {
     setSearch(
       (current) => {
@@ -77,8 +76,8 @@ export default function PersonalNotesPage({ onSessionExpired }: { onSessionExpir
           sort={sort}
           options={noteSorts}
           onQuery={setQuery}
-          onSort={(value) => setSort(value as NoteSort)}
-          onReset={resetView}
+          onSort={setSort}
+          onReset={reset}
           active={!!query || sort !== 'updated'}
           count={visible.length}
           total={notes.length}
@@ -119,7 +118,7 @@ export default function PersonalNotesPage({ onSessionExpired }: { onSessionExpir
             type="button"
             className="secondary"
             onClick={() => {
-              resetView()
+              reset()
               document.getElementById('family-content')?.focus()
             }}
           >

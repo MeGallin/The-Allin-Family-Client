@@ -1,3 +1,4 @@
+import { SEARCH_QUERY_LIMIT } from '../../lib/search'
 import { useId, useRef, type ReactNode } from 'react'
 import './ViewControls.css'
 export function ViewControls({
@@ -56,7 +57,7 @@ export function ViewControls({
               id={id + '-search'}
               type="search"
               value={query}
-              maxLength={100}
+              maxLength={SEARCH_QUERY_LIMIT}
               onChange={(e) => onQuery(e.target.value)}
               placeholder={placeholder}
               aria-describedby={id + '-hint'}

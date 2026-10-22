@@ -14,6 +14,3 @@ export function pollActionPath(
   params.set(action, value)
   return '/polls?' + params.toString() + hash
 }
-export function pollStatus(value: string | null) {
-  return value === 'closed' || value === 'all' ? value : 'open'
-}
