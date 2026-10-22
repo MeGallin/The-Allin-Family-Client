@@ -1,12 +1,9 @@
 import { useHashTarget } from '../../hooks/useHashTarget'
 import { useFamilyData } from '../../features/family/useFamilyData'
 import { PageHeader } from '../../components/ui/PageHeader'
-import { QuickActions } from '../../components/family/QuickActions'
-import { HomeOverview } from '../../components/family/HomeOverview'
-import { MemoryPreview } from '../../components/family/memories/MemoryPreview'
-import { UpcomingPlans } from '../../components/family/calendar/UpcomingPlans'
-import { ShoppingPreview } from '../../components/family/shopping/ShoppingPreview'
-import { FamilyPoll } from '../../components/family/polls/FamilyPoll'
+import { WeekPlanner } from '../../components/family/home/WeekPlanner'
+import { HomePriorities } from '../../components/family/home/HomePriorities'
+import { HomeDestinations } from '../../components/family/home/HomeDestinations'
 import './FamilyHomePage.css'
 
 export default function FamilyHomePage() {
@@ -16,17 +13,14 @@ export default function FamilyHomePage() {
   return (
     <div className="page-stack page-enter">
       <PageHeader
-        title={'Hello, ' + firstName + '.'}
-        description="A little planning. A lot of family."
+        title="The days ahead."
+        description={'Hello, ' + firstName + '. Make room for what matters.'}
       />
-      <HomeOverview />
       <div className="family-home-grid">
-        <ShoppingPreview />
-        <UpcomingPlans />
-        <FamilyPoll />
-        <MemoryPreview />
+        <HomePriorities />
+        <WeekPlanner />
       </div>
-      <QuickActions />
+      <HomeDestinations name={firstName} />
     </div>
   )
 }
