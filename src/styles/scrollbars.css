@@ -1,0 +1,42 @@
+/* Shared native scrollbars: pages, editors, dialogs and scrollable data regions.
+   Touch-only devices and forced-colour modes retain their platform scrollbars. */
+@media (any-pointer: fine) and (forced-colors: none) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+  }
+
+  /* Chromium/WebKit allow an explicit size and thumb hover/drag treatments.
+     Reset standard properties here so they do not override these selectors. */
+  @supports selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: auto;
+      scrollbar-color: auto;
+    }
+
+    ::-webkit-scrollbar {
+      width: var(--scrollbar-size);
+      height: var(--scrollbar-size);
+    }
+
+    ::-webkit-scrollbar-track,
+    ::-webkit-scrollbar-corner {
+      background: var(--color-scrollbar-track);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      min-width: var(--scrollbar-thumb-min);
+      min-height: var(--scrollbar-thumb-min);
+      border-radius: var(--radius-pill);
+      background: var(--color-scrollbar-thumb);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--color-scrollbar-thumb-hover);
+    }
+
+    ::-webkit-scrollbar-thumb:active {
+      background: var(--color-scrollbar-thumb-active);
+    }
+  }
+}

@@ -661,3 +661,7 @@ All fixtures, uploaded fixture photos/derivatives and associated audit/vote/opti
 ## Repeatable regression coverage
 
 Run `npm run test:all` from this directory for client, feature API and existing authentication checks. See [TESTING.md](TESTING.md) for the coverage matrix, isolated fixture requirements and limitations. The shared Undo delay is now **20 seconds** across shopping, calendar, memories, private notes and polls; all countdowns/hints read the same constant. Usage heartbeats and admin refresh intervals remain separate policies.
+
+## Shared scrollbar styling
+
+`src/styles/scrollbars.css` owns native scrollbar styling for the page and nested scroll containers. Semantic tokens in `tokens.css` provide the shared 8px width/height, minimum thumb length, navy track and Nimbus blue/cyan default/hover/active colours. Fine-pointer devices receive the styling; touch-only devices and forced-colour modes retain native scrollbars. Standard thin/colour properties cover browsers without WebKit scrollbar selectors; the supported WebKit branch resets those properties to allow explicit dimensions and thumb states. No scrolling behaviour or overflow rules are replaced.
