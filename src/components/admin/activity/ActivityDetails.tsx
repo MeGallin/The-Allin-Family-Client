@@ -11,6 +11,8 @@ const labels: Record<string, string> = {
   annually: 'Repeats every year',
   timeZone: 'Time zone',
   nickname: 'Nickname',
+  town: 'Weather town',
+  holidayRegion: 'Bank holiday region',
   username: 'Sign-in username',
   displayName: 'Full name',
   role: 'Role',
@@ -25,6 +27,16 @@ const labels: Record<string, string> = {
   choice: 'Vote',
 }
 function display(value: unknown, key: string): string {
+  if (key === 'holidayRegion' && typeof value === 'string')
+    return (
+      (
+        {
+          'england-and-wales': 'England and Wales',
+          scotland: 'Scotland',
+          'northern-ireland': 'Northern Ireland',
+        } as Record<string, string>
+      )[value] ?? 'Switched off'
+    )
   if ((key === 'startsAt' || key === 'closesAt') && typeof value === 'string')
     return exactDate(value)
   if (key === 'photoKey') return value ? 'Photo attached' : 'No photo'

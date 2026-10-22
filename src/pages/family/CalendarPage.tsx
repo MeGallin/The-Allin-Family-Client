@@ -7,7 +7,7 @@ import { CalendarDays, CalendarPlus } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
 import { useCalendar } from '../../features/calendar/useCalendar'
 import type { FamilyEvent } from '../../features/calendar/types'
-import { upcomingEvents, isUpcomingEvent, eventDate } from '../../lib/dates'
+import { upcomingEvents, isUpcomingEvent, eventDate, validDateInput } from '../../lib/dates'
 import { EventList } from '../../components/family/calendar/EventList'
 import { CalendarActivity } from '../../components/family/calendar/CalendarActivity'
 import { EmptyState } from '../../components/ui/EmptyState'
@@ -25,6 +25,7 @@ export default function CalendarPage() {
   const { events, loading, pending, error, feedback, refresh } = useCalendar()
   const [editing, setEditing] = useState<FamilyEvent | null>(null)
   const [search, setSearch] = useSearchParams()
+  const initialDay = validDateInput(search.get('date'))
   const now = useNow()
   const upcoming = upcomingEvents(events, now)
   const past = events
@@ -42,6 +43,7 @@ export default function CalendarPage() {
       (current) => {
         const next = new URLSearchParams(current)
         next.delete('compose')
+        next.delete('date')
         return next
       },
       { replace: true },
@@ -136,8 +138,9 @@ export default function CalendarPage() {
       {(search.get('compose') === 'event' || editing) && (
         <Suspense fallback={<LoadingState label="Opening the event form…" />}>
           <EventComposer
-            key={editing?.id ?? 'new'}
+            key={editing?.id ?? 'new-' + (initialDay ?? '')}
             event={editing ?? undefined}
+            initialDay={initialDay}
             onClose={closeComposer}
           />
         </Suspense>

@@ -2,18 +2,18 @@ import { RemovalDelayHint } from '../../removals/RemovalDelayHint'
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { useCalendar } from '../../../features/calendar/useCalendar'
 import type { FamilyEvent } from '../../../features/calendar/types'
-import { dateInputValue, eventDate } from '../../../lib/dates'
+import { dateInputValue, eventDate, validDateInput } from '../../../lib/dates'
 import { Modal } from '../../ui/Modal'
 import './EventComposer.css'
 import { useDraftGuard } from '../../../features/drafts/DraftProtection'
 import { DraftConflict } from '../../ui/DraftConflict'
 
 const localZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone
-function fields(event?: FamilyEvent) {
+function fields(event?: FamilyEvent, initialDay?: string) {
   const date = event ? eventDate({ startsAt: event.startsAt, allDay: event.allDay }) : new Date()
   return {
     title: event?.title ?? '',
-    day: dateInputValue(date),
+    day: (!event && validDateInput(initialDay)) || dateInputValue(date),
     time: event
       ? String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0')
       : '12:00',
@@ -25,14 +25,16 @@ function fields(event?: FamilyEvent) {
 export default function EventComposer({
   onClose,
   event,
+  initialDay,
 }: {
   onClose: () => void
   event?: FamilyEvent
+  initialDay?: string
 }) {
   const { events, add, edit, remove, pending, error, failure, clearError, refresh, loading } =
     useCalendar()
   const [original, setOriginal] = useState(event)
-  const [baseline, setBaseline] = useState(() => fields(event))
+  const [baseline, setBaseline] = useState(() => fields(event, initialDay))
   const [draft, setDraft] = useState(baseline)
   const guard = useDraftGuard(JSON.stringify(draft) !== JSON.stringify(baseline), pending)
   const [validation, setValidation] = useState('')

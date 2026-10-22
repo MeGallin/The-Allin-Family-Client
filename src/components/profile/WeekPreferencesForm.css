@@ -1,0 +1,95 @@
+.week-preferences {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  min-width: 0;
+}
+.week-preferences .note {
+  margin: 0;
+}
+.week-preferences__current {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-muted);
+}
+.week-preferences__current > .ui-icon {
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+.week-preferences__current > span {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.week-preferences__current small {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+.week-preferences__search {
+  display: grid;
+  gap: var(--space-2);
+}
+.week-preferences input,
+.week-preferences select {
+  width: 100%;
+  min-width: 0;
+}
+.week-preferences__search button,
+.week-preferences__results button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+.week-preferences__results {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  margin: 0;
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+}
+.week-preferences__results legend {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.week-preferences__results button {
+  justify-content: start;
+  text-align: left;
+  font-size: var(--text-sm);
+  white-space: normal;
+}
+.week-preferences__results .ui-icon {
+  flex-shrink: 0;
+}
+.week-preferences__results span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.week-preferences__feedback {
+  color: var(--color-success);
+  margin: 0;
+  min-height: 1.4em;
+}
+.week-preferences__conflict {
+  color: var(--color-text-muted);
+  border-left: 2px solid var(--color-accent);
+  padding-left: var(--space-3);
+}
+.week-preferences .week-preferences__attribution {
+  font-size: var(--text-xs);
+}
+@media (min-width: 30rem) {
+  .week-preferences__search {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .week-preferences > button {
+    justify-self: start;
+  }
+}

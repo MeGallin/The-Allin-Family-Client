@@ -1,0 +1,16 @@
+.week-context-status {
+  display: grid;
+  gap: var(--space-1);
+  margin-block: var(--space-2) var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+.week-context-status__sources,
+.week-context-status__sources a {
+  color: var(--color-text-muted);
+  font-size: var(--text-caption);
+}
+.week-context-status .text-button {
+  min-height: var(--control-min-height);
+  color: var(--color-link);
+}

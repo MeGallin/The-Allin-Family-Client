@@ -6,6 +6,13 @@ export function dateInputValue(date: Date): string {
   ].join('-')
 }
 
+/** Accept only a real local calendar date, without UTC conversion or date rollover. */
+export function validDateInput(value: string | null | undefined): string | undefined {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined
+  const date = new Date(value + 'T12:00:00')
+  return !Number.isNaN(date.getTime()) && dateInputValue(date) === value ? value : undefined
+}
+
 export function formatEventTime(value: string): string {
   return format(new Date(value), 'HH:mm', { locale: enGB })
 }

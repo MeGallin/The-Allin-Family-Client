@@ -1,0 +1,62 @@
+.horizontal-scroll {
+  min-width: 0;
+  max-width: 100%;
+}
+.horizontal-scroll__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+.horizontal-scroll__controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.horizontal-scroll__arrow {
+  color: var(--color-link);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  box-shadow: none;
+}
+.horizontal-scroll__arrow:hover:not(:disabled) {
+  background: var(--color-surface-raised);
+  border-color: var(--color-accent);
+}
+.horizontal-scroll__arrow:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+.horizontal-scroll__viewport {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  padding: var(--space-2);
+  scroll-padding-inline: var(--space-2);
+}
+.horizontal-scroll__viewport:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-control);
+}
+.horizontal-scroll__content {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-3);
+  width: max-content;
+  min-width: 100%;
+}
+.horizontal-scroll__content > * {
+  flex: 0 0 auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .horizontal-scroll__viewport {
+    scroll-behavior: auto;
+  }
+}

@@ -18,6 +18,7 @@ const verbs: Record<string, string> = {
   liked: 'liked',
   unliked: 'removed their like from',
   nickname_changed: 'changed the nickname on',
+  week_preferences_changed: 'changed Week Ahead preferences on',
   password_reset: 'reset the password for',
   password_changed: 'changed the password for',
   voted: 'voted on',
