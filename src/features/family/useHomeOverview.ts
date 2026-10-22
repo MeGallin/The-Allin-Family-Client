@@ -14,28 +14,32 @@ export function useHomeOverview() {
   const now = useNow()
   return [
     {
-      to: '/calendar',
-      label: 'Upcoming plans',
-      count: calendar.data ? upcomingEvents(calendar.data.events, now).length : null,
-      error: !!calendar.error,
-    },
-    {
-      to: '/memories',
-      label: 'Family memories',
-      count: memories.data?.memories.length ?? null,
-      error: !!memories.error,
-    },
-    {
+      kind: 'shopping' as const,
       to: '/lists?show=needed',
       label: 'Still to pick up',
       count: shopping.data ? shopping.data.items.filter((item) => !item.checked).length : null,
       error: !!shopping.error,
     },
     {
+      kind: 'plans' as const,
+      to: '/calendar',
+      label: 'Upcoming plans',
+      count: calendar.data ? upcomingEvents(calendar.data.events, now).length : null,
+      error: !!calendar.error,
+    },
+    {
+      kind: 'polls' as const,
       to: '/polls',
       label: 'Open polls',
       count: polls.data ? polls.data.polls.filter((poll) => !poll.closed).length : null,
       error: !!polls.error,
+    },
+    {
+      kind: 'memories' as const,
+      to: '/memories',
+      label: 'Family memories',
+      count: memories.data?.memories.length ?? null,
+      error: !!memories.error,
     },
   ]
 }

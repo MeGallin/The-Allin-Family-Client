@@ -2,45 +2,39 @@
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: start;
-  gap: var(--space-4);
-  padding-block: var(--space-4) var(--space-5);
-  margin-bottom: var(--space-3);
-  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-3);
+  padding-block: var(--space-2);
   overflow-wrap: anywhere;
 }
 .upcoming-plans__date {
   display: grid;
   text-align: center;
-  padding-right: var(--space-4);
+  padding-right: var(--space-3);
   border-right: 2px solid var(--color-accent);
   line-height: 1;
   color: var(--color-accent);
 }
 .upcoming-plans__date strong {
-  font-size: var(--text-key-date);
-  letter-spacing: -0.06em;
-  font-weight: 600;
+  font-size: var(--text-3xl);
+  letter-spacing: -0.04em;
+  font-weight: var(--weight-heading);
   font-variant-numeric: tabular-nums;
 }
 .upcoming-plans__date span {
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   margin-top: var(--space-2);
 }
 .upcoming-plans__headline h3 {
-  font-size: clamp(1.375rem, 3vw, 2rem);
-  line-height: 1.15;
-  letter-spacing: -0.035em;
-  margin: var(--space-2) 0;
+  font-size: var(--text-xl);
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  margin: 0 0 var(--space-2);
 }
 .upcoming-plans__headline p {
   margin: 0 0 var(--space-2);
   line-height: var(--line-compact);
-}
-.upcoming-plans__eyebrow {
-  font-size: var(--text-xs);
-  color: var(--color-link);
 }
 .upcoming-plans__credit,
 .upcoming-plans__headline p:last-child {
@@ -48,6 +42,11 @@
   color: var(--color-text-muted);
 }
 .upcoming-plans__more {
-  margin: var(--space-4) 0 0;
+  margin: 0;
   font-size: var(--text-sm);
+}
+.upcoming-plans__more a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-min-height);
 }

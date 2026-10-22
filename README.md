@@ -588,3 +588,33 @@ Warnings focus Keep editing; conflict review restores editor focus, and modal re
 focus can fall back to main content when an account-menu trigger disappears.
 Only Gary-owned disposable fixtures were used; all were removed and original content,
 account identities and audit history were compared exactly with the private baseline.
+
+## Mobile Home priorities
+
+Home reads in the same task-first order on phones and desktop: Shopping, Coming up,
+Polls, Recent memories. The linked real-data overview uses that order too, with
+semantic icon keys rather than positional icon assignments. Existing wider
+container layouts remain two columns; DOM and keyboard order match the reading order.
+
+Shopping reuses the shared interactive list for up to three needed items, important
+first, with a link to the remainder. Empty/all-picked-up states are compact inline
+summaries. Failed connections keep retry feedback and distinguish cached completion
+from a verified current snapshot. Coming up leads with the next saved occurrence,
+natural countdown, author and exact date; its remaining-plan count links to Calendar.
+
+Recent memories now uses up to three compact linked rows, lazy FamilyImage previews,
+two-line story excerpts and author/relative dates. Thumbnails contain the complete
+photo; text-only memories use the shared icon. Each row opens its existing album
+anchor for full photos, stories, editing and reactions. Home does not duplicate those
+full-card actions. Panel/Icon/FriendlyTime/date helpers and existing RTK Query
+snapshots remain shared. No new endpoints, dependencies, data or design tokens.
+
+### Mobile Home regression follow-up
+
+Internal-browser checks under Gary/Dad covered populated shopping priority/preview
+limits/remainder links and saved checks, real upcoming-plan links, Home poll votes,
+changed votes and closed-result links, plus photo/story album anchors. Checked320px,
+390px and desktop widths with long text and real photo loading. Memory links now
+have explicit concise accessible names, so a clamped story is not read in full as
+part of the link label. Disposable Gary-owned records and their audit/photo data
+were cleaned; original saved content, identities and history matched the baseline.

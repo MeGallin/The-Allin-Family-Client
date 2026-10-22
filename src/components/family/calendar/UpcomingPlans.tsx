@@ -5,7 +5,6 @@ import { LoadingState } from '../../ui/LoadingState'
 import { formatEventDay, formatEventTime, upcomingEvents, eventDate } from '../../../lib/dates'
 import { EmptyState } from '../../ui/EmptyState'
 import { Panel } from '../../ui/Panel'
-import { EventList } from './EventList'
 import './UpcomingPlans.css'
 import { EventCountdown } from './EventCountdown'
 import { useNow } from '../../../hooks/useNow'
@@ -39,7 +38,6 @@ export function UpcomingPlans() {
               </span>
             </div>
             <div className="upcoming-plans__headline">
-              <p className="upcoming-plans__eyebrow">Next on the calendar</p>
               <h3>{next.title}</h3>
               <p>
                 <EventCountdown event={next} />
@@ -55,12 +53,10 @@ export function UpcomingPlans() {
               </p>
             </div>
           </div>
-          <EventList events={upcoming.slice(1, 3)} compact />
-          {upcoming.length > 3 && (
+          {upcoming.length > 1 && (
             <p className="upcoming-plans__more">
               <Link to="/calendar">
-                See {upcoming.length - 3} more upcoming{' '}
-                {upcoming.length - 3 === 1 ? 'plan' : 'plans'}
+                See {upcoming.length - 1} more upcoming {upcoming.length === 2 ? 'plan' : 'plans'}
               </Link>
             </p>
           )}

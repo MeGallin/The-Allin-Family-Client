@@ -12,10 +12,7 @@ export function FamilyPoll() {
   const poll = featured ?? recentResult
   return (
     <div id="family-poll" tabIndex={-1} className="family-poll">
-      <Panel
-        title="Have a say"
-        action={<Link to={poll ? pollLink(poll) : '/polls'}>View polls</Link>}
-      >
+      <Panel title="Polls" action={<Link to={poll ? pollLink(poll) : '/polls'}>View polls</Link>}>
         {!loading && !error && (
           <p className="note">
             {open.length
@@ -52,7 +49,7 @@ export function FamilyPoll() {
           </>
         ) : (
           !error && (
-            <p className="note">Ask a question, share a few choices and let everyone have a say.</p>
+            <p className="family-poll__empty">Ask a question and let everyone have a say.</p>
           )
         )}
         {!loading && !error && !featured && (

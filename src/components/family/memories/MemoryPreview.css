@@ -1,49 +1,24 @@
-.memory-preview {
-  display: grid;
-  align-content: start;
-  gap: 0;
-  min-width: 0;
-  border-top: 1px solid var(--color-border);
-}
-.memory-preview__header {
-  padding-block: var(--space-3);
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-.memory-preview__header h2 {
-  font-size: var(--text-lg);
-  margin: 0;
-}
-.memory-preview__header > a {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--control-min-height);
-  font-size: var(--text-sm);
-}
 .memory-preview__recent {
   list-style: none;
   padding: 0;
   margin: 0;
-  display: grid;
-  gap: var(--space-3);
+}
+.memory-preview__recent li + li {
+  border-top: 1px solid var(--color-border);
 }
 .memory-preview__recent a {
   display: flex;
   align-items: start;
   gap: var(--space-3);
   min-width: 0;
-  padding: var(--space-3);
+  min-height: var(--control-min-height);
+  padding-block: var(--space-3);
   color: var(--color-text);
   text-decoration: none;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
 }
-.memory-preview__recent a:hover {
-  border-color: var(--color-accent);
+.memory-preview__recent a:hover .memory-preview__title {
+  color: var(--color-link);
+  text-decoration: underline;
 }
 .memory-preview__copy {
   display: grid;
@@ -51,17 +26,34 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.memory-preview__copy > span {
+.memory-preview__title {
+  font-size: var(--text-md);
+  font-weight: var(--weight-heading);
+  line-height: var(--line-compact);
+}
+.memory-preview__meta {
   font-size: var(--text-xs);
   color: var(--color-text-muted);
 }
 .memory-preview__thumbnail {
+  display: grid;
+  place-items: center;
   flex: 0 0 var(--space-8);
+  width: var(--space-8);
+  height: var(--space-8);
   border-radius: var(--radius-control);
   overflow: hidden;
+  color: var(--color-accent);
+  background: var(--color-surface-raised);
 }
 .memory-preview__thumbnail .family-image {
-  aspect-ratio: 1;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+.memory-preview__thumbnail img {
+  height: 100%;
+  object-fit: contain;
 }
 .memory-preview__thumbnail .family-image__fallback {
   min-height: 0;
@@ -76,9 +68,15 @@
   -webkit-line-clamp: 2;
   overflow: hidden;
   white-space: pre-line;
+  font-size: var(--text-sm);
+  line-height: var(--line-compact);
+  color: var(--color-text-muted);
 }
-
-.memory-preview__thumbnail img {
-  height: 100%;
-  object-fit: cover;
+.memory-preview__empty {
+  margin: 0;
+}
+.memory-preview__empty a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-min-height);
 }

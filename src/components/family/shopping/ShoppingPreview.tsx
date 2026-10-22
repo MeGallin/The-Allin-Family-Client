@@ -3,27 +3,16 @@ import { CheckCheck } from 'lucide-react'
 import { useShopping } from '../../../features/shopping/useShopping'
 import { shoppingView } from '../../../features/shopping/shopping-view'
 import { Panel } from '../../ui/Panel'
-import { EmptyState } from '../../ui/EmptyState'
+import { Icon } from '../../ui/Icon'
 import { ShoppingList } from './ShoppingList'
 import './ShoppingPreview.css'
 
 export function ShoppingPreview() {
   const { items: shopping, loading, error, feedback, refresh, pending } = useShopping()
-  const remaining = shopping.filter((item) => !item.checked).length
   const needed = shoppingView(shopping, '', 'priority', 'needed')
+  const remaining = needed.length
   return (
-    <Panel title="Pick up on the way" action={<Link to="/lists">Open list</Link>}>
-      <p className="shopping-preview__count" role="status">
-        {loading
-          ? 'Connecting…'
-          : error
-            ? 'Check the shared list connection'
-            : shopping.length === 0
-              ? 'Nothing to get yet'
-              : remaining
-                ? remaining + ' to get'
-                : '1 shared list · Up to date'}
-      </p>
+    <Panel title="Shopping" action={<Link to="/lists">Open list</Link>}>
       {error && shopping.length > 0 && (
         <div>
           <p className="error" role="alert">
@@ -34,17 +23,33 @@ export function ShoppingPreview() {
           </button>
         </div>
       )}
-      {!loading && shopping.length > 0 && remaining === 0 ? (
-        <EmptyState icon={CheckCheck} title="All picked up">
-          <p>The shared list is sorted. Add anything else you need.</p>
-          <Link to="/lists">Review the shopping list</Link>
-        </EmptyState>
+      {!loading && remaining === 0 && (!error || shopping.length > 0) ? (
+        <p className="shopping-preview__settled">
+          <Icon icon={CheckCheck} />
+          <span>
+            <strong>
+              {error
+                ? 'Saved list: all picked up'
+                : shopping.length
+                  ? 'All picked up'
+                  : 'Nothing on the list yet'}
+            </strong>
+            <Link to="/lists">Add something for the next shop</Link>
+          </span>
+        </p>
       ) : (
-        <ShoppingList limit={3} view={needed} />
+        <>
+          {remaining > 0 && (
+            <p className="shopping-preview__count">{remaining} to get · important items first</p>
+          )}
+          <ShoppingList limit={3} view={needed} />
+        </>
       )}
-      <p className="note" role="status">
-        {feedback}
-      </p>
+      {feedback && (
+        <p className="note" role="status">
+          {feedback}
+        </p>
+      )}
       {remaining > 3 && (
         <p className="shopping-preview__more">
           <Link to="/lists?show=needed">See {remaining - 3} more to pick up</Link>

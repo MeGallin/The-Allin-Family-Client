@@ -21,10 +21,10 @@ export default function FamilyHomePage() {
       />
       <HomeOverview />
       <div className="family-home-grid">
-        <UpcomingPlans />
-        <MemoryPreview />
         <ShoppingPreview />
+        <UpcomingPlans />
         <FamilyPoll />
+        <MemoryPreview />
       </div>
       <QuickActions />
       <p className="family-home-footer">A private space for the people who matter.</p>
