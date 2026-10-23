@@ -67,7 +67,11 @@ export function CalendarDayTile({
             {(isToday || weekend) && <small>{isToday ? 'Today' : 'Weekend'}</small>}
           </span>
         </span>
-        <span className="calendar-day-tile__plan">
+        <span
+          className={
+            'calendar-day-tile__plan' + (!plansUnavailable && plans.length ? ' has-plan' : '')
+          }
+        >
           <span>
             <strong>
               {plansUnavailable ? 'Check calendar' : (plans[0]?.title ?? 'No plans yet')}

@@ -80,6 +80,8 @@
   /* Shape, elevation and layout */
   --collection-column-min: 18rem;
   --calendar-tile-width: 17.5rem;
+  --calendar-tile-date-size: 2.5rem;
+  --calendar-tile-date-size-compact: 2.25rem;
   --calendar-tile-height: 12.25rem;
   --calendar-tile-header: 3.25rem;
   --calendar-tile-footer: calc(var(--control-min-height) + var(--space-1) + 1px);

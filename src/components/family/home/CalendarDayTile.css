@@ -53,8 +53,8 @@
     border-color var(--control-transition);
 }
 .calendar-day-tile__identity > strong {
-  font-size: var(--text-3xl);
-  font-weight: 450;
+  font-size: var(--calendar-tile-date-size);
+  font-weight: 700;
   letter-spacing: -0.065em;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -113,6 +113,13 @@
   color: var(--color-text-muted);
   font-size: var(--text-caption);
   line-height: var(--line-compact);
+}
+.calendar-day-tile__plan.has-plan strong {
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+.calendar-day-tile__plan.has-plan strong:has(+ small) {
+  -webkit-line-clamp: 1;
 }
 .calendar-day-tile__plan > .ui-icon {
   width: var(--space-3);
@@ -175,7 +182,7 @@
     max-width: calc(100% - 4.5rem);
   }
   .calendar-day-tile__identity > strong {
-    font-size: var(--text-2xl);
+    font-size: var(--calendar-tile-date-size-compact);
   }
   .calendar-day-tile .week-planner__day-label {
     font-size: var(--text-caption);
