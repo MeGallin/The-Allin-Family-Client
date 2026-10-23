@@ -16,6 +16,18 @@ npm run format:check
 
 ## Organisation
 
+The Alerts component's colocated `FoodAlerts.test.tsx` covers notice/source links and dates, loading, empty,
+unavailable/retry, stale and expired data plus shared-clock skew. `npm run test:api`
+also runs the FSA parser/cache unit cases and authentication/read-only route checks
+against isolated fixtures. These automated tests make no real FSA requests.
+The Redux/router integration checks calendar-to-Alerts navigation without a second
+request and confirms no detailed feed is rendered on the Home test route. The API
+suite also checks `/alerts` is recognised in section-only admin usage reporting.
+Expanded notices are checked for native open/close behaviour, product/batch/date
+fields, risk/advice, missing-field fallback and safe text rendering. API fixtures
+exercise single-object/list variants, multi-date batches, HTML-to-text handling
+and optional invalid/oversized text. These cases join the normal regression runs.
+
 Client tests live beside the code they exercise (`*.test.ts` / `*.test.tsx`). `src/test/` contains only shared test fixtures/setup. `vitest.config.ts` uses jsdom, React Testing Library and the real Redux middleware. The application exports `createAppStore()` so each test owns a fresh store; the normal singleton and browser listener setup remain the application's entry point. Test dependencies and setup are not imported into production code.
 
 The client setup blocks unmocked fetch calls, so a missing test mock cannot contact the family API. Modal methods are simulated because jsdom has no native dialog presentation. Timers are virtual: the real 20-second deletion policy is checked at 19,999ms and 20,000ms without waiting 20 real seconds per case. API persistence/security are tested against a real disposable database separately.

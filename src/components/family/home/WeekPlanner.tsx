@@ -13,6 +13,7 @@ import { HomeDataError } from './HomeDataError'
 import { useWeekContext } from '../../../features/week-context/useWeekContext'
 import { DayWeather } from './DayWeather'
 import { HorizontalScroll } from '../../ui/HorizontalScroll'
+import { CalendarFoodAlerts } from './CalendarFoodAlerts'
 import './WeekPlanner.css'
 import './WeekPlannerLayout.css'
 
@@ -159,6 +160,7 @@ export function WeekPlanner() {
                             <small>{error ? 'Check calendar' : 'Today'}</small>
                           ) : null}
                         </Link>
+                        {index === 0 && <CalendarFoodAlerts />}
                         {forecast && weather && (
                           <DayWeather
                             day={forecast}

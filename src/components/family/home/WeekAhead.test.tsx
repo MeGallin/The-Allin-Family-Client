@@ -5,6 +5,7 @@ import type { FamilyEvent } from '../../../features/calendar/types'
 import type { FamilyPollRecord } from '../../../features/polls/types'
 import type { ShoppingItem } from '../../../features/shopping/types'
 import type { WeekContext } from '../../../features/week-context/types'
+import type { FoodAlertsFeed } from '../../../features/food-alerts/types'
 import { WeekPlanner } from './WeekPlanner'
 import { HomePriorities } from './HomePriorities'
 import { HomeDestinations } from './HomeDestinations'
@@ -18,6 +19,10 @@ const state = vi.hoisted(() => ({
   error: '',
   retry: vi.fn(),
   context: undefined as WeekContext | undefined,
+  food: undefined as FoodAlertsFeed | undefined,
+}))
+vi.mock('../../../features/food-alerts/useFoodAlerts', () => ({
+  useFoodAlerts: () => ({ data: state.food, isLoading: !state.food, isError: false }),
 }))
 // Public context has its own service lifecycle; these tests isolate family navigation.
 vi.mock('../../../features/week-context/useWeekContext', () => ({
@@ -107,10 +112,32 @@ beforeEach(() => {
   state.loading = false
   state.error = ''
   state.context = undefined
+  state.food = undefined
   vi.useFakeTimers()
   vi.setSystemTime(state.now)
 })
 describe('Week Ahead dashboard', () => {
+  it('places the food-warning badge inside today’s tile only, outside the day navigation link', () => {
+    state.food = {
+      status: 'ready',
+      updatedAt: new Date(state.now).toISOString(),
+      data: [
+        {
+          id: 'FSA-AA-1-2026',
+          title: 'Food alert',
+          publishedAt: '2026-10-21',
+          kind: 'allergy',
+          url: 'https://alerts.food.gov.uk/a',
+        },
+      ],
+    }
+    const view = show(<WeekPlanner />)
+    const badge = screen.getByRole('link', { name: /Latest food alerts/ })
+    expect(badge.closest('.week-planner__day')?.classList.contains('is-today')).toBe(true)
+    expect(badge.closest('.week-planner__day-main')).toBeNull()
+    expect(view.container.querySelectorAll('.calendar-food-alerts')).toHaveLength(1)
+    expect(view.container.querySelectorAll('.week-planner__day')).toHaveLength(7)
+  })
   it('marks weekends and shows months only at the start and month boundaries', () => {
     const view = render(
       <MemoryRouter initialEntries={['/?days=45']}>

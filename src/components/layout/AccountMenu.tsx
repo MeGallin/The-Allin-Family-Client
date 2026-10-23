@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { KeyRound, LogOut, ShieldCheck, UserRound } from 'lucide-react'
+import { KeyRound, LogOut, ShieldCheck, UserRound, TriangleAlert } from 'lucide-react'
 import { Link } from 'react-router'
 import type { FamilyUser } from '../../types/auth'
 import { Icon } from '../ui/Icon'
@@ -49,6 +49,10 @@ export function AccountMenu({ user, onChangePassword, onLogout, loggingOut }: Pr
         <Link to="/profile" onClick={close}>
           <Icon icon={UserRound} />
           Your profile
+        </Link>
+        <Link to="/alerts" onClick={close}>
+          <Icon icon={TriangleAlert} />
+          Alerts
         </Link>
         {user.role === 'admin' && (
           <Link to="/admin" onClick={close}>

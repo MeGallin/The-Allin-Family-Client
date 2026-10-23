@@ -2,6 +2,8 @@ import { useId, type ReactNode } from 'react'
 import './Panel.css'
 
 type PanelProps = {
+  id?: string
+  tabIndex?: number
   title: string
   action?: ReactNode
   children: ReactNode
@@ -10,6 +12,8 @@ type PanelProps = {
 }
 
 export function Panel({
+  id,
+  tabIndex,
   title,
   action,
   children,
@@ -19,6 +23,8 @@ export function Panel({
   const titleId = useId()
   return (
     <section
+      id={id}
+      tabIndex={tabIndex}
       className={'panel ' + (variant === 'surface' ? 'content-surface ' : '') + className}
       aria-labelledby={titleId}
     >

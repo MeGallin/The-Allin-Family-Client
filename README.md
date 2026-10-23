@@ -3,6 +3,34 @@
 React and TypeScript client using Vite for theallinfamily.co.uk. The PHP API has
 its own repository in the sibling api folder.
 
+## Alerts
+
+The lazy-loaded `/alerts` route shows the three latest FSA notices, using shared
+Nimbus Panel/Icon/FriendlyTime styles and a shared content surface. Home retains
+only the warning badge inside today's calendar tile. Desktop navigation and the
+account menu both offer Alerts; the five mobile bottom destinations stay compact.
+Provider components and tests live together in `components/family/alerts`, ready
+for additional alert sources later. The `features/food-alerts` hook subscribes to the
+shared Redux Toolkit Query API through `services/food-alerts-query.ts`. Polls every
+30 minutes while focused; server caching and failure backoff protect the provider.
+Source/publication dates, official links and last successful check are shown.
+Unavailable/stale data is labelled, with retry; browser-cached notices expire after
+six hours. No search, key, database migration or family data sent to the FSA.
+Release requires both client and API packages. Tests are colocated with FoodAlerts;
+the API regression suite includes provider normalisation/cache/authentication checks.
+Today's Home calendar tile shows a small warning badge and latest-notice count
+beside the date, alongside the weather information. The badge opens `/alerts`
+without changing tile height. Its accessible
+label/tooltip explains notice types and stale/unavailable status. It is a current
+information shortcut, not a claim these notices were issued today. Both displays
+share one RTK Query request and the same freshness rules.
+On Alerts, each headline is a native keyboard-accessible disclosure. Expanding it
+shows affected products (including supplied pack, batch and date information), the
+FSA risk statement and consumer advice, plus the official source link. Missing
+fields have explicit fallbacks. Products/advice stack on phones and use two columns
+when space permits. No additional request or family data write occurs on expansion;
+the API's cached full-view response is shared with Home's compact badge.
+
 ## Run locally
 
 The existing checkout has dependencies and a local environment file. Start the

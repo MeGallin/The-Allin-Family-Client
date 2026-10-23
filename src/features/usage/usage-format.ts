@@ -11,6 +11,7 @@ export function usageDuration(seconds: number) {
 export const usagePages: Record<string, string> = {
   '/': 'Home',
   '/calendar': 'Calendar',
+  '/alerts': 'Alerts',
   '/memories': 'Memories',
   '/lists': 'Shopping list',
   '/polls': 'Polls',

@@ -1,0 +1,40 @@
+.food-alerts .panel__header h2 {
+  font-size: var(--text-md);
+}
+.food-alerts .panel__header a {
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+}
+.food-alerts__source,
+.food-alerts__checked,
+.food-alerts__message {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--line-compact);
+}
+.food-alerts__source {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.food-alerts__source .ui-icon {
+  color: var(--color-accent);
+}
+.food-alerts__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.food-alerts__list li + li {
+  border-top: 1px solid var(--color-border);
+}
+.food-alerts__checked {
+  margin-top: var(--space-3);
+}
+.food-alerts .food-alerts__retry {
+  margin: 0;
+  padding: 0 var(--space-2);
+  font-size: inherit;
+}

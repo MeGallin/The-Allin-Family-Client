@@ -1,0 +1,37 @@
+.calendar-food-alerts {
+  position: absolute;
+  inset-block-start: var(--space-7);
+  inset-inline-end: var(--space-2);
+  display: grid;
+  place-items: center;
+  min-width: var(--control-min-height);
+  min-height: var(--control-min-height);
+  color: var(--color-error);
+  text-decoration: none;
+  border-radius: var(--radius-control);
+}
+.calendar-food-alerts__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  background: var(--color-error-soft);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-control);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-heading);
+  line-height: 1;
+}
+.calendar-food-alerts__badge .ui-icon {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+.calendar-food-alerts--unavailable {
+  color: var(--color-text-muted);
+}
+.calendar-food-alerts--unavailable .calendar-food-alerts__badge {
+  background: var(--color-surface-muted);
+}
+.calendar-food-alerts:hover .calendar-food-alerts__badge {
+  box-shadow: 0 0 0 1px currentColor;
+}
