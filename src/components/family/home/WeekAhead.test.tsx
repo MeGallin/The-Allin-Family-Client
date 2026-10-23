@@ -21,6 +21,9 @@ const state = vi.hoisted(() => ({
   context: undefined as WeekContext | undefined,
   food: undefined as FoodAlertsFeed | undefined,
 }))
+vi.mock('../../../features/travel/useTravel', () => ({
+  useTravel: () => ({ data: undefined, isLoading: false, isError: false }),
+}))
 vi.mock('../../../features/food-alerts/useFoodAlerts', () => ({
   useFoodAlerts: () => ({ data: state.food, isLoading: !state.food, isError: false }),
 }))

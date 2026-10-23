@@ -4,6 +4,7 @@ import { Panel } from '../../components/ui/Panel'
 import { AccentPicker } from '../../components/profile/AccentPicker'
 import { NicknameForm } from '../../components/profile/NicknameForm'
 import { WeekPreferencesForm } from '../../components/profile/WeekPreferencesForm'
+import { TravelPreferencesForm } from '../../components/profile/TravelPreferencesForm'
 import './ProfilePage.css'
 export default function ProfilePage() {
   const user = useAppSelector((state) => state.auth.user)
@@ -23,6 +24,9 @@ export default function ProfilePage() {
         </Panel>
         <Panel title="Your Week Ahead">
           <WeekPreferencesForm />
+        </Panel>
+        <Panel title="Your travel">
+          <TravelPreferencesForm />
         </Panel>
       </div>
       <p className="note">

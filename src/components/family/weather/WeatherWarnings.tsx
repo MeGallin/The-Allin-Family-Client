@@ -23,7 +23,7 @@ export default function WeatherWarnings({
         linkLabel="View warning map"
       />
       {stale && (
-        <p className="weather-warnings__status" role="status">
+        <p className="alert-briefing__status" role="status">
           Updates are delayed. These are saved notices; check the Met Office for the latest warning.
         </p>
       )}
@@ -42,10 +42,10 @@ export default function WeatherWarnings({
             />
           ),
           content: (
-            <div className="weather-warning__body">
-              <section className="weather-warning__coverage" aria-label="Warning coverage">
+            <div className="alert-briefing__body">
+              <section className="alert-briefing__panel" aria-label="Warning coverage">
                 <h3>When and where</h3>
-                <dl className="weather-warning__times">
+                <dl className="alert-briefing__times">
                   <div>
                     <dt>From</dt>
                     <dd>
@@ -59,15 +59,15 @@ export default function WeatherWarnings({
                     </dd>
                   </div>
                 </dl>
-                <p className="weather-warning__scope">
+                <p className="alert-briefing__note">
                   Matched by your saved town/county names. A warning may cover only part of a listed
                   area; check the official map for exact coverage.
                 </p>
               </section>
-              <section className="weather-warning__advice" aria-label="Official warning">
+              <section className="alert-briefing__advice" aria-label="Official warning">
                 <h3>Met Office summary</h3>
                 <p>{warning.description}</p>
-                <p className="weather-warning__utc">
+                <p className="alert-briefing__supplement">
                   Times in the original summary are UTC. Validity times are shown in UK local time.
                 </p>
                 <a href={warning.url} target="_blank" rel="noopener noreferrer">
@@ -79,7 +79,7 @@ export default function WeatherWarnings({
           ),
         }))}
       />
-      <p className="weather-warnings__checked">
+      <p className="alert-briefing__footer">
         {updatedAt && (
           <>
             Last checked <FriendlyTime value={updatedAt} /> ·{' '}

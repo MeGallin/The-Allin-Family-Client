@@ -38,6 +38,7 @@ export function AlertSource({
 export function AlertSummary({
   icon,
   label,
+  mark,
   metadata,
   headline,
   preview,
@@ -45,16 +46,19 @@ export function AlertSummary({
 }: {
   icon: LucideIcon
   label: string
+  mark?: ReactNode
   metadata?: ReactNode
-  headline: string
+  headline: ReactNode
   preview?: ReactNode
   tone?: 'error' | 'yellow' | 'amber' | 'red' | 'accent' | 'muted'
 }) {
   return (
     <>
-      <span className={'alert-briefing__mark alert-briefing--' + tone} aria-hidden="true">
-        <Icon icon={icon} />
-      </span>
+      {mark ?? (
+        <span className={'alert-briefing__mark alert-briefing--' + tone} aria-hidden="true">
+          <Icon icon={icon} />
+        </span>
+      )}
       <span className="alert-briefing__meta">
         <span className={'alert-briefing__kind alert-briefing--' + tone}>{label}</span>
         {metadata}

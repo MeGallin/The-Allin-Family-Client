@@ -1,0 +1,138 @@
+.travel-preferences {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  min-width: 0;
+}
+.travel-preferences__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+.travel-preferences__all {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-min-height);
+  margin-left: auto;
+  padding: var(--space-2);
+  border-radius: var(--radius-control);
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+.travel-preferences__all input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  min-height: 0;
+}
+.travel-preferences__all-mark {
+  display: grid;
+  place-items: center;
+  width: var(--space-5);
+  height: var(--space-5);
+  flex-shrink: 0;
+  border: 1px solid var(--color-border-strong);
+  border-radius: calc(var(--radius-control) / 2);
+  background: var(--color-surface-muted);
+}
+.travel-preferences__all-mark .ui-icon {
+  width: var(--space-4);
+  height: var(--space-4);
+  opacity: 0;
+}
+.travel-preferences__all-mark.is-selected {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-link);
+}
+.travel-preferences__all-mark.is-selected .ui-icon {
+  opacity: 1;
+}
+.travel-preferences__all:focus-within {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.travel-preferences__all:has(input:disabled) {
+  opacity: 0.65;
+  cursor: default;
+}
+.travel-preferences__summary > .ui-icon {
+  color: var(--color-link);
+}
+.travel-preferences__summary span {
+  display: grid;
+  gap: var(--space-1);
+}
+.travel-preferences__summary small {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+.travel-preferences fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.travel-preferences legend {
+  margin-bottom: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+.travel-preferences__choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: var(--space-2);
+}
+.travel-preferences__choice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-min-height);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-muted);
+  cursor: pointer;
+  font-size: var(--text-xs);
+}
+.travel-preferences__choice input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.travel-preferences__choice .ui-icon {
+  flex-shrink: 0;
+  margin-left: auto;
+  width: var(--space-4);
+  height: var(--space-4);
+  opacity: 0;
+}
+.travel-preferences__choice.is-selected {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+.travel-preferences__choice.is-selected .ui-icon {
+  opacity: 1;
+  color: var(--color-link);
+}
+.travel-preferences__choice:focus-within {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.travel-preferences fieldset:disabled {
+  opacity: 0.65;
+}
+.travel-preferences .note {
+  margin: 0;
+}
+@media (min-width: 30rem) {
+  .travel-preferences > button {
+    justify-self: start;
+  }
+}

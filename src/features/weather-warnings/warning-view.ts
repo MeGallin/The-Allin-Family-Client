@@ -17,15 +17,4 @@ export function weatherWarningView(
   }
 }
 
-const ukTime = new Intl.DateTimeFormat('en-GB', {
-  timeZone: 'Europe/London',
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-  timeZoneName: 'short',
-})
-export function warningTime(value: string) {
-  return ukTime.format(new Date(value))
-}
+export { formatUkDateTime as warningTime } from '../../lib/uk-time'

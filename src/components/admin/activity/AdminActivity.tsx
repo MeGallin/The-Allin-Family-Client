@@ -1,5 +1,5 @@
 import { ReportingPeriodSelect } from '../../ui/ReportingPeriodSelect'
-import { chartDate } from '../../../features/insights/chart-config'
+import { chartDate, featureNames } from '../../../features/insights/chart-config'
 import { useId } from 'react'
 import { useAdminFilters } from '../../../features/admin/useAdminFilters'
 import { activityApi } from '../../../services/activity-query'
@@ -56,7 +56,7 @@ export default function AdminActivity() {
               ['calendar_event', 'Calendar'],
               ['memory', 'Memories and likes'],
               ['poll', 'Polls and votes'],
-              ['user_profile', 'Nicknames'],
+              ['user_profile', featureNames.user_profile],
               ['user_account', 'Family accounts'],
             ].map(([value, label]) => (
               <option key={value} value={value}>

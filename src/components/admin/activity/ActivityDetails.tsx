@@ -13,6 +13,7 @@ const labels: Record<string, string> = {
   nickname: 'Nickname',
   town: 'Weather town',
   holidayRegion: 'Bank holiday region',
+  travelLines: 'TfL lines',
   username: 'Sign-in username',
   displayName: 'Full name',
   role: 'Role',
@@ -27,6 +28,7 @@ const labels: Record<string, string> = {
   choice: 'Vote',
 }
 function display(value: unknown, key: string): string {
+  if (key === 'travelLines' && Array.isArray(value) && !value.length) return 'Switched off'
   if (key === 'holidayRegion' && typeof value === 'string')
     return (
       (

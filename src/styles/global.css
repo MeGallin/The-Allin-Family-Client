@@ -176,8 +176,12 @@ button:active:not(:disabled) {
 }
 
 button:disabled {
-  cursor: wait;
+  cursor: default;
   opacity: 0.62;
+}
+
+button[aria-busy='true'] {
+  cursor: progress;
 }
 
 @media (prefers-reduced-motion: reduce) {

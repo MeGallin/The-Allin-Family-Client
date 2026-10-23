@@ -17,6 +17,9 @@
 .calendar-day-tile.is-today {
   border-color: var(--color-accent);
 }
+.calendar-day-tile.has-plans {
+  background-color: var(--color-calendar-planned-surface);
+}
 .calendar-day-tile.is-weekend {
   background-image: repeating-linear-gradient(
     45deg,

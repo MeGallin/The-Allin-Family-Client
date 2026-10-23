@@ -25,6 +25,11 @@
   --color-important: var(--color-accent);
   --color-important-surface: var(--color-accent-soft);
   --color-important-text: var(--color-link);
+  --color-calendar-planned-surface: color-mix(
+    in srgb,
+    var(--color-accent) 8%,
+    var(--color-surface-muted)
+  );
   --color-action: var(--color-accent);
   --color-action-hover: var(--color-accent-highlight);
   --color-link: var(--color-accent-highlight);

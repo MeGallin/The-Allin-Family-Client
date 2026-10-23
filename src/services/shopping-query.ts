@@ -47,6 +47,8 @@ export const shoppingApi = createApi({
     'AdminInsights',
     'WeekContext',
     'WeekPreferences',
+    'Travel',
+    'TravelPreferences',
   ],
   refetchOnFocus: true,
   refetchOnReconnect: true,

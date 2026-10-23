@@ -29,13 +29,13 @@ export function FoodAlerts() {
         linkLabel="View all alerts"
       />
       {isLoading ? (
-        <p className="food-alerts__message" role="status">
+        <p className="alert-briefing__status" role="status">
           Checking the latest food alerts…
         </p>
       ) : (
         <>
           {(unavailable || stale) && (
-            <p className="food-alerts__message" role="status">
+            <p className="alert-briefing__status" role="status">
               {alerts?.length
                 ? 'Updates are temporarily unavailable. These notices were last checked earlier; check the FSA for the latest advice.'
                 : 'Food alerts are temporarily unavailable. Check the FSA for the latest advice.'}{' '}
@@ -61,14 +61,14 @@ export function FoodAlerts() {
             />
           )}
           {!unavailable && !alerts?.length && (
-            <p className="food-alerts__message">
+            <p className="alert-briefing__status">
               No notices returned by the FSA. View all alerts for official advice.
             </p>
           )}
         </>
       )}
       {data?.updatedAt && (
-        <p className="food-alerts__checked">
+        <p className="alert-briefing__footer">
           Last checked <FriendlyTime value={data.updatedAt} />
           {stale && ' · updates delayed'}
         </p>

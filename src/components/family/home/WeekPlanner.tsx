@@ -20,6 +20,9 @@ import { holidayCalendarIndicator } from './calendar-day-indicators'
 import type { CalendarIndicator } from '../../ui/IndicatorStrip'
 import { useWeatherWarnings } from '../../../features/weather-warnings/useWeatherWarnings'
 import { weatherWarningView } from '../../../features/weather-warnings/warning-view'
+import { useTravel } from '../../../features/travel/useTravel'
+import { prepareTravelView } from '../../../features/travel/travel-view'
+import { travelCalendarIndicator } from './CalendarTravel'
 import './WeekPlanner.css'
 import './WeekPlannerLayout.css'
 
@@ -37,6 +40,8 @@ export function WeekPlanner() {
   const foodIndicator = useFoodCalendarIndicator()
   const warningFeed = useWeatherWarnings()
   const warningView = weatherWarningView(warningFeed.data, warningFeed.isError, now)
+  const travelFeed = useTravel()
+  const travelForDay = prepareTravelView(travelFeed.data, travelFeed.isError, now)
   const weather = context.data?.weather
   const today = startOfDay(now)
   const upcoming = upcomingEvents(events, now)
@@ -135,6 +140,14 @@ export function WeekPlanner() {
                   const indicators: CalendarIndicator[] = []
                   if (warningIndicator) indicators.push(warningIndicator)
                   if (index === 0 && foodIndicator) indicators.push(foodIndicator)
+                  const travelIndicator = travelCalendarIndicator(
+                    {
+                      day: key,
+                      ...travelForDay(key),
+                    },
+                    index === 0,
+                  )
+                  if (travelIndicator) indicators.push(travelIndicator)
                   if (holiday)
                     indicators.push(
                       holidayCalendarIndicator(
@@ -202,6 +215,19 @@ export function WeekPlanner() {
                   rel="noopener noreferrer"
                 >
                   Check the Met Office<span className="sr-only"> (opens in a new tab)</span>
+                </a>
+                .
+              </p>
+            )}
+            {travelFeed.isError && !travelFeed.data && (
+              <p className="weather-warnings-status" role="status">
+                Travel updates are unavailable.{' '}
+                <a
+                  href="https://tfl.gov.uk/tube-dlr-overground/status/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Check TfL<span className="sr-only"> (opens in a new tab)</span>
                 </a>
                 .
               </p>

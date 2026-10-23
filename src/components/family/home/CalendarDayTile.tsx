@@ -42,6 +42,7 @@ export function CalendarDayTile({
     <div
       className={
         'calendar-day-tile week-planner__day' +
+        (!plansUnavailable && plans.length ? ' has-plans' : '') +
         (isToday ? ' is-today' : '') +
         (weekend ? ' is-weekend' : '')
       }

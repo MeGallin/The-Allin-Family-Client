@@ -1,0 +1,27 @@
+/* TfL Colour Standard, issue 11 (August 2026), RGB values, sections 3, 5 and 6.
+ * https://content.tfl.gov.uk/tfl-colour-standard.pdf
+ * Provider identities are independent of personal accents and disruption severity.
+ */
+:root {
+  --color-tfl-bakerloo: #b26300;
+  --color-tfl-central: #dc241f;
+  --color-tfl-circle: #ffc80a;
+  --color-tfl-district: #007d32;
+  --color-tfl-hammersmith-city: #f589a6;
+  --color-tfl-jubilee: #838d93;
+  --color-tfl-metropolitan: #9b0058;
+  --color-tfl-northern: #000000;
+  --color-tfl-piccadilly: #0019a8;
+  --color-tfl-victoria: #039be5;
+  --color-tfl-waterloo-city: #76d0bd;
+  --color-tfl-liberty: #5d6061;
+  --color-tfl-lioness: #faa61a;
+  --color-tfl-mildmay: #0077ad;
+  --color-tfl-suffragette: #5bbd72;
+  --color-tfl-weaver: #823a62;
+  --color-tfl-windrush: #ed1b00;
+  --color-tfl-dlr: #00afad;
+  --color-tfl-elizabeth: #60399e;
+  --color-tfl-ink-light: #ffffff;
+  --color-tfl-ink-dark: #000000;
+}

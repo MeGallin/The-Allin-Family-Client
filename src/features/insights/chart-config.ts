@@ -10,7 +10,7 @@ export const featureNames: Record<string, string> = {
   calendar_event: 'Calendar',
   memory: 'Memories',
   poll: 'Polls',
-  user_profile: 'Nicknames',
+  user_profile: 'Profiles and preferences',
   user_account: 'Family accounts',
 }
 export function chartDate(day: string, full = false) {

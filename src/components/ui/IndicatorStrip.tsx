@@ -33,7 +33,7 @@ export function IndicatorStrip({
   const ordered = [...indicators].sort(
     (a, b) => a.priority - b.priority || a.id.localeCompare(b.id),
   )
-  const visible = ordered.slice(0, 2)
+  const visible = ordered.slice(0, 3)
   const remaining = ordered.length - visible.length
   const selected =
     typeof view === 'object' && view ? ordered.find((item) => item.id === view.id) : undefined
@@ -82,34 +82,40 @@ export function IndicatorStrip({
           className="indicator-dialog"
           scrollable
         >
-          <Suspense fallback={<LoadingState label="Opening details…" />}>
-            {selected ? (
-              selected.details()
-            ) : ordered.length ? (
-              <Accordion
-                lazy
-                itemClassName="alert-briefing__item"
-                summaryClassName="alert-briefing__summary"
-                items={ordered.map((item) => ({
-                  id: item.id,
-                  title: (
-                    <AlertSummary
-                      icon={item.icon}
-                      label={item.source}
-                      tone={item.tone}
-                      headline={item.description}
-                      preview={item.label}
-                    />
-                  ),
-                  content: <div className="indicator-dialog__detail">{item.details()}</div>,
-                }))}
-              />
-            ) : (
-              <p>
-                These indicators are no longer available. Close this dialog to check the calendar.
-              </p>
-            )}
-          </Suspense>
+          {selected ? (
+            <Suspense fallback={<LoadingState label="Opening details…" />}>
+              {selected.details()}
+            </Suspense>
+          ) : ordered.length ? (
+            <Accordion
+              lazy
+              itemClassName="alert-briefing__item"
+              summaryClassName="alert-briefing__summary"
+              items={ordered.map((item) => ({
+                id: item.id,
+                title: (
+                  <AlertSummary
+                    icon={item.icon}
+                    label={item.source}
+                    tone={item.tone}
+                    headline={item.description}
+                    preview={item.label}
+                  />
+                ),
+                content: (
+                  <div className="indicator-dialog__detail">
+                    <Suspense fallback={<LoadingState label="Opening details…" />}>
+                      {item.details()}
+                    </Suspense>
+                  </div>
+                ),
+              }))}
+            />
+          ) : (
+            <p>
+              These indicators are no longer available. Close this dialog to check the calendar.
+            </p>
+          )}
         </Modal>
       )}
     </div>
