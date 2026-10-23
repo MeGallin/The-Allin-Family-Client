@@ -18,3 +18,7 @@ export function TravelLineIcon({ lineId }: { lineId: string }) {
     </span>
   )
 }
+
+export function TravelLineSwatch({ lineId }: { lineId: string }) {
+  return <span className="travel-line-swatch" data-line={lineId} aria-hidden="true" />
+}

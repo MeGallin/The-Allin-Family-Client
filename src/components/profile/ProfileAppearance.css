@@ -1,0 +1,90 @@
+.profile-appearance {
+  min-width: 0;
+}
+.profile-appearance__preview {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  overflow: hidden;
+  min-height: calc(var(--space-8) + var(--space-8));
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: linear-gradient(115deg, var(--color-surface-raised), var(--color-accent-soft));
+}
+.profile-appearance__orbit {
+  position: absolute;
+  top: calc(-1 * var(--space-7));
+  right: var(--space-6);
+  width: 13rem;
+  height: 13rem;
+  border: var(--space-5) solid color-mix(in srgb, var(--color-accent) 10%, transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 var(--space-6) color-mix(in srgb, var(--color-accent) 5%, transparent);
+}
+.profile-appearance__initial {
+  position: relative;
+  color: var(--color-link);
+  font-size: var(--text-display);
+  font-weight: 600;
+  line-height: 1;
+}
+.profile-appearance__sample {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+  padding: var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 30%, var(--color-border));
+  border-radius: var(--radius-control);
+  background: var(--color-surface-muted);
+  color: var(--color-link);
+  font-size: var(--text-caption);
+}
+.profile-appearance__sample .ui-icon {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+.profile-appearance h3 {
+  margin: var(--space-5) 0 var(--space-2);
+  font-size: var(--text-2xl);
+  letter-spacing: -0.04em;
+}
+.profile-appearance .accent-picker legend {
+  font-size: var(--text-xs);
+  font-weight: 550;
+  color: var(--color-text-muted);
+}
+.profile-appearance .accent-picker .note {
+  font-size: var(--text-xs);
+}
+.profile-appearance .accent-picker {
+  --swatch-size: 2.5rem;
+}
+.profile-appearance .accent-picker__label {
+  font-size: var(--text-caption);
+}
+.profile-appearance .accent-picker__choices {
+  padding-top: var(--space-5);
+}
+.profile-appearance .accent-picker__feedback {
+  border: 0;
+  padding: 0;
+}
+.profile-appearance__scope {
+  display: flex;
+  align-items: start;
+  gap: var(--space-2);
+  margin: var(--space-4) 0 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--text-caption);
+}
+.profile-appearance__scope .ui-icon {
+  width: var(--space-4);
+  height: var(--space-4);
+  flex-shrink: 0;
+}

@@ -1,0 +1,66 @@
+.profile-section {
+  min-width: 0;
+  padding: var(--space-5) var(--space-4);
+}
+.profile-section__heading {
+  display: flex;
+  align-items: start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+.profile-section__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: calc(var(--space-6) + var(--space-2));
+  height: calc(var(--space-6) + var(--space-2));
+  border-radius: var(--radius-control);
+  background: var(--color-accent-soft);
+  color: var(--color-link);
+}
+.profile-section__heading h2 {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-lg);
+  line-height: 1.4;
+  letter-spacing: -0.025em;
+}
+.profile-section__heading p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+.profile-section__body {
+  min-width: 0;
+}
+.profile-section__body > .note {
+  margin: 0 0 var(--space-5);
+  font-size: var(--text-xs);
+  max-width: var(--content-width);
+}
+.profile-section__body form {
+  margin-top: 0;
+}
+.profile-section__body :is(.note, .error, .nickname-form__feedback, .week-preferences__feedback) {
+  font-size: var(--text-xs);
+  line-height: var(--line-compact);
+}
+.profile-section__body :is(input, select, button) {
+  font-size: var(--text-sm);
+}
+.profile-section__body :is(.nickname-form, .week-preferences, .travel-preferences) > button {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+.profile-section__body .nickname-form {
+  max-width: var(--content-width);
+  gap: var(--space-4);
+}
+@container family-content (min-width: 40rem) {
+  .profile-section {
+    padding: var(--space-6);
+  }
+  .profile-section__body :is(.nickname-form, .week-preferences, .travel-preferences) > button {
+    width: auto;
+    justify-self: start;
+  }
+}

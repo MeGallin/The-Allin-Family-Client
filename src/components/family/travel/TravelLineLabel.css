@@ -1,3 +1,11 @@
+.travel-line-swatch {
+  width: var(--space-1);
+  height: var(--space-5);
+  flex-shrink: 0;
+  border: 1px solid color-mix(in srgb, var(--color-tfl-ink-light) 35%, transparent);
+  border-radius: var(--radius-pill);
+  background: var(--travel-line-color, var(--color-border-strong));
+}
 .travel-line-label {
   display: inline-block;
   max-width: 100%;
@@ -13,97 +21,192 @@
   vertical-align: middle;
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='bakerloo'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='bakerloo'] {
   --travel-line-color: var(--color-tfl-bakerloo);
   --travel-line-ink: var(--color-tfl-ink-dark);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='central'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='central'] {
   --travel-line-color: var(--color-tfl-central);
   --travel-line-ink: var(--color-tfl-ink-light);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='circle'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='circle'] {
   --travel-line-color: var(--color-tfl-circle);
   --travel-line-ink: var(--color-tfl-ink-dark);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='district'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='district'] {
   --travel-line-color: var(--color-tfl-district);
   --travel-line-ink: var(--color-tfl-ink-light);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='hammersmith-city'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='hammersmith-city'] {
   --travel-line-color: var(--color-tfl-hammersmith-city);
   --travel-line-ink: var(--color-tfl-ink-dark);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='jubilee'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='jubilee'] {
   --travel-line-color: var(--color-tfl-jubilee);
   --travel-line-ink: var(--color-tfl-ink-dark);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='metropolitan'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='metropolitan'] {
   --travel-line-color: var(--color-tfl-metropolitan);
   --travel-line-ink: var(--color-tfl-ink-light);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='northern'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='northern'] {
   --travel-line-color: var(--color-tfl-northern);
   --travel-line-ink: var(--color-tfl-ink-light);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='piccadilly'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='piccadilly'] {
   --travel-line-color: var(--color-tfl-piccadilly);
   --travel-line-ink: var(--color-tfl-ink-light);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='victoria'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='victoria'] {
   --travel-line-color: var(--color-tfl-victoria);
   --travel-line-ink: var(--color-tfl-ink-dark);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='waterloo-city'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='waterloo-city'] {
   --travel-line-color: var(--color-tfl-waterloo-city);
   --travel-line-ink: var(--color-tfl-ink-dark);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='liberty'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='liberty'] {
   --travel-line-color: var(--color-tfl-liberty);
   --travel-line-ink: var(--color-tfl-ink-light);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='lioness'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='lioness'] {
   --travel-line-color: var(--color-tfl-lioness);
   --travel-line-ink: var(--color-tfl-ink-dark);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='mildmay'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='mildmay'] {
   --travel-line-color: var(--color-tfl-mildmay);
   --travel-line-ink: var(--color-tfl-ink-light);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='suffragette'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='suffragette'] {
   --travel-line-color: var(--color-tfl-suffragette);
   --travel-line-ink: var(--color-tfl-ink-dark);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='weaver'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='weaver'] {
   --travel-line-color: var(--color-tfl-weaver);
   --travel-line-ink: var(--color-tfl-ink-light);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='windrush'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='windrush'] {
   --travel-line-color: var(--color-tfl-windrush);
   --travel-line-ink: var(--color-tfl-ink-dark);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='dlr'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='dlr'] {
   --travel-line-color: var(--color-tfl-dlr);
   --travel-line-ink: var(--color-tfl-ink-dark);
 }
 
-:is(.travel-line-label, .travel-line-icon, .travel-notice__timeline)[data-line='elizabeth'] {
+:is(
+  .travel-line-label,
+  .travel-line-icon,
+  .travel-line-swatch,
+  .travel-notice__timeline
+)[data-line='elizabeth'] {
   --travel-line-color: var(--color-tfl-elizabeth);
   --travel-line-ink: var(--color-tfl-ink-light);
 }

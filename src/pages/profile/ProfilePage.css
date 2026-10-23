@@ -1,17 +1,35 @@
-.profile-sections {
+.profile-studio {
   display: grid;
-  align-items: start;
-  gap: var(--space-5);
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-muted);
+  overflow: clip;
+}
+.profile-studio > .tabs {
   min-width: 0;
 }
-.profile-page .nickname-form {
-  margin-top: var(--space-4);
+.profile-page__privacy {
+  display: flex;
+  align-items: start;
+  gap: var(--space-2);
+  max-width: var(--content-width);
+  color: var(--color-text-muted);
+}
+.profile-page__privacy p {
+  margin: 0;
+  font-size: var(--text-caption);
+  line-height: 1.7;
+}
+.profile-page__privacy .ui-icon {
+  flex-shrink: 0;
+  width: var(--space-4);
+  height: var(--space-4);
+  margin-top: var(--space-1);
 }
 @container family-content (min-width: 54rem) {
-  .profile-sections {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .profile-sections > .panel:last-child {
-    grid-column: 1 / -1;
+  .profile-studio {
+    grid-template-columns: minmax(12rem, 15rem) minmax(0, 1fr);
+    min-height: 36rem;
   }
 }

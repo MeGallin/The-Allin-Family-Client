@@ -6,6 +6,7 @@ import type { TravelPreferences } from '../../features/travel/types'
 import { useDraftGuard } from '../../features/drafts/DraftProtection'
 import { Icon } from '../ui/Icon'
 import { LoadingState } from '../ui/LoadingState'
+import { TravelLineSwatch } from '../family/travel/TravelLineLabel'
 import './TravelPreferencesForm.css'
 
 export function TravelPreferencesForm() {
@@ -14,8 +15,7 @@ export function TravelPreferencesForm() {
   return (
     <>
       <p className="note">
-        Follow the TfL lines you use. Your choices follow your account on every device. Leave all
-        lines unselected to switch travel indicators off.
+        Follow the TfL lines you use. Your choices follow your account on every device.
       </p>
       {query.data && <TravelEditor preferences={query.data} />}
       {query.isError && (
@@ -130,6 +130,7 @@ function TravelEditor({ preferences }: { preferences: TravelPreferences }) {
                       setFeedback('')
                     }}
                   />
+                  <TravelLineSwatch lineId={line.id} />
                   <span>{line.name}</span>
                   <Icon icon={Check} />
                 </label>
@@ -177,8 +178,9 @@ function TravelEditor({ preferences }: { preferences: TravelPreferences }) {
         {feedback}
       </p>
       <p className="note">
-        London transport only. Guildford mainline trains are not covered. Live delays appear today;
-        published planned works are checked for the next 30 days.
+        Leave all lines unselected to switch TfL indicators off. London transport only. Guildford
+        mainline trains are not covered. Live delays appear today; published planned works are
+        checked for the next 30 days.
       </p>
     </form>
   )

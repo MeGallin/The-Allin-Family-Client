@@ -15,17 +15,9 @@ export function WeekPreferencesForm() {
   const context = useWeekContext()
   return (
     <>
-      <WeekContextStatus
-        data={context.data}
-        loading={context.isLoading}
-        error={context.isError}
-        retry={() => {
-          void context.refetch()
-        }}
-      />
       <p className="note">
-        Your forecast and bank holidays follow your account on every device. Start with Guildford,
-        Surrey, or choose your own town.
+        Choose your weather town and bank holiday region. These choices follow your account on every
+        device.
       </p>
       {query.isLoading ? (
         <LoadingState label="Loading your preferences…" />
@@ -47,6 +39,16 @@ export function WeekPreferencesForm() {
           Reload preferences
         </button>
       )}
+      <div className="week-preferences__source">
+        <WeekContextStatus
+          data={context.data}
+          loading={context.isLoading}
+          error={context.isError}
+          retry={() => {
+            void context.refetch()
+          }}
+        />
+      </div>
     </>
   )
 }
@@ -91,112 +93,119 @@ function PreferenceEditor({ preferences }: { preferences: WeekPreferences }) {
   }
   return (
     <form className="week-preferences" onSubmit={submit}>
-      <div className="week-preferences__current">
-        <Icon icon={MapPin} />
-        <span>
-          <small>Your weather town</small>
-          <strong>{town?.label ?? 'Weather switched off'}</strong>
-        </span>
-      </div>
-      <label htmlFor={id + '-town'}>Find a town</label>
-      <div className="week-preferences__search">
-        <input
-          id={id + '-town'}
-          type="search"
-          autoComplete="off"
-          value={term}
-          maxLength={80}
-          placeholder="Town, country"
-          disabled={mutation.isLoading}
-          aria-describedby={id + '-help'}
-          onChange={(event) => {
-            setTerm(event.target.value)
-            setFeedback('')
-          }}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              event.preventDefault()
-              if (term.trim().length >= 2 && !results.isFetching) void search(term.trim())
-            }
-          }}
-        />
-        <button
-          type="button"
-          className="secondary"
-          disabled={term.trim().length < 2 || results.isFetching || mutation.isLoading}
-          onClick={() => {
-            void search(term.trim())
-          }}
-        >
-          <Icon icon={Search} />
-          {results.isFetching ? 'Searching…' : 'Search'}
-        </button>
-      </div>
-      <p className="note" id={id + '-help'}>
-        Search and select the correct town. Only the town name is sent to Open-Meteo; no GPS or
-        street address is needed.
-      </p>
-      {searchError && (
-        <p className="error" role="alert">
-          {searchError}
+      <fieldset className="preference-group" disabled={mutation.isLoading}>
+        <legend>Weather forecast</legend>
+        <div className="week-preferences__current">
+          <Icon icon={MapPin} />
+          <span>
+            <small>Your weather town</small>
+            <strong>{town?.label ?? 'Weather switched off'}</strong>
+          </span>
+        </div>
+        <label htmlFor={id + '-town'}>Find a town</label>
+        <div className="week-preferences__search">
+          <input
+            id={id + '-town'}
+            type="search"
+            autoComplete="off"
+            value={term}
+            maxLength={80}
+            placeholder="Town, country"
+            disabled={mutation.isLoading}
+            aria-describedby={id + '-help'}
+            onChange={(event) => {
+              setTerm(event.target.value)
+              setFeedback('')
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault()
+                if (term.trim().length >= 2 && !results.isFetching) void search(term.trim())
+              }
+            }}
+          />
+          <button
+            type="button"
+            className="secondary"
+            disabled={term.trim().length < 2 || results.isFetching || mutation.isLoading}
+            onClick={() => {
+              void search(term.trim())
+            }}
+          >
+            <Icon icon={Search} />
+            {results.isFetching ? 'Searching…' : 'Search'}
+          </button>
+        </div>
+        <p className="note" id={id + '-help'}>
+          Search and select the correct town. Only the town name is sent to Open-Meteo; no GPS or
+          street address is needed.
         </p>
-      )}
-      {choices &&
-        !results.isFetching &&
-        (choices.length ? (
-          <fieldset className="week-preferences__results">
-            <legend>Choose your town</legend>
-            {choices.map((choice) => (
-              <button
-                key={choice.id}
-                type="button"
-                className="secondary"
-                disabled={mutation.isLoading}
-                onClick={() => {
-                  setSelection(choice)
-                  setTerm('')
-                  setFeedback('')
-                }}
-              >
-                <Icon icon={MapPin} />
-                <span>{choice.label}</span>
-              </button>
-            ))}
-          </fieldset>
-        ) : (
-          <p role="status" className="note">
-            No towns found. Try a nearby town or add the country.
+        {searchError && (
+          <p className="error" role="alert">
+            {searchError}
           </p>
-        ))}
-      <div className="week-preferences__actions">
-        <button
-          className="text-button"
-          type="button"
-          disabled={mutation.isLoading || !town}
-          onClick={() => {
-            setSelection(null)
-            setTerm('')
+        )}
+        {choices &&
+          !results.isFetching &&
+          (choices.length ? (
+            <fieldset className="week-preferences__results">
+              <legend>Choose your town</legend>
+              {choices.map((choice) => (
+                <button
+                  key={choice.id}
+                  type="button"
+                  className="secondary"
+                  disabled={mutation.isLoading}
+                  onClick={() => {
+                    setSelection(choice)
+                    setTerm('')
+                    setFeedback('')
+                  }}
+                >
+                  <Icon icon={MapPin} />
+                  <span>{choice.label}</span>
+                </button>
+              ))}
+            </fieldset>
+          ) : (
+            <p role="status" className="note">
+              No towns found. Try a nearby town or add the country.
+            </p>
+          ))}
+        <div className="week-preferences__actions">
+          <button
+            className="text-button"
+            type="button"
+            disabled={mutation.isLoading || !town}
+            onClick={() => {
+              setSelection(null)
+              setTerm('')
+              setFeedback('')
+            }}
+          >
+            Turn weather off
+          </button>
+        </div>
+      </fieldset>
+      <fieldset className="preference-group" disabled={mutation.isLoading}>
+        <legend>Bank holidays</legend>
+        <label htmlFor={id + '-region'}>Bank holiday region</label>
+        <select
+          id={id + '-region'}
+          value={region}
+          disabled={mutation.isLoading}
+          onChange={(event) => {
+            setRegion(event.target.value)
             setFeedback('')
           }}
         >
-          Turn weather off
-        </button>
-      </div>
-      <label htmlFor={id + '-region'}>Bank holiday region</label>
-      <select
-        id={id + '-region'}
-        value={region}
-        disabled={mutation.isLoading}
-        onChange={(event) => {
-          setRegion(event.target.value)
-          setFeedback('')
-        }}
-      >
-        <option value="england-and-wales">England and Wales</option>
-        <option value="scotland">Scotland</option>
-        <option value="northern-ireland">Northern Ireland</option>
-        <option value="">Don’t show UK bank holidays</option>
-      </select>
+          <option value="england-and-wales">England and Wales</option>
+          <option value="scotland">Scotland</option>
+          <option value="northern-ireland">Northern Ireland</option>
+          <option value="">Don’t show UK bank holidays</option>
+        </select>
+        <p className="note">The dates shown on your calendar follow this region.</p>
+      </fieldset>
       {changedElsewhere && (
         <div className="week-preferences__conflict" role="alert">
           <p>Your preferences changed elsewhere. Your draft is still here.</p>

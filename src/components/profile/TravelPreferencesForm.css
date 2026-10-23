@@ -67,6 +67,9 @@
   display: grid;
   gap: var(--space-1);
 }
+.travel-preferences__summary > span {
+  flex: 1;
+}
 .travel-preferences__summary small {
   color: var(--color-text-muted);
   font-size: var(--text-xs);
@@ -81,6 +84,8 @@
   margin-bottom: var(--space-2);
   color: var(--color-text-muted);
   font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 .travel-preferences__choices {
   display: grid;
@@ -114,8 +119,15 @@
   opacity: 0;
 }
 .travel-preferences__choice.is-selected {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-raised);
+}
+.travel-preferences__choice:hover {
   border-color: var(--color-accent);
-  background: var(--color-accent-soft);
+}
+.travel-preferences__choice > span:not(.travel-line-swatch) {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .travel-preferences__choice.is-selected .ui-icon {
   opacity: 1;
