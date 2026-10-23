@@ -48,7 +48,7 @@ export default function AdminMembers() {
   }
   if (!user) return null
   return (
-    <section className="admin-members" aria-labelledby="admin-members-heading">
+    <section className="admin-members content-surface" aria-labelledby="admin-members-heading">
       <header className="admin-members__header">
         <div>
           <h2 id="admin-members-heading">Family members</h2>

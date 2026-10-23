@@ -14,6 +14,7 @@ import { useWeekContext } from '../../../features/week-context/useWeekContext'
 import { DayWeather } from './DayWeather'
 import { HorizontalScroll } from '../../ui/HorizontalScroll'
 import './WeekPlanner.css'
+import './WeekPlannerLayout.css'
 
 export function WeekPlanner() {
   const [search, setSearch] = useSearchParams()
@@ -40,161 +41,179 @@ export function WeekPlanner() {
   // Annual events are the calendar's existing birthday/anniversary convention.
   const annual = upcoming.find((event) => event.annually && event.id !== next?.id)
   return (
-    <Panel
-      title="Days ahead"
-      action={
-        <Link to="/calendar">
-          Open calendar <Icon icon={ArrowUpRight} />
-        </Link>
-      }
-      className="week-planner"
-    >
-      <p className="week-planner__range-caption" role="status">
-        {format(today, 'd MMM yyyy')} – {format(addDays(today, dayCount - 1), 'd MMM yyyy')} ·
-        Select a day to make a plan.
-      </p>
-      <HomeDataError error={error} retry={refresh} />
-      {loading ? (
-        <LoadingState label="Loading family plans…" />
-      ) : (
-        <>
-          <HorizontalScroll
-            label="Week Ahead calendar"
-            className="week-planner__scroll"
-            toolbar={
-              <form
-                className="week-planner__range"
-                onSubmit={(event) => {
-                  event.preventDefault()
-                  const value = Number(new FormData(event.currentTarget).get('days'))
-                  if (!Number.isInteger(value) || value < 4 || value > 360) return
-                  setSearch(
-                    (current) => {
-                      const next = new URLSearchParams(current)
-                      next.set('days', String(value))
-                      return next
-                    },
-                    { replace: true },
-                  )
-                }}
-              >
-                <label htmlFor={rangeId}>
-                  Days<span className="sr-only"> to show (4–360)</span>
-                </label>
-                <input
-                  key={dayCount}
-                  id={rangeId}
-                  name="days"
-                  type="number"
-                  min="4"
-                  max="360"
-                  step="1"
-                  required
-                  defaultValue={dayCount}
-                />
-                <button
-                  type="submit"
-                  className="icon-button secondary"
-                  aria-label="Show days"
-                  title="Apply day range"
+    <div className="home-diary content-surface">
+      <Panel
+        variant="plain"
+        title="Days ahead"
+        action={
+          <Link to="/calendar">
+            Open calendar <Icon icon={ArrowUpRight} />
+          </Link>
+        }
+        className="week-planner"
+      >
+        <p className="week-planner__range-caption" role="status">
+          {format(today, 'd MMM yyyy')} – {format(addDays(today, dayCount - 1), 'd MMM yyyy')} ·
+          Select a day to make a plan.
+        </p>
+        <HomeDataError error={error} retry={refresh} />
+        {loading ? (
+          <LoadingState label="Loading family plans…" />
+        ) : (
+          <>
+            <HorizontalScroll
+              label="Week Ahead calendar"
+              className="week-planner__scroll"
+              toolbar={
+                <form
+                  className="week-planner__range"
+                  onSubmit={(event) => {
+                    event.preventDefault()
+                    const value = Number(new FormData(event.currentTarget).get('days'))
+                    if (!Number.isInteger(value) || value < 4 || value > 360) return
+                    setSearch(
+                      (current) => {
+                        const next = new URLSearchParams(current)
+                        next.set('days', String(value))
+                        return next
+                      },
+                      { replace: true },
+                    )
+                  }}
                 >
-                  <Icon icon={Check} />
-                </button>
-              </form>
-            }
-          >
-            <ol className="week-planner__days" aria-label={`Next ${dayCount} days`}>
-              {days.map((day, index) => {
-                const key = dateInputValue(day)
-                const weekend = isWeekend(day)
-                const plans = plansByDay.get(key) ?? []
-                const forecast = weather?.data?.find((entry) => entry.date === key)
-                const holiday = context.data?.holidays.data?.find((entry) => entry.date === key)
-                return (
-                  <li key={day.toISOString()}>
-                    <div
-                      className={
-                        'week-planner__day' +
-                        (index === 0 ? ' is-today' : '') +
-                        (weekend ? ' is-weekend' : '') +
-                        (plans.length ? ' has-plans' : '')
-                      }
-                    >
-                      <Link
-                        to={`/calendar?compose=event&date=${key}`}
-                        className="week-planner__day-main"
-                        aria-label={`${format(day, 'EEEE d MMMM')}${index === 0 ? ', today' : ''}${holiday ? ', ' + holiday.title : ''}: ${error ? 'plans unavailable' : plans.length ? plans.map((plan) => plan.title).join('; ') : 'no plans'}`}
-                        aria-current={index === 0 ? 'date' : undefined}
+                  <label htmlFor={rangeId}>
+                    Days<span className="sr-only"> to show (4–360)</span>
+                  </label>
+                  <input
+                    key={dayCount}
+                    id={rangeId}
+                    name="days"
+                    type="number"
+                    min="4"
+                    max="360"
+                    step="1"
+                    required
+                    defaultValue={dayCount}
+                  />
+                  <button
+                    type="submit"
+                    className="icon-button secondary"
+                    aria-label="Show days"
+                    title="Apply day range"
+                  >
+                    <Icon icon={Check} />
+                  </button>
+                </form>
+              }
+            >
+              <ol className="week-planner__days" aria-label={`Next ${dayCount} days`}>
+                {days.map((day, index) => {
+                  const key = dateInputValue(day)
+                  const weekend = isWeekend(day)
+                  const plans = plansByDay.get(key) ?? []
+                  const forecast = weather?.data?.find((entry) => entry.date === key)
+                  const holiday = context.data?.holidays.data?.find((entry) => entry.date === key)
+                  return (
+                    <li key={day.toISOString()}>
+                      <div
+                        className={
+                          'week-planner__day' +
+                          (index === 0 ? ' is-today' : '') +
+                          (weekend ? ' is-weekend' : '') +
+                          (plans.length ? ' has-plans' : '')
+                        }
                       >
-                        <span className="week-planner__day-label">
-                          <span>{format(day, 'EEE')}</span>
-                          {(index === 0 || day.getDate() === 1) && (
-                            <span
-                              className="week-planner__month"
-                              title={format(day, 'MMMM yyyy')}
-                              aria-hidden="true"
-                            >
-                              {format(
-                                day,
-                                day.getFullYear() === today.getFullYear() ? 'MMM' : 'MMM yy',
-                              )}
+                        <Link
+                          to={`/calendar?compose=event&date=${key}`}
+                          className="week-planner__day-main"
+                          aria-label={`${format(day, 'EEEE d MMMM')}${index === 0 ? ', today' : ''}${holiday ? ', ' + holiday.title : ''}: ${error ? 'plans unavailable' : plans.length ? plans.map((plan) => plan.title).join('; ') : 'no plans'}`}
+                          aria-current={index === 0 ? 'date' : undefined}
+                        >
+                          <span className="week-planner__day-label">
+                            <span>{format(day, 'EEE')}</span>
+                            {(index === 0 || day.getDate() === 1) && (
+                              <span
+                                className="week-planner__month"
+                                title={format(day, 'MMMM yyyy')}
+                                aria-hidden="true"
+                              >
+                                {format(
+                                  day,
+                                  day.getFullYear() === today.getFullYear() ? 'MMM' : 'MMM yy',
+                                )}
+                              </span>
+                            )}
+                          </span>
+                          <strong>{format(day, 'd')}</strong>
+                          {holiday && (
+                            <span className="week-planner__holiday" title={holiday.title}>
+                              {holiday.title}
                             </span>
                           )}
-                        </span>
-                        <strong>{format(day, 'd')}</strong>
-                        {holiday && (
-                          <span className="week-planner__holiday" title={holiday.title}>
-                            {holiday.title}
-                          </span>
+                          {plans.length && !error ? (
+                            <span className="week-planner__highlight">
+                              <strong title={plans[0].title}>{plans[0].title}</strong>
+                              {plans.length > 1 && <small>+{plans.length - 1} more</small>}
+                            </span>
+                          ) : error || index === 0 ? (
+                            <small>{error ? 'Check calendar' : 'Today'}</small>
+                          ) : null}
+                        </Link>
+                        {forecast && weather && (
+                          <DayWeather
+                            day={forecast}
+                            location={weather.location}
+                            timeZone={weather.timeZone}
+                            updatedAt={weather.updatedAt}
+                            stale={
+                              weather.status === 'stale' ||
+                              context.isError ||
+                              (weather.updatedAt !== null &&
+                                now - Date.parse(weather.updatedAt) > 1800000)
+                            }
+                          />
                         )}
-                        {plans.length && !error ? (
-                          <span className="week-planner__highlight">
-                            <strong title={plans[0].title}>{plans[0].title}</strong>
-                            {plans.length > 1 && <small>+{plans.length - 1} more</small>}
-                          </span>
-                        ) : error || index === 0 ? (
-                          <small>{error ? 'Check calendar' : 'Today'}</small>
-                        ) : null}
-                      </Link>
-                      {forecast && weather && (
-                        <DayWeather
-                          day={forecast}
-                          location={weather.location}
-                          timeZone={weather.timeZone}
-                          updatedAt={weather.updatedAt}
-                          stale={
-                            weather.status === 'stale' ||
-                            context.isError ||
-                            (weather.updatedAt !== null &&
-                              now - Date.parse(weather.updatedAt) > 1800000)
-                          }
-                        />
-                      )}
-                    </div>
-                  </li>
-                )
-              })}
-            </ol>
-          </HorizontalScroll>
-          {next ? (
-            <Link className="week-planner__next" to="/calendar">
-              <span className="week-planner__date" aria-hidden="true">
-                <strong>{format(eventDate(next), 'd')}</strong>
-                <span>{format(eventDate(next), 'MMM')}</span>
-              </span>
-              <span className="week-planner__copy">
-                <small>Next on the calendar</small>
-                <strong>{next.title}</strong>
-                <span>
-                  {format(eventDate(next), 'EEEE, d MMMM')} ·{' '}
-                  {next.allDay ? 'All day' : format(eventDate(next), 'HH:mm')}
+                      </div>
+                    </li>
+                  )
+                })}
+              </ol>
+            </HorizontalScroll>
+            {!error && (
+              <p className="week-planner__count">
+                {visiblePlans.length} {visiblePlans.length === 1 ? 'plan' : 'plans'} in the next{' '}
+                {dayCount} days · {upcoming.length} upcoming in your family calendar
+              </p>
+            )}
+          </>
+        )}
+      </Panel>
+      <aside className="home-diary__next" aria-labelledby={rangeId + '-next'}>
+        <h2 id={rangeId + '-next'}>Next in your diary</h2>
+        {loading ? (
+          <LoadingState label="Loading next event…" />
+        ) : error ? (
+          <p className="home-diary__unavailable">Open the calendar to check upcoming dates.</p>
+        ) : (
+          <>
+            {next ? (
+              <Link className="week-planner__next" to="/calendar">
+                <span className="week-planner__date" aria-hidden="true">
+                  <strong>{format(eventDate(next), 'd')}</strong>
+                  <span>{format(eventDate(next), 'MMM')}</span>
                 </span>
-                <EventCountdown event={next} />
-              </span>
-              <Icon icon={ArrowUpRight} />
-            </Link>
-          ) : (
-            !error && (
+                <span className="week-planner__copy">
+                  <small>Next on the calendar</small>
+                  <strong>{next.title}</strong>
+                  <span>
+                    {format(eventDate(next), 'EEEE, d MMMM')} ·{' '}
+                    {next.allDay ? 'All day' : format(eventDate(next), 'HH:mm')}
+                  </span>
+                  <EventCountdown event={next} />
+                </span>
+                <Icon icon={ArrowUpRight} />
+              </Link>
+            ) : (
               <div className="week-planner__quiet">
                 <Icon icon={CalendarDays} />
                 <div>
@@ -202,29 +221,23 @@ export function WeekPlanner() {
                   <p>No upcoming plans. Open the calendar to plan something together.</p>
                 </div>
               </div>
-            )
-          )}
-          {annual && (
-            <Link className="week-planner__annual" to="/calendar">
-              <Icon icon={Cake} />
-              <span>
-                <small>Another date to remember</small>
-                <strong>{annual.title}</strong>
+            )}
+            {annual && (
+              <Link className="week-planner__annual" to="/calendar">
+                <Icon icon={Cake} />
                 <span>
-                  {format(eventDate(annual), 'd MMMM')} · <EventCountdown event={annual} />
+                  <small>Another date to remember</small>
+                  <strong>{annual.title}</strong>
+                  <span>
+                    {format(eventDate(annual), 'd MMMM')} · <EventCountdown event={annual} />
+                  </span>
                 </span>
-              </span>
-              <Icon icon={ArrowUpRight} />
-            </Link>
-          )}
-          {!error && (
-            <p className="week-planner__count">
-              {visiblePlans.length} {visiblePlans.length === 1 ? 'plan' : 'plans'} in the next{' '}
-              {dayCount} days · {upcoming.length} upcoming in your family calendar
-            </p>
-          )}
-        </>
-      )}
-    </Panel>
+                <Icon icon={ArrowUpRight} />
+              </Link>
+            )}
+          </>
+        )}
+      </aside>
+    </div>
   )
 }

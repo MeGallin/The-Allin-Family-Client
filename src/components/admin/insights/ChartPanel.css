@@ -1,9 +1,5 @@
 .chart-panel {
   min-width: 0;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  padding: var(--panel-padding);
-  background: var(--color-surface);
 }
 .chart-panel h2 {
   font-size: var(--text-lg);

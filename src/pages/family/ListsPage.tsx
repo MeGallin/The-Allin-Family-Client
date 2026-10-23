@@ -51,79 +51,87 @@ export default function ListsPage() {
   return (
     <div className="page-stack page-enter lists-page">
       <PageHeader title="Little things, sorted." description="One list. Everyone’s essentials." />
-      <ShoppingControls
-        query={query}
-        sort={sort}
-        filter={filter}
-        onQuery={setQuery}
-        onSort={setSort}
-        onFilter={setFilter}
-        onReset={reset}
-        count={visible.length}
-        total={shopping.length}
-      />
-      <Panel
-        title="Shopping list"
-        action={
-          <RefreshButton label="Refresh list" disabled={pending || loading} onClick={refresh} />
-        }
-      >
-        <p className="lists-page__count">
-          {loading
-            ? 'Connecting to the shared list…'
-            : shopping.length === 0
-              ? 'Your shared list is empty'
-              : remaining
-                ? remaining +
-                  ' to get · ' +
-                  shopping.length +
-                  (shopping.length === 1 ? ' item' : ' items')
-                : 'Everything is picked up'}
-        </p>
-        {error && shopping.length > 0 && (
-          <p className="error" role="alert">
-            {error}{' '}
-            <button type="button" className="button-link" onClick={refresh}>
-              Try again
-            </button>
-          </p>
-        )}
-        <form className="shopping-add" onSubmit={submit}>
-          <label htmlFor={inputId}>Add something</label>
-          <div className="shopping-add__controls">
-            <input
-              id={inputId}
-              ref={inputRef}
-              required
-              disabled={pending || loading}
-              maxLength={100}
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              placeholder="e.g. Milk"
-            />
-            <button type="submit" disabled={pending || loading || !title.trim()}>
-              <Icon icon={Plus} />
-              {pending ? 'Saving…' : 'Add item'}
-            </button>
-          </div>
-          <ImportanceOption
-            checked={important}
-            disabled={pending || loading}
-            onChange={setImportant}
+      <div className="content-layout">
+        <div className="content-layout__main">
+          <ShoppingControls
+            query={query}
+            sort={sort}
+            filter={filter}
+            onQuery={setQuery}
+            onSort={setSort}
+            onFilter={setFilter}
+            onReset={reset}
+            count={visible.length}
+            total={shopping.length}
           />
-        </form>
-        <ShoppingList
-          viewKey={query + ':' + sort + ':' + filter}
-          removable
-          view={visible}
-          onReset={reset}
-        />
+          <Panel
+            title="Shopping list"
+            action={
+              <RefreshButton label="Refresh list" disabled={pending || loading} onClick={refresh} />
+            }
+          >
+            <p className="lists-page__count">
+              {loading
+                ? 'Connecting to the shared list…'
+                : shopping.length === 0
+                  ? 'Your shared list is empty'
+                  : remaining
+                    ? remaining +
+                      ' to get · ' +
+                      shopping.length +
+                      (shopping.length === 1 ? ' item' : ' items')
+                    : 'Everything is picked up'}
+            </p>
+            {error && shopping.length > 0 && (
+              <p className="error" role="alert">
+                {error}{' '}
+                <button type="button" className="button-link" onClick={refresh}>
+                  Try again
+                </button>
+              </p>
+            )}
+            <form className="shopping-add" onSubmit={submit}>
+              <label htmlFor={inputId}>Add something</label>
+              <div className="shopping-add__controls">
+                <input
+                  id={inputId}
+                  ref={inputRef}
+                  required
+                  disabled={pending || loading}
+                  maxLength={100}
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
+                  placeholder="e.g. Milk"
+                />
+                <button type="submit" disabled={pending || loading || !title.trim()}>
+                  <Icon icon={Plus} />
+                  {pending ? 'Saving…' : 'Add item'}
+                </button>
+              </div>
+              <ImportanceOption
+                checked={important}
+                disabled={pending || loading}
+                onChange={setImportant}
+              />
+            </form>
+            <ShoppingList
+              viewKey={query + ':' + sort + ':' + filter}
+              removable
+              view={visible}
+              onReset={reset}
+            />
 
-        <p className="lists-page__feedback" role="status">
-          {feedback}
-        </p>
-        <ShoppingActivity />
-      </Panel>
+            <p className="lists-page__feedback" role="status">
+              {feedback}
+            </p>
+          </Panel>
+        </div>
+        <aside className="content-layout__aside" aria-label="Shopping history">
+          <Panel title="List history">
+            <ShoppingActivity />
+          </Panel>
+        </aside>
+      </div>
     </div>
   )
 }

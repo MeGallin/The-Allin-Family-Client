@@ -1,3 +1,4 @@
+import { ContentSurface } from '../../components/ui/ContentSurface'
 import { useCollectionFilters } from '../../hooks/useCollectionFilters'
 import { useUrlFilters } from '../../hooks/useUrlFilters'
 import { pollStatuses, pollStatus, pollsView } from '../../features/polls/polls-view'
@@ -98,89 +99,91 @@ export default function PollsPage() {
           </Link>
         }
       />
-      {polls.length > 0 && (
-        <ViewControls
-          label="Poll filters"
-          sortLabel="Show"
-          queryLabel="Question or name"
-          placeholder="Find a family poll"
-          hint="Search questions, details or who added/edited them."
-          query={query}
-          sort={status}
-          options={pollStatuses}
-          onQuery={setQuery}
-          onSort={setSort}
-          onReset={reset}
-          active={!!query || status !== 'open'}
-          count={visible.length}
-          total={polls.length}
-          noun="poll"
-        />
-      )}
-      <CollectionToolbar
-        label="Refresh polls"
-        busy={pending}
-        feedback={pending ? 'Saving…' : feedback}
-        onRefresh={refresh}
-      >
-        <p className="note">
-          Each person has one vote per poll. Administrators can see who voted or changed a vote.
-        </p>
-      </CollectionToolbar>
-      {!loading && !error && requestedId && !requested && (
-        <div className="feedback" role="status">
-          <p>The linked poll is no longer available.</p>
-          <button
-            type="button"
-            className="secondary"
-            onClick={() => update({ q: '', show: 'all' }, { clearHash: true })}
-          >
-            Show available polls
-          </button>
-        </div>
-      )}
-      {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      )}
-      {loading ? (
-        <LoadingState label="Loading family polls…" />
-      ) : visible.length ? (
-        <>
-          <div className="polls-page__grid">
-            {collection.items.map((poll) => (
-              <PollCard key={poll.id} poll={poll} />
-            ))}
+      <ContentSurface>
+        {polls.length > 0 && (
+          <ViewControls
+            label="Poll filters"
+            sortLabel="Show"
+            queryLabel="Question or name"
+            placeholder="Find a family poll"
+            hint="Search questions, details or who added/edited them."
+            query={query}
+            sort={status}
+            options={pollStatuses}
+            onQuery={setQuery}
+            onSort={setSort}
+            onReset={reset}
+            active={!!query || status !== 'open'}
+            count={visible.length}
+            total={polls.length}
+            noun="poll"
+          />
+        )}
+        <CollectionToolbar
+          label="Refresh polls"
+          busy={pending}
+          feedback={pending ? 'Saving…' : feedback}
+          onRefresh={refresh}
+        >
+          <p className="note">
+            Each person has one vote per poll. Administrators can see who voted or changed a vote.
+          </p>
+        </CollectionToolbar>
+        {!loading && !error && requestedId && !requested && (
+          <div className="feedback" role="status">
+            <p>The linked poll is no longer available.</p>
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => update({ q: '', show: 'all' }, { clearHash: true })}
+            >
+              Show available polls
+            </button>
           </div>
-          <CollectionMore {...collection} label="polls" />
-        </>
-      ) : (
-        !error && (
-          <EmptyState
-            icon={Vote}
-            title={polls.length ? 'No matching polls' : 'What shall we decide together?'}
-          >
-            <p>
-              {polls.length
-                ? 'Change the filters to see other polls.'
-                : 'Create the first poll and invite the family to vote.'}
-            </p>
-            {polls.length > 0 && (
-              <button
-                type="button"
-                className="secondary"
-                onClick={() => {
-                  update({ q: '', show: 'all' }, { clearHash: true })
-                  document.getElementById('family-content')?.focus()
-                }}
-              >
-                Show all polls
-              </button>
-            )}
-          </EmptyState>
-        )
-      )}
+        )}
+        {error && (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        )}
+        {loading ? (
+          <LoadingState label="Loading family polls…" />
+        ) : visible.length ? (
+          <>
+            <div className="polls-page__grid">
+              {collection.items.map((poll) => (
+                <PollCard key={poll.id} poll={poll} />
+              ))}
+            </div>
+            <CollectionMore {...collection} label="polls" />
+          </>
+        ) : (
+          !error && (
+            <EmptyState
+              icon={Vote}
+              title={polls.length ? 'No matching polls' : 'What shall we decide together?'}
+            >
+              <p>
+                {polls.length
+                  ? 'Change the filters to see other polls.'
+                  : 'Create the first poll and invite the family to vote.'}
+              </p>
+              {polls.length > 0 && (
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => {
+                    update({ q: '', show: 'all' }, { clearHash: true })
+                    document.getElementById('family-content')?.focus()
+                  }}
+                >
+                  Show all polls
+                </button>
+              )}
+            </EmptyState>
+          )
+        )}
+      </ContentSurface>
       {missing && (
         <div role="status">
           <p>This poll is unavailable or you cannot manage it.</p>

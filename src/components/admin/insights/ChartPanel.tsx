@@ -16,7 +16,10 @@ export function ChartPanel({
 }) {
   const id = useId()
   return (
-    <section className={'chart-panel' + (wide ? ' chart-panel--wide' : '')} aria-labelledby={id}>
+    <section
+      className={'chart-panel content-surface' + (wide ? ' chart-panel--wide' : '')}
+      aria-labelledby={id}
+    >
       <header>
         <h2 id={id}>{title}</h2>
         <p className="note">{description}</p>

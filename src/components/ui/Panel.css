@@ -1,7 +1,6 @@
 .panel {
   min-width: 0;
   overflow-wrap: anywhere;
-  border-top: 1px solid var(--color-border);
 }
 .panel__header {
   display: flex;

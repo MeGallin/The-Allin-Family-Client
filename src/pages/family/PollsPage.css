@@ -1,11 +1,7 @@
 .polls-page__grid {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--collection-column-min)), 1fr));
   gap: var(--space-5);
   min-width: 0;
   align-items: start;
-}
-@container family-content (min-width: 48rem) {
-  .polls-page__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }

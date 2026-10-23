@@ -1,6 +1,17 @@
-.profile-page > .panel {
-  max-width: 40rem;
+.profile-sections {
+  display: grid;
+  align-items: start;
+  gap: var(--space-5);
+  min-width: 0;
 }
 .profile-page .nickname-form {
   margin-top: var(--space-4);
+}
+@container family-content (min-width: 54rem) {
+  .profile-sections {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .profile-sections > .panel:last-child {
+    grid-column: 1 / -1;
+  }
 }

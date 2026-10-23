@@ -1,3 +1,4 @@
+import { ContentSurface } from '../../components/ui/ContentSurface'
 import { useCollectionFilters } from '../../hooks/useCollectionFilters'
 import { useCollectionWindow } from '../../hooks/useCollectionWindow'
 import { CollectionMore } from '../../components/ui/CollectionMore'
@@ -66,76 +67,84 @@ export default function PersonalNotesPage({ onSessionExpired }: { onSessionExpir
           </Link>
         }
       />
-      {notes.length > 0 && (
-        <ViewControls
-          label="Your note filters and sorting"
-          queryLabel="Search your notes"
-          placeholder="Title or something you wrote"
-          hint="Search titles, headers, bodies and footers."
-          query={query}
-          sort={sort}
-          options={noteSorts}
-          onQuery={setQuery}
-          onSort={setSort}
-          onReset={reset}
-          active={!!query || sort !== 'updated'}
-          count={visible.length}
-          total={notes.length}
-          noun="note"
-        />
-      )}
-      <CollectionToolbar
-        label="Refresh notes"
-        busy={pending}
-        feedback={feedback}
-        onRefresh={refresh}
-      >
-        <p className="personal-notes-page__privacy">
-          <Icon icon={LockKeyhole} />
-          <span>Only you can view, edit or delete your notes.</span>
-        </p>
-      </CollectionToolbar>
-      {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      )}
-      {loading ? (
-        <LoadingState label="Opening your private notebook…" />
-      ) : notes.length === 0 ? (
-        !error && (
-          <EmptyState icon={NotebookPen} title="A little space for yourself">
-            <p>
-              Create your first note with a title, date, header, body and footer. Headers and
-              footers are optional.
-            </p>
-          </EmptyState>
-        )
-      ) : visible.length === 0 ? (
-        <EmptyState icon={NotebookPen} title="No matching notes">
-          <p>Try another search or reset your view.</p>
-          <button
-            type="button"
-            className="secondary"
-            onClick={() => {
-              reset()
-              document.getElementById('family-content')?.focus()
-            }}
+      <div className="content-layout">
+        <ContentSurface>
+          {notes.length > 0 && (
+            <ViewControls
+              label="Your note filters and sorting"
+              queryLabel="Search your notes"
+              placeholder="Title or something you wrote"
+              hint="Search titles, headers, bodies and footers."
+              query={query}
+              sort={sort}
+              options={noteSorts}
+              onQuery={setQuery}
+              onSort={setSort}
+              onReset={reset}
+              active={!!query || sort !== 'updated'}
+              count={visible.length}
+              total={notes.length}
+              noun="note"
+            />
+          )}
+          <CollectionToolbar
+            label="Refresh notes"
+            busy={pending}
+            feedback={feedback}
+            onRefresh={refresh}
           >
-            Reset view
-          </button>
-        </EmptyState>
-      ) : (
-        <>
-          <div className="personal-notes-page__list">
-            {collection.items.map((note) => (
-              <NoteCard key={note.id} note={note} onAction={clearError} />
-            ))}
-          </div>
-          <CollectionMore {...collection} label="notes" />
-        </>
-      )}
-      <NoteHistory activity={activity} />
+            <p className="personal-notes-page__privacy">
+              <Icon icon={LockKeyhole} />
+              <span>Only you can view, edit or delete your notes.</span>
+            </p>
+          </CollectionToolbar>
+          {error && (
+            <p className="error" role="alert">
+              {error}
+            </p>
+          )}
+          {loading ? (
+            <LoadingState label="Opening your private notebook…" />
+          ) : notes.length === 0 ? (
+            !error && (
+              <EmptyState icon={NotebookPen} title="A little space for yourself">
+                <p>
+                  Create your first note with a title, date, header, body and footer. Headers and
+                  footers are optional.
+                </p>
+              </EmptyState>
+            )
+          ) : visible.length === 0 ? (
+            <EmptyState icon={NotebookPen} title="No matching notes">
+              <p>Try another search or reset your view.</p>
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => {
+                  reset()
+                  document.getElementById('family-content')?.focus()
+                }}
+              >
+                Reset view
+              </button>
+            </EmptyState>
+          ) : (
+            <>
+              <div className="personal-notes-page__list">
+                {collection.items.map((note) => (
+                  <NoteCard key={note.id} note={note} onAction={clearError} />
+                ))}
+              </div>
+              <CollectionMore {...collection} label="notes" />
+            </>
+          )}
+        </ContentSurface>
+        <aside className="content-layout__aside" aria-label="Your private note history">
+          <ContentSurface>
+            <NoteHistory activity={activity} />
+          </ContentSurface>
+        </aside>
+      </div>
       {missing && (
         <div role="status">
           <p>This note is not available in your notebook.</p>

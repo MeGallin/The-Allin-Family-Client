@@ -27,7 +27,7 @@ export default function AdminActivity() {
   // currentData avoids briefly showing another filter/page's rows while a request loads.
   const data = query.currentData
   return (
-    <section className="admin-activity" aria-labelledby={id + '-title'}>
+    <section className="admin-activity content-surface" aria-labelledby={id + '-title'}>
       <header>
         <h2 id={id + '-title'}>Family activity</h2>
         <p className="note">

@@ -1,0 +1,46 @@
+/* Shared Diary companion surfaces and primary/supporting content rhythm. */
+.content-surface {
+  min-width: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: linear-gradient(120deg, var(--color-surface), var(--color-surface-muted));
+}
+.content-surface--stack,
+.content-layout,
+.content-layout__main,
+.content-layout__aside {
+  display: grid;
+  align-content: start;
+  gap: var(--space-5);
+  min-width: 0;
+}
+.content-layout {
+  align-items: start;
+}
+.content-layout__aside .panel__header h2 {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  letter-spacing: 0;
+}
+.content-layout__aside .panel__header {
+  padding-top: 0;
+}
+.content-layout__aside {
+  overflow-wrap: anywhere;
+}
+.content-layout__aside .memory-activity,
+.content-layout__aside .shopping-activity {
+  margin-top: 0;
+}
+@container family-content (min-width: 40rem) {
+  .content-surface {
+    padding: var(--space-5);
+  }
+}
+@container family-content (min-width: 64rem) {
+  .content-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem);
+    gap: var(--space-6);
+  }
+}

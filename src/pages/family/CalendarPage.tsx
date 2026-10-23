@@ -67,74 +67,84 @@ export default function CalendarPage() {
           </Link>
         }
       />
-      <CalendarControls
-        query={query}
-        sort={sort}
-        onQuery={setQuery}
-        onSort={setSort}
-        onReset={reset}
-        count={shownUpcoming.length + shownPast.length}
-        total={events.length}
-      />
-      <Panel
-        title="Coming up"
-        action={
-          <RefreshButton label="Refresh calendar" disabled={pending || loading} onClick={refresh} />
-        }
-      >
-        <p className="note">Times shown in {zone}. Updates refresh automatically.</p>
-        {error && (
-          <p className="error" role="alert">
-            {error}{' '}
-            <button type="button" className="button-link" disabled={pending} onClick={refresh}>
-              Try again
-            </button>
-          </p>
-        )}
-        {loading ? (
-          <LoadingState label="Loading the family calendar…" />
-        ) : shownUpcoming.length ? (
-          <>
-            <EventList
-              events={upcomingWindow.items}
-              onEdit={setEditing}
-              disabled={pending}
-              blocks
-            />
-            <CollectionMore {...upcomingWindow} label="upcoming plans" />
-          </>
-        ) : (
-          !error && (
-            <EmptyState
-              icon={CalendarDays}
-              title={query ? 'No matching upcoming events' : 'The diary is clear'}
-            >
-              <p>
-                {query
-                  ? 'Try another name or reset your view.'
-                  : 'Make a plan and give everyone something to look forward to.'}
-              </p>
-              {query && (
-                <button type="button" className="button-link" onClick={reset}>
-                  Reset view
+      <div className="content-layout">
+        <div className="content-layout__main">
+          <CalendarControls
+            query={query}
+            sort={sort}
+            onQuery={setQuery}
+            onSort={setSort}
+            onReset={reset}
+            count={shownUpcoming.length + shownPast.length}
+            total={events.length}
+          />
+          <Panel
+            title="Coming up"
+            action={
+              <RefreshButton
+                label="Refresh calendar"
+                disabled={pending || loading}
+                onClick={refresh}
+              />
+            }
+          >
+            <p className="note">Times shown in {zone}. Updates refresh automatically.</p>
+            {error && (
+              <p className="error" role="alert">
+                {error}{' '}
+                <button type="button" className="button-link" disabled={pending} onClick={refresh}>
+                  Try again
                 </button>
-              )}
-            </EmptyState>
-          )
-        )}
-        <p className="calendar-page__feedback" role="status">
-          {feedback}
-        </p>
-      </Panel>
-      {shownPast.length > 0 && (
-        <Panel title="Earlier plans">
-          <EventList events={pastWindow.items} onEdit={setEditing} disabled={pending} blocks />
-          <CollectionMore {...pastWindow} label="earlier plans" />
-        </Panel>
-      )}
-      <Panel title="Calendar history">
-        <CalendarActivity />
-      </Panel>
+              </p>
+            )}
+            {loading ? (
+              <LoadingState label="Loading the family calendar…" />
+            ) : shownUpcoming.length ? (
+              <>
+                <EventList
+                  events={upcomingWindow.items}
+                  onEdit={setEditing}
+                  disabled={pending}
+                  blocks
+                />
+                <CollectionMore {...upcomingWindow} label="upcoming plans" />
+              </>
+            ) : (
+              !error && (
+                <EmptyState
+                  icon={CalendarDays}
+                  title={query ? 'No matching upcoming events' : 'The diary is clear'}
+                >
+                  <p>
+                    {query
+                      ? 'Try another name or reset your view.'
+                      : 'Make a plan and give everyone something to look forward to.'}
+                  </p>
+                  {query && (
+                    <button type="button" className="button-link" onClick={reset}>
+                      Reset view
+                    </button>
+                  )}
+                </EmptyState>
+              )
+            )}
+            <p className="calendar-page__feedback" role="status">
+              {feedback}
+            </p>
+          </Panel>
+          {shownPast.length > 0 && (
+            <Panel title="Earlier plans">
+              <EventList events={pastWindow.items} onEdit={setEditing} disabled={pending} blocks />
+              <CollectionMore {...pastWindow} label="earlier plans" />
+            </Panel>
+          )}
+        </div>
+        <aside className="content-layout__aside" aria-label="Calendar history">
+          <Panel title="Calendar history">
+            <CalendarActivity />
+          </Panel>
+        </aside>
+      </div>
       {(search.get('compose') === 'event' || editing) && (
         <Suspense fallback={<LoadingState label="Opening the event form…" />}>
           <EventComposer

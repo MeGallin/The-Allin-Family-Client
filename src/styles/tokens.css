@@ -76,6 +76,7 @@
   --space-9: 5rem;
 
   /* Shape, elevation and layout */
+  --collection-column-min: 18rem;
   --radius-control: 0.5rem;
   --radius-card: 0.75rem;
   --radius-panel: 0.875rem;

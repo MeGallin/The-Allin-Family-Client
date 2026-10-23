@@ -17,8 +17,8 @@ export default function FamilyHomePage() {
         description={'Hello, ' + firstName + '. Make room for what matters.'}
       />
       <div className="family-home-grid">
-        <HomePriorities />
         <WeekPlanner />
+        <HomePriorities />
       </div>
       <HomeDestinations name={firstName} />
     </div>

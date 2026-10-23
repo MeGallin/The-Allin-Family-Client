@@ -34,7 +34,7 @@ export default function AdminOverview() {
     previous !== null && previous !== undefined && data ? data.summary.actions - previous : null
   return (
     <div className="admin-overview">
-      <div className="admin-overview__toolbar">
+      <div className="admin-overview__toolbar content-surface">
         <div>
           <h2>Participation at a glance</h2>
           <p className="note">Who’s taking part, what’s useful, and where to focus next.</p>
@@ -71,7 +71,7 @@ export default function AdminOverview() {
                 {data.usageSince ? 'from ' + chartDate(data.usageSince) : 'not yet recorded'}.
               </p>
             </div>
-            <dl className="data-summary">
+            <dl className="data-summary content-surface">
               <div>
                 <dt>
                   <Icon icon={Users} />
@@ -107,7 +107,10 @@ export default function AdminOverview() {
               <FeatureActivity data={data} />
               <MemberParticipation data={data} />
             </div>
-            <section className="insight-direction" aria-labelledby={id + '-direction'}>
+            <section
+              className="insight-direction content-surface"
+              aria-labelledby={id + '-direction'}
+            >
               <header>
                 <p className="admin-overview__eyebrow">Planning ahead</p>
                 <h2 id={id + '-direction'}>Where to focus next</h2>

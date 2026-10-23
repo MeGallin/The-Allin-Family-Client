@@ -822,3 +822,15 @@ All poll countdowns use pollTimeLeft, including compact text and expanded access
 - `hooks/useUrlFilters.ts` merges URL updates while preserving unrelated/editor parameters, handles in-flight/interleaved router commits, and resets its baseline for browser Back/Forward. Collection changes replace history and clear stale deep-link hashes. Admin reuses the same updater with pushed history, retaining its period allowlist and clearing stale pagination cursors when filters change.
 - `lib/search.ts` provides the shared 100-character query bound, prepared case-insensitive substring matcher and allowlisted option lookup. Each feature keeps its own searched fields, stable sorting and business filters in its `*-view.ts` module; Polls filtering is now in `features/polls/polls-view.ts` and includes creator/editor names. Filtering still operates on the full cached collection before display windowing.
 - Regression tests cover matching/Unicode/limits, private memory state, option fallbacks, editor-parameter preservation, reset, rapid/interleaved updates, Back/Forward, admin cursor resets and poll expiry matching. This refactor adds no API route, database migration or dependency; Memories still has no search UI.
+
+## Diary companion layout and shared surfaces
+
+Home leads with the existing horizontal calendar. Its next-event/birthday column follows the calendar in DOM order and sits alongside it only at the wide container breakpoint. Polls and shopping remain compact links to their source pages.
+
+- `styles/tokens.css` owns Nimbus design values, including the minimum collection-column width.
+- `styles/content-patterns.css` owns the shared surface recipe and main/history layout. Change the recipe once to update Home, collections, Profile and Admin.
+- `components/ui/Panel.tsx` provides a labelled section with a header/action. Its default `surface` variant uses the shared recipe. Use `variant="plain"` only inside an existing surface, as Home does, to avoid duplicate framing.
+- `components/ui/ContentSurface.tsx` wraps collections that already have their own headings/controls. It uses the same recipe and adds stacked spacing; it has no data or business logic.
+- Domain components retain their own rendering and behaviour. Sticky notes, photos and charts keep their specialised styles. History follows primary content on mobile. A lone photo memory pairs its image and story only on wide screens.
+
+This styling release changes no API, database schema, permissions or saved family content. Deploy with `npm run build:deploy:client`; upload only that package into the site root, preserving remote `api/` and private server storage. Shared Panel regression coverage includes both surface and plain variants.

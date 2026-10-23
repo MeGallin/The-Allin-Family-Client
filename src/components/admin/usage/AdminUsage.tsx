@@ -28,7 +28,7 @@ export default function AdminUsage() {
   const logins = people.reduce((total, person) => total + person.logins, 0)
   const seconds = people.reduce((total, person) => total + person.activeSeconds, 0)
   return (
-    <section className="admin-usage" aria-labelledby={id + '-title'}>
+    <section className="admin-usage content-surface" aria-labelledby={id + '-title'}>
       <header>
         <h2 id={id + '-title'}>Platform usage</h2>
         <p className="note">

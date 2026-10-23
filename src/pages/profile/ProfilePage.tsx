@@ -11,18 +11,20 @@ export default function ProfilePage() {
   return (
     <div className="page-stack page-enter profile-page">
       <PageHeader title="Your profile" description="Your name. Your own finishing touch." />
-      <Panel title="Your nickname">
-        <p className="note">
-          Currently shown as <strong>{user.familyName}</strong>. Your username is {user.username}.
-        </p>
-        <NicknameForm profile={user} />
-      </Panel>
-      <Panel title="Make it yours">
-        <AccentPicker />
-      </Panel>
-      <Panel title="Your Week Ahead">
-        <WeekPreferencesForm />
-      </Panel>
+      <div className="profile-sections">
+        <Panel title="Your nickname">
+          <p className="note">
+            Currently shown as <strong>{user.familyName}</strong>. Your username is {user.username}.
+          </p>
+          <NicknameForm profile={user} />
+        </Panel>
+        <Panel title="Make it yours">
+          <AccentPicker />
+        </Panel>
+        <Panel title="Your Week Ahead">
+          <WeekPreferencesForm />
+        </Panel>
+      </div>
       <p className="note">
         Family administrators can see sign-in counts, estimated active time and the last section
         visited. Your personal note contents stay private.

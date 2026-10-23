@@ -1,3 +1,4 @@
+import { ContentSurface } from '../../components/ui/ContentSurface'
 import { useCollectionWindow } from '../../hooks/useCollectionWindow'
 import { CollectionMore } from '../../components/ui/CollectionMore'
 import { useEditingRecord } from '../../hooks/useEditingRecord'
@@ -51,39 +52,47 @@ export default function MemoriesPage() {
           </Link>
         }
       />
-      <div className="memories-page__status">
-        <p role="status" className="note">
-          {feedback ||
-            (loading
-              ? 'Opening the family album…'
-              : `${memories.length} ${memories.length === 1 ? 'memory' : 'memories'}`)}
-        </p>
-        <RefreshButton label="Refresh memories" disabled={pending} onClick={refresh} />
-      </div>
-      {error && (
-        <p role="alert" className="error">
-          {error}
-        </p>
-      )}
-      {loading ? (
-        <LoadingState label="Loading family memories…" />
-      ) : memories.length ? (
-        <>
-          <div className="memories-grid">
-            {collection.items.map((memory, index) => (
-              <MemoryCard key={memory.id} memory={memory} featured={index === 0} />
-            ))}
+      <div className="content-layout">
+        <ContentSurface>
+          <div className="memories-page__status">
+            <p role="status" className="note">
+              {feedback ||
+                (loading
+                  ? 'Opening the family album…'
+                  : `${memories.length} ${memories.length === 1 ? 'memory' : 'memories'}`)}
+            </p>
+            <RefreshButton label="Refresh memories" disabled={pending} onClick={refresh} />
           </div>
-          <CollectionMore {...collection} label="memories" />
-        </>
-      ) : (
-        !error && (
-          <EmptyState icon={Images} title="Make room for a memory">
-            <p>Share a photo, a story, or both to start your family album.</p>
-          </EmptyState>
-        )
-      )}
-      <MemoryActivity />
+          {error && (
+            <p role="alert" className="error">
+              {error}
+            </p>
+          )}
+          {loading ? (
+            <LoadingState label="Loading family memories…" />
+          ) : memories.length ? (
+            <>
+              <div className="memories-grid">
+                {collection.items.map((memory, index) => (
+                  <MemoryCard key={memory.id} memory={memory} featured={index === 0} />
+                ))}
+              </div>
+              <CollectionMore {...collection} label="memories" />
+            </>
+          ) : (
+            !error && (
+              <EmptyState icon={Images} title="Make room for a memory">
+                <p>Share a photo, a story, or both to start your family album.</p>
+              </EmptyState>
+            )
+          )}
+        </ContentSurface>
+        <aside className="content-layout__aside" aria-label="Memory history">
+          <ContentSurface>
+            <MemoryActivity />
+          </ContentSurface>
+        </aside>
+      </div>
       {missing && (
         <div role="status">
           <p>This memory is no longer available. It may have been removed.</p>
