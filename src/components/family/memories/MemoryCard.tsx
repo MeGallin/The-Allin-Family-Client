@@ -5,11 +5,11 @@ import { Heart, Pencil } from 'lucide-react'
 import type { FamilyMemory } from '../../../features/memories/types'
 import { useMemories } from '../../../features/memories/useMemories'
 import { useAppSelector } from '../../../app/store-hooks'
-import { memoryPhotoSources, memoryPhotoUrl } from '../../../services/memories-api'
+import { memoryPhotoUrl } from '../../../services/memories-api'
 import { exactDate } from '../../../lib/friendly-dates'
 import { FriendlyTime } from '../../ui/FriendlyTime'
 import { Icon } from '../../ui/Icon'
-import { FamilyImage } from './FamilyImage'
+import { MemoryPhoto } from './MemoryPhoto'
 import { MemoryStory } from './MemoryStory'
 import './MemoryCard.css'
 
@@ -40,14 +40,7 @@ export function MemoryCard({
       tabIndex={-1}
       className={'memory-card' + (featured ? ' memory-card--featured' : '')}
     >
-      {memory.photoKey && (
-        <FamilyImage
-          key={memory.photoKey}
-          {...memoryPhotoSources(memory)}
-          alt={memory.photoAlt || memory.title}
-          eager={featured}
-        />
-      )}
+      {memory.photoKey && <MemoryPhoto key={memory.photoKey} memory={memory} eager={featured} />}
       <div className="memory-card__content">
         <p className="memory-card__label">
           {memory.photoKey ? 'A family moment' : 'A family story'}

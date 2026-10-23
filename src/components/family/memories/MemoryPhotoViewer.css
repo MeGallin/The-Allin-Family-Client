@@ -1,0 +1,56 @@
+.modal.memory-photo-viewer {
+  width: min(80rem, calc(100% - 1rem));
+  max-width: none;
+  max-height: calc(100dvh - 1rem);
+  padding: var(--space-3);
+}
+.memory-photo-viewer .modal__header h2 {
+  font-size: var(--text-base);
+  overflow-wrap: anywhere;
+}
+.memory-photo-viewer .modal__header > button {
+  flex-shrink: 0;
+}
+.memory-photo-viewer__tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-block: var(--space-3);
+  font-size: var(--text-xs);
+}
+.memory-photo-viewer__tools button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.memory-photo-viewer__tools a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-min-height);
+}
+.memory-photo-viewer__canvas {
+  height: 65dvh;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border-radius: var(--radius-control);
+  background: var(--color-surface-muted);
+}
+.memory-photo-viewer__canvas > .family-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+.memory-photo-viewer__canvas img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.memory-photo-viewer__canvas.is-zoomed > .family-image {
+  width: 200%;
+  height: auto;
+  min-height: 100%;
+}
+.memory-photo-viewer__canvas.is-zoomed img {
+  height: auto;
+}
