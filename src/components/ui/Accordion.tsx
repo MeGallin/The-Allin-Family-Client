@@ -15,11 +15,13 @@ export function Accordion({
   className = '',
   itemClassName = '',
   summaryClassName = '',
+  lazy = false,
 }: {
   items: AccordionItem[]
   className?: string
   itemClassName?: string
   summaryClassName?: string
+  lazy?: boolean
 }) {
   const [openId, setOpenId] = useState<string | null>(null)
   const selectedSummary = useRef<HTMLElement | null>(null)
@@ -44,7 +46,7 @@ export function Accordion({
               {item.title}
               <Icon icon={ChevronDown} className="accordion__chevron" />
             </summary>
-            {item.content}
+            {(!lazy || openId === item.id) && item.content}
           </details>
         </li>
       ))}

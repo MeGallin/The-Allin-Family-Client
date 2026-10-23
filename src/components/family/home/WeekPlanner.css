@@ -31,131 +31,28 @@
 .week-planner__days {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 8rem;
+  grid-auto-columns: min(var(--calendar-tile-width), calc(100cqi - var(--space-4)));
   gap: var(--space-2);
   list-style: none;
   padding: 0;
   margin: 0;
 }
 .week-planner__scroll {
+  container-type: inline-size;
   margin-block: var(--space-2) var(--space-5);
 }
 .week-planner__days li {
   min-width: 0;
   scroll-snap-align: start;
 }
-.week-planner__day {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  min-height: 7.5rem;
-  height: 100%;
-  padding: var(--space-3) var(--space-2);
-  border: 1px solid transparent;
-  border-radius: var(--radius-control);
-  background: var(--color-surface-muted);
-  color: var(--color-text);
-  text-decoration: none;
+.week-planner__scroll .horizontal-scroll__toolbar {
+  flex-wrap: wrap;
 }
-.week-planner__day-main > span,
-.week-planner__day-main small {
+.weather-warnings-status {
+  margin: var(--space-3) 0;
+  color: var(--color-text-muted);
   font-size: var(--text-xs);
-  color: var(--color-text-muted);
-}
-.week-planner__day-main > strong {
-  font-size: var(--text-2xl);
-  font-weight: 450;
-  line-height: 1;
-}
-.week-planner__day-label > .week-planner__month {
-  font-size: var(--text-caption);
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  color: var(--color-text-muted);
-}
-.week-planner__day-label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-1);
-}
-.week-planner__day-label {
-  min-height: var(--space-6);
-}
-.week-planner__day.is-weekend .week-planner__day-label > span:first-child {
-  color: var(--color-link);
-  font-weight: 600;
-  padding: var(--space-1) var(--space-2);
-  border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
-  border-radius: var(--radius-control);
-  background: var(--color-surface-muted);
-  line-height: 1;
-}
-.week-planner__day.is-weekend {
-  background-image: repeating-linear-gradient(
-    45deg,
-    transparent 0,
-    transparent 11px,
-    color-mix(in srgb, var(--color-accent) 6%, transparent) 11px,
-    color-mix(in srgb, var(--color-accent) 6%, transparent) 12px
-  );
-}
-.week-planner__day-main > small {
-  margin-top: auto;
-}
-.week-planner__day.is-today {
-  border-color: var(--color-accent);
-}
-.week-planner__day.is-today .week-planner__day-main > span,
-.week-planner__day.is-today .week-planner__day-main > small {
-  color: var(--color-link);
-}
-.week-planner__day.has-plans {
-  background-color: var(--color-accent-soft);
-}
-.week-planner__day-main > .week-planner__highlight {
-  display: grid;
-  gap: var(--space-1);
-  margin-top: auto;
-  min-width: 0;
-}
-.week-planner__highlight > strong {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-  color: var(--color-link);
-  font-size: var(--text-caption);
-  font-weight: 500;
   line-height: var(--line-compact);
-}
-.week-planner__highlight > small {
-  margin-top: 0;
-  color: var(--color-link);
-}
-.week-planner__day:hover {
-  background-color: var(--color-surface-raised);
-}
-.week-planner__day-main {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  flex: 1;
-  min-width: 0;
-  min-height: var(--control-min-height);
-  color: var(--color-text);
-  text-decoration: none;
-}
-.week-planner__day-main > .week-planner__holiday {
-  color: var(--color-link);
-  font-size: var(--text-caption);
-  line-height: var(--line-compact);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
 }
 .week-planner__next,
 .week-planner__annual {
@@ -227,15 +124,4 @@
 }
 .week-planner__count {
   margin: var(--space-2) 0 0;
-}
-@container family-content (min-width: 32rem) {
-  .week-planner__days {
-    grid-auto-columns: 8.5rem;
-  }
-}
-@container family-content (min-width: 54rem) {
-  .week-planner__day {
-    min-height: 9rem;
-    padding-block: var(--space-4);
-  }
 }

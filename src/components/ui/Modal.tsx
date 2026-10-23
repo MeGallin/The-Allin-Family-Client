@@ -13,12 +13,14 @@ export function Modal({
   children,
   busy = false,
   className = '',
+  scrollable = false,
 }: {
   title: string
   onClose: () => void
   children: ReactNode
   busy?: boolean
   className?: string
+  scrollable?: boolean
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const titleId = useId()
@@ -56,7 +58,7 @@ export function Modal({
   return (
     <dialog
       ref={dialogRef}
-      className={'modal ' + className}
+      className={'modal ' + (scrollable ? 'modal--scrollable ' : '') + className}
       aria-labelledby={titleId}
       onCancel={(event) => {
         event.preventDefault()
@@ -75,7 +77,7 @@ export function Modal({
           <Icon icon={X} />
         </button>
       </header>
-      {children}
+      {scrollable ? <div className="modal__body">{children}</div> : children}
     </dialog>
   )
 }

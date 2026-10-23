@@ -27,15 +27,18 @@ export function DayWeather({
       <button
         type="button"
         className="day-weather"
+        title={`View forecast · ${format(parseISO(day.date), 'EEEE d MMMM')} · ${condition.label}, high ${day.high}°C, low ${day.low}°C, ${day.rain}% chance of rain${stale ? ' · saved forecast' : ''}`}
         onClick={() => setOpen(true)}
         aria-label={`Forecast for ${format(parseISO(day.date), 'EEEE d MMMM')} in ${location}: ${condition.label}, high ${day.high}°C, low ${day.low}°C, ${day.rain}% chance of rain${stale ? ', saved forecast' : ''}`}
       >
-        <span>
-          <Icon icon={condition.icon} />
-          <strong>{day.high}°</strong>
-          <span>{day.low}°</span>
+        <span className="day-weather__preview">
+          <span className="day-weather__temperatures">
+            <Icon icon={condition.icon} />
+            <strong>{day.high}°</strong>
+            <span>{day.low}°</span>
+          </span>
+          <small>{day.rain}% rain</small>
         </span>
-        <small>{day.rain}% rain</small>
       </button>
       {open && (
         <Modal title={format(parseISO(day.date), 'EEEE, d MMMM')} onClose={() => setOpen(false)}>

@@ -1,4 +1,4 @@
-import { addDays, format, isWeekend, startOfDay } from 'date-fns'
+import { addDays, format, startOfDay } from 'date-fns'
 import { Link, useSearchParams } from 'react-router'
 import { useId } from 'react'
 import { ArrowUpRight, CalendarDays, Cake, Check } from 'lucide-react'
@@ -13,7 +13,13 @@ import { HomeDataError } from './HomeDataError'
 import { useWeekContext } from '../../../features/week-context/useWeekContext'
 import { DayWeather } from './DayWeather'
 import { HorizontalScroll } from '../../ui/HorizontalScroll'
-import { CalendarFoodAlerts } from './CalendarFoodAlerts'
+import { useFoodCalendarIndicator } from './CalendarFoodAlerts'
+import { weatherCalendarIndicator } from './CalendarWeatherWarnings'
+import { CalendarDayTile } from './CalendarDayTile'
+import { holidayCalendarIndicator } from './calendar-day-indicators'
+import type { CalendarIndicator } from '../../ui/IndicatorStrip'
+import { useWeatherWarnings } from '../../../features/weather-warnings/useWeatherWarnings'
+import { weatherWarningView } from '../../../features/weather-warnings/warning-view'
 import './WeekPlanner.css'
 import './WeekPlannerLayout.css'
 
@@ -28,6 +34,9 @@ export function WeekPlanner() {
   const { events, loading, error, refresh } = useCalendar()
   const now = useNow()
   const context = useWeekContext()
+  const foodIndicator = useFoodCalendarIndicator()
+  const warningFeed = useWeatherWarnings()
+  const warningView = weatherWarningView(warningFeed.data, warningFeed.isError, now)
   const weather = context.data?.weather
   const today = startOfDay(now)
   const upcoming = upcomingEvents(events, now)
@@ -110,77 +119,93 @@ export function WeekPlanner() {
               <ol className="week-planner__days" aria-label={`Next ${dayCount} days`}>
                 {days.map((day, index) => {
                   const key = dateInputValue(day)
-                  const weekend = isWeekend(day)
                   const plans = plansByDay.get(key) ?? []
                   const forecast = weather?.data?.find((entry) => entry.date === key)
                   const holiday = context.data?.holidays.data?.find((entry) => entry.date === key)
+                  const warnings = warningView.warnings.filter(
+                    (warning) => warning.startsOn <= key && warning.endsOn >= key,
+                  )
+                  const warningIndicator = weatherCalendarIndicator({
+                    day: key,
+                    warnings,
+                    location: warningFeed.data?.location ?? '',
+                    updatedAt: warningFeed.data?.updatedAt ?? null,
+                    stale: warningView.stale,
+                  })
+                  const indicators: CalendarIndicator[] = []
+                  if (warningIndicator) indicators.push(warningIndicator)
+                  if (index === 0 && foodIndicator) indicators.push(foodIndicator)
+                  if (holiday)
+                    indicators.push(
+                      holidayCalendarIndicator(
+                        holiday.title,
+                        format(day, 'EEEE d MMMM'),
+                        context.data?.holidays.region ?? '',
+                      ),
+                    )
                   return (
                     <li key={day.toISOString()}>
-                      <div
-                        className={
-                          'week-planner__day' +
-                          (index === 0 ? ' is-today' : '') +
-                          (weekend ? ' is-weekend' : '') +
-                          (plans.length ? ' has-plans' : '')
+                      <CalendarDayTile
+                        date={day}
+                        calendarHref={`/calendar?compose=event&date=${key}`}
+                        isToday={index === 0}
+                        monthLabel={
+                          index === 0 || day.getDate() === 1
+                            ? format(
+                                day,
+                                day.getFullYear() === today.getFullYear() ? 'MMM' : 'MMM yy',
+                              )
+                            : undefined
                         }
-                      >
-                        <Link
-                          to={`/calendar?compose=event&date=${key}`}
-                          className="week-planner__day-main"
-                          aria-label={`${format(day, 'EEEE d MMMM')}${index === 0 ? ', today' : ''}${holiday ? ', ' + holiday.title : ''}: ${error ? 'plans unavailable' : plans.length ? plans.map((plan) => plan.title).join('; ') : 'no plans'}`}
-                          aria-current={index === 0 ? 'date' : undefined}
-                        >
-                          <span className="week-planner__day-label">
-                            <span>{format(day, 'EEE')}</span>
-                            {(index === 0 || day.getDate() === 1) && (
-                              <span
-                                className="week-planner__month"
-                                title={format(day, 'MMMM yyyy')}
-                                aria-hidden="true"
-                              >
-                                {format(
-                                  day,
-                                  day.getFullYear() === today.getFullYear() ? 'MMM' : 'MMM yy',
-                                )}
-                              </span>
-                            )}
-                          </span>
-                          <strong>{format(day, 'd')}</strong>
-                          {holiday && (
-                            <span className="week-planner__holiday" title={holiday.title}>
-                              {holiday.title}
-                            </span>
-                          )}
-                          {plans.length && !error ? (
-                            <span className="week-planner__highlight">
-                              <strong title={plans[0].title}>{plans[0].title}</strong>
-                              {plans.length > 1 && <small>+{plans.length - 1} more</small>}
-                            </span>
-                          ) : error || index === 0 ? (
-                            <small>{error ? 'Check calendar' : 'Today'}</small>
-                          ) : null}
-                        </Link>
-                        {index === 0 && <CalendarFoodAlerts />}
-                        {forecast && weather && (
-                          <DayWeather
-                            day={forecast}
-                            location={weather.location}
-                            timeZone={weather.timeZone}
-                            updatedAt={weather.updatedAt}
-                            stale={
-                              weather.status === 'stale' ||
-                              context.isError ||
-                              (weather.updatedAt !== null &&
-                                now - Date.parse(weather.updatedAt) > 1800000)
-                            }
-                          />
-                        )}
-                      </div>
+                        plans={plans}
+                        plansUnavailable={!!error}
+                        holidayTitle={holiday?.title}
+                        indicators={indicators}
+                        forecast={
+                          forecast && weather ? (
+                            <DayWeather
+                              day={forecast}
+                              location={weather.location}
+                              timeZone={weather.timeZone}
+                              updatedAt={weather.updatedAt}
+                              stale={
+                                weather.status === 'stale' ||
+                                context.isError ||
+                                (weather.updatedAt !== null &&
+                                  now - Date.parse(weather.updatedAt) > 1800000)
+                              }
+                            />
+                          ) : (
+                            <p className="calendar-day-tile__forecast-note">
+                              {context.isLoading
+                                ? 'Loading forecast…'
+                                : weather?.status === 'unconfigured'
+                                  ? 'Weather off'
+                                  : weather?.data?.length
+                                    ? 'No forecast yet'
+                                    : 'Forecast unavailable'}
+                            </p>
+                          )
+                        }
+                      />
                     </li>
                   )
                 })}
               </ol>
             </HorizontalScroll>
+            {!warningFeed.isLoading && (warningView.unavailable || warningView.stale) && (
+              <p className="weather-warnings-status" role="status">
+                Weather warning updates are {warningView.unavailable ? 'unavailable' : 'delayed'}.{' '}
+                <a
+                  href="https://www.metoffice.gov.uk/weather/warnings-and-advice/uk-warnings"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Check the Met Office<span className="sr-only"> (opens in a new tab)</span>
+                </a>
+                .
+              </p>
+            )}
             {!error && (
               <p className="week-planner__count">
                 {visiblePlans.length} {visiblePlans.length === 1 ? 'plan' : 'plans'} in the next{' '}

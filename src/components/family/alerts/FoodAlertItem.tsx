@@ -3,35 +3,36 @@ import { format, parseISO } from 'date-fns'
 import type { FoodAlert } from '../../../features/food-alerts/types'
 import { foodAlertLabels } from '../../../features/food-alerts/food-alert-view'
 import { Icon } from '../../ui/Icon'
+import { AlertSummary } from '../../ui/AlertBriefing'
 import './FoodAlertItem.css'
 
 export function FoodAlertSummary({ alert }: { alert: FoodAlert }) {
   return (
     <>
-      <span className="food-alerts__mark" aria-hidden="true">
-        <Icon
-          icon={
-            alert.kind === 'allergy'
-              ? TriangleAlert
-              : alert.kind === 'recall'
-                ? PackageX
-                : ShieldAlert
-          }
-        />
-      </span>
-      <span className="food-alerts__meta">
-        <span className="food-alerts__kind">{foodAlertLabels[alert.kind]}</span>
-        <time dateTime={alert.publishedAt}>
-          {format(parseISO(alert.publishedAt), 'd MMM yyyy')}
-        </time>
-      </span>
-      <span className="food-alerts__headline">{alert.title}</span>
-      {!!alert.details?.products.length && (
-        <span className="food-alerts__preview">
-          {alert.details.products.length} affected{' '}
-          {alert.details.products.length === 1 ? 'product' : 'products'}
-        </span>
-      )}
+      <AlertSummary
+        icon={
+          alert.kind === 'allergy'
+            ? TriangleAlert
+            : alert.kind === 'recall'
+              ? PackageX
+              : ShieldAlert
+        }
+        label={foodAlertLabels[alert.kind]}
+        metadata={
+          <time dateTime={alert.publishedAt}>
+            {format(parseISO(alert.publishedAt), 'd MMM yyyy')}
+          </time>
+        }
+        headline={alert.title}
+        preview={
+          alert.details?.products.length ? (
+            <>
+              {alert.details.products.length} affected{' '}
+              {alert.details.products.length === 1 ? 'product' : 'products'}
+            </>
+          ) : undefined
+        }
+      />
       <span className="sr-only">. Expand for affected products, the risk and what to do</span>
     </>
   )

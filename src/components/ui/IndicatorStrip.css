@@ -1,0 +1,101 @@
+.indicator-strip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+  min-height: 0;
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-1);
+}
+.indicator-strip__item,
+.indicator-strip__more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: var(--control-min-height);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  background: transparent;
+  box-shadow: none;
+  color: var(--indicator-color, var(--color-link));
+  font-size: var(--text-caption);
+  font-weight: 550;
+  white-space: nowrap;
+  min-width: 0;
+}
+.indicator-strip__item .ui-icon {
+  width: var(--space-4);
+  height: var(--space-4);
+  flex-shrink: 0;
+}
+.indicator-strip__item > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 8ch;
+}
+.indicator-strip__more {
+  margin-left: auto;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+.indicator-strip--error,
+.indicator-strip--red {
+  --indicator-color: var(--color-error);
+}
+.indicator-strip--yellow {
+  --indicator-color: var(--color-warning);
+}
+.indicator-strip--amber {
+  --indicator-color: var(--color-warning-strong);
+}
+.indicator-strip--muted {
+  --indicator-color: var(--color-text-muted);
+}
+.indicator-strip__quiet {
+  padding-left: var(--space-1);
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+}
+@media (hover: hover) and (pointer: fine) {
+  .indicator-strip .indicator-strip__item:hover:not(:disabled),
+  .indicator-strip .indicator-strip__more:hover:not(:disabled) {
+    border-color: currentColor;
+    background: color-mix(in srgb, currentColor 14%, var(--color-surface-muted));
+    transform: none;
+    box-shadow: none;
+  }
+}
+.indicator-dialog {
+  width: min(60rem, calc(100% - 2rem));
+  container-type: inline-size;
+  container-name: family-content;
+}
+.indicator-dialog__detail {
+  padding: 0 var(--space-3) var(--space-5);
+}
+.indicator-dialog__simple {
+  display: grid;
+  gap: var(--space-5);
+}
+.indicator-dialog__simple h3,
+.indicator-dialog__simple p {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+.indicator-strip .indicator-strip__compact-label {
+  display: none;
+}
+@container calendar-day (max-width: 14rem) {
+  .indicator-strip__item,
+  .indicator-strip__more {
+    padding-inline: var(--space-1);
+  }
+  .indicator-strip .has-compact-label .indicator-strip__label {
+    display: none;
+  }
+  .indicator-strip .has-compact-label .indicator-strip__compact-label {
+    display: inline;
+  }
+}

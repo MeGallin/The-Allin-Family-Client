@@ -29,8 +29,40 @@
 .modal .note {
   margin: var(--space-2) 0 0;
 }
+.modal--scrollable {
+  padding: 0;
+  overflow: clip;
+}
+.modal--scrollable[open] {
+  display: flex;
+  flex-direction: column;
+}
+.modal--scrollable > .modal__header {
+  flex-shrink: 0;
+  margin: 0;
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+.modal--scrollable > .modal__header h2 {
+  font-size: var(--text-lg);
+  letter-spacing: -0.02em;
+}
+.modal--scrollable > .modal__body {
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-4);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
 @media (min-width: 40rem) {
   .modal {
     padding: var(--space-6);
+  }
+  .modal--scrollable {
+    padding: 0;
+  }
+  .modal--scrollable > .modal__header,
+  .modal--scrollable > .modal__body {
+    padding: var(--space-5) var(--space-6);
   }
 }

@@ -24,6 +24,18 @@ const state = vi.hoisted(() => ({
 vi.mock('../../../features/food-alerts/useFoodAlerts', () => ({
   useFoodAlerts: () => ({ data: state.food, isLoading: !state.food, isError: false }),
 }))
+vi.mock('../../../features/weather-warnings/useWeatherWarnings', () => ({
+  useWeatherWarnings: () => ({
+    data: {
+      status: 'ready',
+      updatedAt: new Date(state.now).toISOString(),
+      location: 'Guildford, Surrey, United Kingdom',
+      data: [],
+    },
+    isLoading: false,
+    isError: false,
+  }),
+}))
 // Public context has its own service lifecycle; these tests isolate family navigation.
 vi.mock('../../../features/week-context/useWeekContext', () => ({
   useWeekContext: () => ({
@@ -135,7 +147,7 @@ describe('Week Ahead dashboard', () => {
     const badge = screen.getByRole('button', { name: /Latest food alerts/ })
     expect(badge.closest('.week-planner__day')?.classList.contains('is-today')).toBe(true)
     expect(badge.closest('.week-planner__day-main')).toBeNull()
-    expect(view.container.querySelectorAll('.calendar-food-alerts')).toHaveLength(1)
+    expect(screen.getAllByRole('button', { name: /Latest food alerts/ })).toHaveLength(1)
     expect(view.container.querySelectorAll('.week-planner__day')).toHaveLength(7)
   })
   it('marks weekends and shows months only at the start and month boundaries', () => {
@@ -154,7 +166,7 @@ describe('Week Ahead dashboard', () => {
       [...view.container.querySelectorAll('.week-planner__month')].map((node) => node.textContent),
     ).toEqual(['Oct', 'Nov', 'Dec'])
     expect(tiles[10].querySelector('.week-planner__day-label')?.textContent).toBe('SunNov')
-    expect(screen.queryByText('Weekend')).toBeNull()
+    expect(screen.getAllByText('Weekend')).toHaveLength(13)
   })
   it('changes to four days from today, then 360 days across the year boundary', () => {
     show(<WeekPlanner />)

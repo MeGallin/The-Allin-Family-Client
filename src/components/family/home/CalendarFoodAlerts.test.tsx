@@ -48,7 +48,7 @@ describe('calendar food alert indicator', () => {
     expect(screen.getByRole('button').getAttribute('aria-label')).toContain(
       '1 allergy alert · 1 recall',
     )
-    expect(screen.getByText('2')).toBeTruthy()
+    expect(screen.getByText('Food 2')).toBeTruthy()
     expect(
       screen.getByRole('button', { name: /Latest food alerts/ }).getAttribute('aria-haspopup'),
     ).toBe('dialog')

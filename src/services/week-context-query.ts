@@ -8,9 +8,23 @@ import type {
   TownChoice,
 } from '../features/week-context/types'
 import type { RootState } from '../app/store'
+import type { WeatherWarningsFeed } from '../features/weather-warnings/types'
 
 export const weekContextApi = shoppingApi.injectEndpoints({
   endpoints: (builder) => ({
+    getWeatherWarnings: builder.query<WeatherWarningsFeed, void>({
+      async queryFn(_, { signal }) {
+        try {
+          return {
+            data: await request<WeatherWarningsFeed>('/weather-warnings', undefined, signal),
+          }
+        } catch (error) {
+          return { error: serializableError(error) }
+        }
+      },
+      keepUnusedDataFor: 300,
+      providesTags: ['WeekContext'],
+    }),
     getWeekContext: builder.query<WeekContext, void>({
       async queryFn(_, { signal }) {
         try {

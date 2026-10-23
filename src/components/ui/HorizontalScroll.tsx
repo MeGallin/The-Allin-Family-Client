@@ -51,6 +51,7 @@ export function HorizontalScroll({ children, label, className = '', toolbar }: P
                 type="button"
                 className="icon-button horizontal-scroll__arrow"
                 aria-label={'Scroll ' + label + ' left'}
+                title={'Scroll ' + label + ' left'}
                 aria-controls={id}
                 disabled={!edges.previous}
                 onClick={() => scroll(-1)}
@@ -61,6 +62,7 @@ export function HorizontalScroll({ children, label, className = '', toolbar }: P
                 type="button"
                 className="icon-button horizontal-scroll__arrow"
                 aria-label={'Scroll ' + label + ' right'}
+                title={'Scroll ' + label + ' right'}
                 aria-controls={id}
                 disabled={!edges.next}
                 onClick={() => scroll(1)}

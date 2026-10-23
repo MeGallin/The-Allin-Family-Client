@@ -1,19 +1,15 @@
-import { lazy, Suspense, useState } from 'react'
-import { TriangleAlert } from 'lucide-react'
+import { lazy } from 'react'
+import { ShieldAlert } from 'lucide-react'
 import { useFoodAlerts } from '../../../features/food-alerts/useFoodAlerts'
 import { foodAlertView } from '../../../features/food-alerts/food-alert-view'
 import { useNow } from '../../../hooks/useNow'
-import { Icon } from '../../ui/Icon'
-import { Modal } from '../../ui/Modal'
-import { LoadingState } from '../../ui/LoadingState'
-import './CalendarFoodAlerts.css'
+import { IndicatorStrip, type CalendarIndicator } from '../../ui/IndicatorStrip'
 
 const FoodAlerts = lazy(() =>
   import('../alerts/FoodAlerts').then((module) => ({ default: module.FoodAlerts })),
 )
 
-export function CalendarFoodAlerts() {
-  const [open, setOpen] = useState(false)
+export function useFoodCalendarIndicator(): CalendarIndicator | null {
   const { data, isLoading, isError } = useFoodAlerts()
   const { alerts, unavailable, stale } = foodAlertView(data, isError, useNow())
   if (isLoading || (!unavailable && alerts.length === 0)) return null
@@ -36,34 +32,22 @@ export function CalendarFoodAlerts() {
   const description =
     (summary || 'Check the latest FSA advice') +
     (stale ? ' · updates delayed' : unavailable ? ' · updates unavailable' : '')
-  return (
-    <>
-      <button
-        type="button"
-        className={
-          'calendar-food-alerts' + (alerts.length ? '' : ' calendar-food-alerts--unavailable')
-        }
-        onClick={() => setOpen(true)}
-        aria-haspopup="dialog"
-        aria-label={'Latest food alerts: ' + description + '. Read the FSA notices.'}
-        title={'Latest FSA food alerts · ' + description}
-      >
-        <span className="calendar-food-alerts__badge" aria-hidden="true">
-          <Icon icon={TriangleAlert} />
-          <span>{alerts.length || '!'}</span>
-        </span>
-      </button>
-      {open && (
-        <Modal
-          title="Latest food alerts"
-          onClose={() => setOpen(false)}
-          className="food-alerts-dialog"
-        >
-          <Suspense fallback={<LoadingState label="Loading food alerts…" />}>
-            <FoodAlerts />
-          </Suspense>
-        </Modal>
-      )}
-    </>
-  )
+  return {
+    id: 'food',
+    label: alerts.length ? 'Food ' + alerts.length : 'Food !',
+    compactLabel: String(alerts.length || '!'),
+    accessibleLabel: 'Latest food alerts: ' + description + '. Read the FSA notices.',
+    description,
+    source: 'FSA food alerts',
+    icon: ShieldAlert,
+    tone: alerts.length ? 'error' : 'muted',
+    priority: 4,
+    dialogTitle: 'Latest food alerts',
+    details: () => <FoodAlerts />,
+  }
+}
+
+export function CalendarFoodAlerts() {
+  const indicator = useFoodCalendarIndicator()
+  return indicator ? <IndicatorStrip indicators={[indicator]} dayLabel="today" /> : null
 }

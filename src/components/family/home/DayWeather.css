@@ -12,7 +12,33 @@
   background: transparent;
   box-shadow: none;
 }
-.day-weather > span {
+.day-weather__preview {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: var(--space-1);
+  width: max-content;
+  max-width: 100%;
+}
+.day-weather__preview::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: calc(-1 * var(--space-1));
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  pointer-events: none;
+  transition:
+    background-color var(--control-transition),
+    border-color var(--control-transition);
+}
+@media (hover: hover) and (pointer: fine) {
+  .day-weather:hover .day-weather__preview::before {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent);
+  }
+}
+.day-weather__temperatures {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -25,7 +51,7 @@
   color: var(--color-link);
   flex-shrink: 0;
 }
-.day-weather > span > span,
+.day-weather__temperatures > span,
 .day-weather small {
   font-size: var(--text-caption);
   color: var(--color-text-muted);
