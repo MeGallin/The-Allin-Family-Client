@@ -1,12 +1,19 @@
-import { Link } from 'react-router'
+import { lazy, Suspense, useState } from 'react'
 import { TriangleAlert } from 'lucide-react'
 import { useFoodAlerts } from '../../../features/food-alerts/useFoodAlerts'
 import { foodAlertView } from '../../../features/food-alerts/food-alert-view'
 import { useNow } from '../../../hooks/useNow'
 import { Icon } from '../../ui/Icon'
+import { Modal } from '../../ui/Modal'
+import { LoadingState } from '../../ui/LoadingState'
 import './CalendarFoodAlerts.css'
 
+const FoodAlerts = lazy(() =>
+  import('../alerts/FoodAlerts').then((module) => ({ default: module.FoodAlerts })),
+)
+
 export function CalendarFoodAlerts() {
+  const [open, setOpen] = useState(false)
   const { data, isLoading, isError } = useFoodAlerts()
   const { alerts, unavailable, stale } = foodAlertView(data, isError, useNow())
   if (isLoading || (!unavailable && alerts.length === 0)) return null
@@ -30,18 +37,33 @@ export function CalendarFoodAlerts() {
     (summary || 'Check the latest FSA advice') +
     (stale ? ' · updates delayed' : unavailable ? ' · updates unavailable' : '')
   return (
-    <Link
-      className={
-        'calendar-food-alerts' + (alerts.length ? '' : ' calendar-food-alerts--unavailable')
-      }
-      to="/alerts"
-      aria-label={'Latest food alerts: ' + description + '. Read the FSA notices.'}
-      title={'Latest FSA food alerts · ' + description}
-    >
-      <span className="calendar-food-alerts__badge" aria-hidden="true">
-        <Icon icon={TriangleAlert} />
-        <span>{alerts.length || '!'}</span>
-      </span>
-    </Link>
+    <>
+      <button
+        type="button"
+        className={
+          'calendar-food-alerts' + (alerts.length ? '' : ' calendar-food-alerts--unavailable')
+        }
+        onClick={() => setOpen(true)}
+        aria-haspopup="dialog"
+        aria-label={'Latest food alerts: ' + description + '. Read the FSA notices.'}
+        title={'Latest FSA food alerts · ' + description}
+      >
+        <span className="calendar-food-alerts__badge" aria-hidden="true">
+          <Icon icon={TriangleAlert} />
+          <span>{alerts.length || '!'}</span>
+        </span>
+      </button>
+      {open && (
+        <Modal
+          title="Latest food alerts"
+          onClose={() => setOpen(false)}
+          className="food-alerts-dialog"
+        >
+          <Suspense fallback={<LoadingState label="Loading food alerts…" />}>
+            <FoodAlerts />
+          </Suspense>
+        </Modal>
+      )}
+    </>
   )
 }

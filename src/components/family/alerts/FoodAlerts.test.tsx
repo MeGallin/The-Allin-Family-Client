@@ -13,7 +13,7 @@ const state = vi.hoisted(() => ({
 vi.mock('../../../features/food-alerts/useFoodAlerts', () => ({ useFoodAlerts: () => state }))
 vi.mock('../../../hooks/useNow', () => ({ useNow: () => Date.parse('2026-10-23T12:00:00Z') }))
 
-describe('Alerts page food notices', () => {
+describe('food alert dialog content', () => {
   beforeEach(() => {
     state.data = {
       status: 'ready',
@@ -103,6 +103,18 @@ describe('Alerts page food notices', () => {
       within(accordion).getByRole('link', { name: /Read the official FSA notice/ }),
     ).toBeTruthy()
   })
+  it('shows only the selected notice details when switching between real alert rows', () => {
+    render(<FoodAlerts />)
+    const first = screen.getByText('Example product recalled for undeclared milk')
+    const second = screen.getByText('Example recall')
+    fireEvent.click(first)
+    fireEvent.click(second)
+    expect(first.closest('details')!.open).toBe(false)
+    expect(second.closest('details')!.open).toBe(true)
+    fireEvent.click(first)
+    expect(first.closest('details')!.open).toBe(true)
+    expect(second.closest('details')!.open).toBe(false)
+  })
   it('renders provider text as text rather than executable markup', () => {
     state.data!.data![0].details!.consumerAdvice = '<img src=x onerror=alert(1)>'
     const view = render(<FoodAlerts />)
@@ -127,9 +139,11 @@ describe('Alerts page food notices', () => {
   })
   it('labels stale cached notices honestly', () => {
     state.data!.status = 'stale'
-    const view = render(<FoodAlerts />)
+    render(<FoodAlerts />)
     expect(screen.getByRole('status').textContent).toContain('last checked earlier')
-    expect(view.container.querySelectorAll('.food-alerts__list > li')).toHaveLength(2)
+    expect(
+      screen.getByRole('region', { name: 'Food alerts' }).querySelectorAll('details'),
+    ).toHaveLength(2)
     expect(screen.getByText(/updates delayed/)).toBeTruthy()
   })
   it('hides expired notices even if a disconnected browser retains Redux data', () => {
@@ -141,8 +155,10 @@ describe('Alerts page food notices', () => {
   })
   it('allows a fresh server timestamp ahead of the shared browser clock tick', () => {
     state.data!.updatedAt = '2026-10-23T12:00:15Z'
-    const view = render(<FoodAlerts />)
-    expect(view.container.querySelectorAll('.food-alerts__list > li')).toHaveLength(2)
+    render(<FoodAlerts />)
+    expect(
+      screen.getByRole('region', { name: 'Food alerts' }).querySelectorAll('details'),
+    ).toHaveLength(2)
     expect(screen.queryByRole('status')).toBeNull()
   })
   it('distinguishes a successful empty feed from an outage', () => {

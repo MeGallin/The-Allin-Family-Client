@@ -5,10 +5,10 @@ its own repository in the sibling api folder.
 
 ## Alerts
 
-The lazy-loaded `/alerts` route shows the three latest FSA notices, using shared
-Nimbus Panel/Icon/FriendlyTime styles and a shared content surface. Home retains
-only the warning badge inside today's calendar tile. Desktop navigation and the
-account menu both offer Alerts; the five mobile bottom destinations stay compact.
+The calendar warning badge opens the shared weather-style Modal with the three
+latest FSA notices, using shared Nimbus Panel/Icon/FriendlyTime styles. Alert
+details load lazily when the dialog opens. There is no dedicated Alerts route or
+navigation entry; closing the dialog preserves the calendar range and scroll.
 Provider components and tests live together in `components/family/alerts`, ready
 for additional alert sources later. The `features/food-alerts` hook subscribes to the
 shared Redux Toolkit Query API through `services/food-alerts-query.ts`. Polls every
@@ -19,17 +19,26 @@ six hours. No search, key, database migration or family data sent to the FSA.
 Release requires both client and API packages. Tests are colocated with FoodAlerts;
 the API regression suite includes provider normalisation/cache/authentication checks.
 Today's Home calendar tile shows a small warning badge and latest-notice count
-beside the date, alongside the weather information. The badge opens `/alerts`
+beside the date, alongside the weather information. The badge opens the dialog
 without changing tile height. Its accessible
 label/tooltip explains notice types and stale/unavailable status. It is a current
 information shortcut, not a claim these notices were issued today. Both displays
 share one RTK Query request and the same freshness rules.
-On Alerts, each headline is a native keyboard-accessible disclosure. Expanding it
+Inside the dialog, each headline is a native keyboard-accessible disclosure. Expanding it
 shows affected products (including supplied pack, batch and date information), the
 FSA risk statement and consumer advice, plus the official source link. Missing
 fields have explicit fallbacks. Products/advice stack on phones and use two columns
 when space permits. No additional request or family data write occurs on expansion;
 the API's cached full-view response is shared with Home's compact badge.
+
+The shared `components/ui/Accordion.tsx` and colocated CSS own disclosure behaviour,
+the chevron and Nimbus defaults. Each group keeps at most one item open; selecting
+the open item again closes it. Food alerts supply stable IDs, summary content and
+detail content while keeping their product-specific layout in the alerts folder.
+The alert briefing uses type-specific warning icons, publication dates and affected
+product counts for scanning. Expanded notices emphasise the FSA consumer action;
+phones show advice first, while wider dialogs pair products and advice in columns.
+Only the notice area scrolls, keeping the dialog title and Close control visible.
 
 ## Run locally
 

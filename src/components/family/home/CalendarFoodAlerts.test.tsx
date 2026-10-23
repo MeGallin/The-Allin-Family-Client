@@ -43,40 +43,40 @@ describe('calendar food alert indicator', () => {
       ],
     }
   })
-  it('highlights notice types and links to the dedicated Alerts route', () => {
+  it('highlights notice types and offers a dialog without navigation', () => {
     show()
-    expect(screen.getByRole('link').getAttribute('aria-label')).toContain(
+    expect(screen.getByRole('button').getAttribute('aria-label')).toContain(
       '1 allergy alert · 1 recall',
     )
     expect(screen.getByText('2')).toBeTruthy()
-    expect(screen.getByRole('link', { name: /Latest food alerts/ }).getAttribute('href')).toBe(
-      '/alerts',
-    )
+    expect(
+      screen.getByRole('button', { name: /Latest food alerts/ }).getAttribute('aria-haspopup'),
+    ).toBe('dialog')
     expect(screen.queryByText(/today/i)).toBeNull()
   })
   it('does not invent an alert while loading', () => {
     state.isLoading = true
     state.data = undefined
     show()
-    expect(screen.queryByRole('link')).toBeNull()
+    expect(screen.queryByRole('button')).toBeNull()
   })
   it('hides the indicator for a successfully empty feed', () => {
     state.data!.data = []
     show()
-    expect(screen.queryByRole('link')).toBeNull()
+    expect(screen.queryByRole('button')).toBeNull()
   })
-  it('keeps a useful route to official advice when the feed is unavailable', () => {
+  it('keeps access to official advice when the feed is unavailable', () => {
     state.data = { status: 'unavailable', updatedAt: null, data: null }
     show()
-    expect(screen.getByRole('link').getAttribute('aria-label')).toContain('updates unavailable')
-    expect(screen.getByRole('link').getAttribute('aria-label')).toContain(
+    expect(screen.getByRole('button').getAttribute('aria-label')).toContain('updates unavailable')
+    expect(screen.getByRole('button').getAttribute('aria-label')).toContain(
       'Check the latest FSA advice',
     )
   })
   it('labels stale notices and expires counts using the same rules as the full list', () => {
     state.data!.status = 'stale'
     const view = show()
-    expect(screen.getByRole('link').getAttribute('aria-label')).toContain(
+    expect(screen.getByRole('button').getAttribute('aria-label')).toContain(
       '1 allergy alert · 1 recall · updates delayed',
     )
     state.data!.updatedAt = '2026-10-22T00:00:00Z'
@@ -85,6 +85,6 @@ describe('calendar food alert indicator', () => {
         <CalendarFoodAlerts />
       </MemoryRouter>,
     )
-    expect(screen.getByRole('link').getAttribute('aria-label')).not.toContain('1 allergy')
+    expect(screen.getByRole('button').getAttribute('aria-label')).not.toContain('1 allergy')
   })
 })

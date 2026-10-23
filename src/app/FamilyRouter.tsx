@@ -11,7 +11,6 @@ import { MemoriesSync } from '../features/memories/MemoriesSync'
 const FamilyHomePage = lazy(() => import('../pages/family/FamilyHomePage'))
 const PollsPage = lazy(() => import('../pages/family/PollsPage'))
 const CalendarPage = lazy(() => import('../pages/family/CalendarPage'))
-const AlertsPage = lazy(() => import('../pages/family/AlertsPage'))
 const MemoriesPage = lazy(() => import('../pages/family/MemoriesPage'))
 const ListsPage = lazy(() => import('../pages/family/ListsPage'))
 const PersonalNotesPage = lazy(() => import('../pages/family/PersonalNotesPage'))
@@ -70,7 +69,6 @@ function ProtectedFamilyRoutes(props: FamilyRouterProps) {
             <Route index element={<FamilyHomePage />} />
             <Route path="polls" element={<PollsPage />} />
             <Route path="calendar" element={<CalendarPage />} />
-            <Route path="alerts" element={<AlertsPage />} />
             <Route path="memories" element={<MemoriesPage />} />
             <Route path="lists" element={<ListsPage />} />
             <Route

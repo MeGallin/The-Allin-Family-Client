@@ -132,7 +132,7 @@ describe('Week Ahead dashboard', () => {
       ],
     }
     const view = show(<WeekPlanner />)
-    const badge = screen.getByRole('link', { name: /Latest food alerts/ })
+    const badge = screen.getByRole('button', { name: /Latest food alerts/ })
     expect(badge.closest('.week-planner__day')?.classList.contains('is-today')).toBe(true)
     expect(badge.closest('.week-planner__day-main')).toBeNull()
     expect(view.container.querySelectorAll('.calendar-food-alerts')).toHaveLength(1)

@@ -20,9 +20,14 @@ The Alerts component's colocated `FoodAlerts.test.tsx` covers notice/source link
 unavailable/retry, stale and expired data plus shared-clock skew. `npm run test:api`
 also runs the FSA parser/cache unit cases and authentication/read-only route checks
 against isolated fixtures. These automated tests make no real FSA requests.
-The Redux/router integration checks calendar-to-Alerts navigation without a second
-request and confirms no detailed feed is rendered on the Home test route. The API
-suite also checks `/alerts` is recognised in section-only admin usage reporting.
+The Redux/router integration checks the calendar dialog opens without a second
+request or navigation, closes cleanly and retains the selected day range. Detailed
+content is only mounted while the dialog is open. Historical `/alerts` usage
+labels remain readable in admin reporting, although that route has been removed.
+The shared Accordion tests cover switching in both directions, closing the active
+item and independence between groups. FoodAlerts also checks exclusive opening
+with real notice content; stale-feed assertions count disclosures rather than a
+removed list wrapper.
 Expanded notices are checked for native open/close behaviour, product/batch/date
 fields, risk/advice, missing-field fallback and safe text rendering. API fixtures
 exercise single-object/list variants, multi-date batches, HTML-to-text handling
