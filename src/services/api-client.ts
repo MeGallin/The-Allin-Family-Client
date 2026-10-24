@@ -11,7 +11,14 @@ export class ApiError extends Error {
 
 // The session cookie is HttpOnly. Only the CSRF token is held in client memory.
 let csrfToken = ''
-const snapshotPaths = new Set(['/shopping', '/calendar', '/memories', '/polls', '/notes'])
+const snapshotPaths = new Set([
+  '/shopping',
+  '/calendar',
+  '/memories',
+  '/polls',
+  '/notes',
+  '/widgets',
+])
 const snapshots = new Map<string, { etag: string; data: unknown }>()
 let responseGeneration = 0
 export function clearSnapshotResponses() {

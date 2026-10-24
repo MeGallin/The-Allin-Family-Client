@@ -58,6 +58,7 @@ export default function AdminActivity() {
               ['poll', 'Polls and votes'],
               ['user_profile', featureNames.user_profile],
               ['user_account', 'Family accounts'],
+              ['widget', 'Widgets'],
             ].map(([value, label]) => (
               <option key={value} value={value}>
                 {label}

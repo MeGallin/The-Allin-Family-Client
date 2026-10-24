@@ -8,6 +8,7 @@ import { useNow } from '../../../hooks/useNow'
 import { PollTimeRemaining } from '../polls/PollTimeRemaining'
 import { Icon } from '../../ui/Icon'
 import { HomeDataError } from './HomeDataError'
+import { HomeDinnerSummary } from './HomeDinnerSummary'
 import './HomePriorities.css'
 
 export function HomePriorities() {
@@ -21,6 +22,7 @@ export function HomePriorities() {
   return (
     <section className="home-activity" aria-labelledby="home-activity-title">
       <h2 id="home-activity-title">Around the family</h2>
+      <HomeDinnerSummary />
       <div className="home-priorities">
         <section
           id="family-poll"

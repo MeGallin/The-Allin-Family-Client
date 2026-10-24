@@ -1,0 +1,20 @@
+.widget-visibility {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.widget-visibility .ui-icon {
+  width: 1em;
+  height: 1em;
+}
+.widget-visibility--family {
+  color: var(--color-accent-highlight);
+  border-color: transparent;
+  background: var(--color-accent-soft);
+}

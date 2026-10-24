@@ -8,6 +8,7 @@ const nouns: Record<string, string> = {
   poll: 'poll',
   user_profile: 'profile',
   user_account: 'account',
+  widget: 'widget',
 }
 const verbs: Record<string, string> = {
   created: 'added',
@@ -27,6 +28,16 @@ const verbs: Record<string, string> = {
   vote_withdrawn: 'withdrew their vote from',
   closed: 'closed voting on',
   reopened: 'reopened voting on',
+  spun: 'spun',
+  hidden: 'hid',
+  shown: 'showed',
+  meal_removed: 'removed a meal from',
+  published: 'published a dinner suggestion from',
+  meal_eaten: 'recorded an eaten meal from',
+  meal_eaten_corrected: 'corrected an eaten meal record on',
+  dinner_responded: 'responded to a dinner suggestion from',
+  dinner_response_changed: 'changed their dinner response on',
+  dinner_response_withdrawn: 'withdrew their dinner response on',
 }
 export function ActivityRow({ entry, day }: { entry: ActivityEntry; day?: string }) {
   const title = entry.after?.title ?? entry.before?.title ?? entry.targetName

@@ -1,3 +1,13 @@
+vi.mock('../../../features/widgets/useWidgets', () => ({
+  useWidgets: () => ({
+    widgets: [],
+    ownerId: 1,
+    removals: {},
+    loading: false,
+    error: '',
+    refresh: vi.fn(),
+  }),
+}))
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'

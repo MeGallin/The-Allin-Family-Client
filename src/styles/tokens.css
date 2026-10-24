@@ -85,6 +85,7 @@
   /* Shape, elevation and layout */
   --collection-column-min: 18rem;
   --calendar-tile-width: 17.5rem;
+  --dinner-wheel-size: 28rem;
   --calendar-tile-date-size: 2.5rem;
   --calendar-tile-date-size-compact: 2.25rem;
   --calendar-tile-height: 12.25rem;

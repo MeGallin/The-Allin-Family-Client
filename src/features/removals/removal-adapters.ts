@@ -5,6 +5,8 @@ import { shoppingApi } from '../../services/shopping-query'
 import { calendarApi } from '../../services/calendar-query'
 import { memoriesApi } from '../../services/memories-query'
 import { notesApi } from '../../services/notes-query'
+import { widgetsApi } from '../../services/widgets-query'
+import { executeWidgetWrite } from '../widgets/widgets-actions'
 import { executeShoppingWrite } from '../shopping/shopping-actions'
 import { executeCalendarWrite } from '../calendar/calendar-actions'
 import { executeMemoryWrite } from '../memories/memories-actions'
@@ -18,6 +20,36 @@ type Adapter = {
 const body = ({ item }: PendingRemoval) => ({ id: item.id, version: item.version })
 /** Only domain differences live here; timing, Undo and safety checks live in the listener. */
 export const removalAdapters: Record<RemovalDomain, Adapter> = {
+  widgets: {
+    busy: (state) => state.widgetsUi.busy,
+    latest: (state, ownerId) =>
+      widgetsApi.endpoints.getWidgets.select(ownerId)(state).data?.widgets,
+    remove: (dispatch, entry) =>
+      dispatch(executeWidgetWrite({ action: 'remove', body: body(entry) })),
+  },
+  widgetMeals: {
+    busy: (state) => state.widgetsUi.busy,
+    latest: (state, ownerId) =>
+      widgetsApi.endpoints.getWidgets
+        .select(ownerId)(state)
+        .data?.widgets.flatMap((widget) =>
+          widget.meals.map((meal) => ({ ...meal, version: widget.version })),
+        ),
+    remove: (dispatch, entry) =>
+      dispatch(async (_, getState) => {
+        const widget = widgetsApi.endpoints.getWidgets
+          .select(entry.ownerId)(getState())
+          .data?.widgets.find((widget) => widget.meals.some((meal) => meal.id === entry.item.id))
+        return widget
+          ? dispatch(
+              executeWidgetWrite({
+                action: 'remove-meal',
+                body: { id: widget.id, version: entry.item.version, mealId: entry.item.id },
+              }),
+            )
+          : false
+      }),
+  },
   polls: {
     busy: (state) => state.pollsUi.busy,
     latest: (state) => pollsApi.endpoints.getPolls.select()(state).data?.polls,

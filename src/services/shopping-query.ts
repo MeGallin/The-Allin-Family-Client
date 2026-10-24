@@ -49,6 +49,7 @@ export const shoppingApi = createApi({
     'WeekPreferences',
     'Travel',
     'TravelPreferences',
+    'Widgets',
   ],
   refetchOnFocus: true,
   refetchOnReconnect: true,

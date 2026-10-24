@@ -1,0 +1,77 @@
+.dinner-wheel {
+  /* Alternate warm/cool hues, including the last-to-first seam, without reshuffling on spin. */
+  --wheel-tone-1: #fb8c8c;
+  --wheel-tone-2: #67e8f9;
+  --wheel-tone-3: #fde047;
+  --wheel-tone-4: #c4b5fd;
+  --wheel-tone-5: #6ee7b7;
+  --wheel-tone-6: #f9a8d4;
+  --wheel-tone-7: #93c5fd;
+  --wheel-tone-8: #fdba74;
+  --wheel-tone-9: #5eead4;
+  --wheel-tone-10: #fda4af;
+  --wheel-tone-11: #bef264;
+  --wheel-tone-12: #a5b4fc;
+  --wheel-label-color: #102033;
+  position: relative;
+  width: min(100%, var(--dinner-wheel-size));
+  aspect-ratio: 1;
+  margin-inline: auto;
+  padding: var(--space-2);
+  container-type: inline-size;
+}
+.dinner-wheel__disc {
+  height: 100%;
+  width: 100%;
+  border: var(--space-1) solid var(--color-border);
+  border-radius: 50%;
+  position: relative;
+  box-shadow: var(--shadow-card);
+  transition: transform 2s cubic-bezier(0.12, 0.64, 0.12, 1);
+}
+.dinner-wheel__labels {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.dinner-wheel__meal {
+  fill: var(--wheel-label-color);
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 650;
+}
+.dinner-wheel__hub {
+  position: absolute;
+  inset: 39%;
+  display: grid;
+  place-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  color: var(--color-accent-highlight);
+  box-shadow: var(--shadow-card);
+}
+.dinner-wheel__pointer {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 0.6rem);
+  width: 1.2rem;
+  height: 1.5rem;
+  background: var(--color-accent);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  z-index: 1;
+}
+.dinner-wheel--compact {
+  width: 8rem;
+}
+.dinner-wheel--compact .dinner-wheel__hub .ui-icon {
+  width: 1rem;
+  height: 1rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dinner-wheel__disc {
+    transition: none;
+  }
+}

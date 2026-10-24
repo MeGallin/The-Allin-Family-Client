@@ -16,6 +16,7 @@ const ListsPage = lazy(() => import('../pages/family/ListsPage'))
 const PersonalNotesPage = lazy(() => import('../pages/family/PersonalNotesPage'))
 const AdminPage = lazy(() => import('../pages/admin/AdminPage'))
 const ProfilePage = lazy(() => import('../pages/profile/ProfilePage'))
+const MySpacePage = lazy(() => import('../pages/family/MySpacePage'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
 export type FamilyRouterProps = {
@@ -77,6 +78,7 @@ function ProtectedFamilyRoutes(props: FamilyRouterProps) {
             />
             <Route path="admin" element={<AdminPage />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="my-space" element={<MySpacePage onSessionExpired={onSessionExpired} />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

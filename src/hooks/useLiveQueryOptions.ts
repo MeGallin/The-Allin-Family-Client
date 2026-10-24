@@ -19,7 +19,10 @@ export function useLiveQueryOptions(path: string, busy = false, always = false) 
   const { pathname } = useLocation()
   const queued = useAppSelector((state) =>
     Object.values(state.removals.entries).some(
-      (entry) => '/' + entry.domain === path || (entry.domain === 'shopping' && path === '/lists'),
+      (entry) =>
+        '/' + entry.domain === path ||
+        (entry.domain === 'shopping' && path === '/lists') ||
+        (path === '/my-space' && ['widgets', 'widgetMeals'].includes(entry.domain)),
     ),
   )
   const foreground = useSyncExternalStore(subscribe, canRefresh, () => false)

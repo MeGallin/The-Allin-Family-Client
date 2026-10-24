@@ -1,0 +1,27 @@
+.widget-meals {
+  display: grid;
+  gap: var(--space-4);
+}
+.widget-meals ol {
+  list-style: none;
+  counter-reset: meal;
+  margin: 0;
+  padding: 0;
+}
+.widget-meals li {
+  counter-increment: meal;
+  display: flex;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+.widget-meals li::before {
+  content: counter(meal, decimal-leading-zero);
+  color: var(--color-accent-highlight);
+  font-size: var(--text-caption);
+  font-variant-numeric: tabular-nums;
+  flex: none;
+  min-width: var(--space-5);
+}

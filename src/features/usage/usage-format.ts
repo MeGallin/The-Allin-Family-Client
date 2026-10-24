@@ -17,6 +17,7 @@ export const usagePages: Record<string, string> = {
   '/polls': 'Polls',
   '/notes': 'Personal Notes',
   '/profile': 'Profile',
+  '/my-space': 'Widgets',
   '/admin': 'Administration',
   '/other': 'Other page',
 }

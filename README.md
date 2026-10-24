@@ -981,3 +981,90 @@ Profile uses the selected Personal Studio layout with an account identity rail a
 Personal Studio release review (23 October 2026): reviewed tab lifecycle, keyboard/ARIA relationships, shared draft blocking, per-user preference services, official TfL colour reuse and mobile layouts. No blocking findings. Production TypeScript/Vite client build completed successfully. No database migration or API package is required.
 
 Live Profile QA (23 October 2026): all four tabs checked under Gary/Dad, including mobile. Nickname, accent, Week Ahead and TfL saves persisted after refresh; Keep editing preserved drafts, Discard completed a tab change, and route navigation was blocked for unfinished searches. Manual keyboard tab navigation worked. Restored Dad, Green, Guildford/England and Wales and TfL off. All 131 client regression tests passed; both focused TfL tests passed after the small mobile-summary spacing fix. The TfL summary now gives Select all its own row on narrow screens.
+
+## My Space and Widget Shelf
+
+`/my-space` uses the approved Widget Shelf layout inside the existing family application shell. Desktop access is in the sidebar; mobile access is in the avatar/account menu so the bottom navigation is unchanged. The shared Tabs, ContentSurface, HorizontalScroll, Modal, draft protection, RTK Query write lifecycle and 20-second Undo are reused.
+
+- Widget Library currently offers Dinner Spinner. Other catalogue entries are explicitly planned, not functional.
+- Add to my space creates a separate owner-controlled instance. Each owner can keep up to 30 instances, with 2–12 distinct meals per spinner. New instances default to Just me.
+- Family visibility lets everyone spin the same instance and see its latest pick/history. Only the owner edits meals, renames, changes visibility or removes the widget. A recipient can hide/show a shared instance without changing it for anyone else.
+- Trial picks are selected and committed by the API before animation, with idempotent retries. Trials belong only to the person spinning, including on family installations. A trial does not replace a published family suggestion. See the publication workflow below.
+- Widget and saved-meal removal use the central 20-second Undo queue and version checks. Removing unsaved draft rows is immediate. Save an additional meal before removing one of the final two saved choices.
+- Admin activity and insights include widget usage metadata, without private widget names, meals or results. Session caches and widget UI state clear on account changes/sign-out.
+
+Requires API migration `018_widgets.sql`, applied locally with `php bin/migrate.php --local` from the API repository. A live release needs both client and API packages plus the established backed-up database-release process. Do not deploy this client feature against an API/database without that migration.
+
+Implementation compilation: TypeScript/Vite build and PHP syntax checks. Full interactive persistence/permissions/concurrency/Undo QA and regression tests are not claimed in this implementation turn; no example spinner or meal data was inserted into Gary's account.
+
+### Widget discovery labels
+The main area is now labelled **Widgets**, with **Widget Library** shown first by default for everyone, **My widgets** for the current user's own saved instances, and **Family widgets** for family-visible setups. An owner's shared instance appears in both My widgets and Family widgets. The existing `/my-space` route is retained. These labels supersede the earlier My Space wording above; ownership/privacy and API permissions are unchanged.
+
+### Personal trials and published family dinners
+
+The current Dinner Spinner workflow supersedes the original immediate shared-pick behaviour:
+
+1. Install a widget for **Personal** or **Family**. Each installation has its own meals; the owner manages them.
+2. Every user can spin a family installation privately as often as desired. The API returns only the signed-in actor's trials, including to the installation owner and admins. The last 10 are available privately.
+3. On a family installation, choose **Publish this pick**, review the dinner date and confirm. A personal installation must be changed to Family in Widget settings before publication is available.
+4. The family sees an immutable published suggestion with meal, date, publisher nickname and publication time. **Family widgets** puts an existing published suggestion before the private spinner for quick access.
+5. Every active family member, including the publisher, can choose **Happy with that**, **Suggest another**, or clear their own response. The UI shows names and unanswered replies. Silence is never agreement.
+6. Further private trials leave the published suggestion and its replies untouched. Publishing a replacement is explicit; the previous suggestion and its responses remain in history. The UI shows the latest 10 publications, including the current one; older records stay in the database.
+
+Publication uses version checks, the expected previous publication ID and a UUID retry key. Only the actor's own saved trial can be published, and its meal must still exist unchanged. Conflicting publication/response writes refresh the current state for review. Retried publication is not duplicated. Responses belong to a specific publication; an outdated response cannot be attached to its replacement.
+
+Requires both migrations 018_widgets.sql and 019_dinner_publications.sql before release. Changes remain local/uncommitted; production database unchanged. TypeScript/Vite build and PHP syntax checks passed; no automated regression or end-to-end functional QA was run in this implementation turn. Only library/installation-dialog visual inspection was performed, including phone fit. No generated installations, trial spins, publications or responses were saved to Gary's account.
+
+### Dinner wheel presentation
+The main spinner now uses the full panel width, capped by the shared --dinner-wheel-size token (34rem). Meal names appear radially inside the wheel rather than as numbered segments; the current twelve-meal example fits with up to two lines per name. Very long names can abbreviate, with full names retained in the segment title/menu. The compact Widget Library illustration remains small. This supersedes the temporary numbered-wheel presentation.
+
+Wheel label refinement: meal names now use smaller, single-line radial text. Long names fit the available segment length after font loading, instead of wrapping or replacing names with numbers. The earlier two-line presentation is superseded.
+
+### Published dinners on Home
+Home includes a compact read-only summary of each visible family Dinner Spinner’s latest published suggestion for today or a future date. It shows the meal, dinner date, publisher and actual active-family response counts. Links open the exact installation in Family widgets for replies; private trials and personal installations are excluded. Past dinners and hidden/queued-for-removal installations are omitted. The existing account-scoped Widgets query supplies the data and visible-route background refresh; no API or migration changes are needed.
+
+
+Dinner Spinner regression checks: run `npm run test:widgets` from the client. This covers dashboard publication visibility/counts/links and database-backed privacy, shared spins, publication retries, responses and stale replacements. API checks create and destroy the isolated regression database using the established test harness; they do not use family accounts or live data.
+
+### Multiple daily meals and the seven-day diary
+Dinner Spinner publications now have a date and a Breakfast/Lunch/Dinner/Other slot. Spin privately as often as needed and publish separately for lunch and dinner; publishing replaces only the selected slot on that date. The publication dialog opens the saved meal in Family widgets after success. The published-meal picker and deep links select the exact date/slot result.
+
+A published choice stands when there are no replies (“Chosen by default”); responses are optional and never fabricated. “Suggest another” flags review. The shared meal-diary helper keeps status/count/slot logic consistent between Home, the result panel and a reusable MealDiary component. Home shows up to four upcoming choices and an expandable rolling seven-day diary, preserving the calendar and general app shell. The diary distinguishes chosen meals from meals explicitly marked eaten, and keeps older records in the database. Mark as eaten / correct eaten record is available in the source widget, with actor/time and admin auditing. All writes use the existing Redux/RTK Query service and version safeguards.
+
+Requires API migration 020_meal_diary.sql (applied locally only). Existing family dinner data is retained. TypeScript and PHP syntax checks passed for this extension; the prior QA results preceded these new meal-slot/diary changes and do not constitute a full regression pass for the extension.
+
+### Meal-slot and diary QA (24 October 2026)
+The extended npm run test:widgets command now runs 12 client checks and 7 database-backed checks (19 total), all passed. Coverage includes separate lunch/dinner/date publications, deep-link selection, default choices without inferred votes, a seven-calendar-day window across the October clock change, all 14 lunch/dinner slots despite the old ten-row snapshot cap, completed-meal controls, eaten actor/time persistence, corrections, retries, stale writes and protection of future/eaten meals. API fixtures are isolated and cleaned automatically. Production build and TypeScript passed.
+
+Internal-browser walkthrough used Gary/Dad with a temporary family installation “QA Lunch and Dinner”: lunch QA Soup and dinner QA Pasta published separately, survived refresh, lunch marked eaten and corrected with both states surviving refresh, dinner remained unchanged, Home/diary reflected exact totals. Mobile viewport 390 had no page overflow; desktop viewport restored. Temporary installation removed through shared 20-second Undo flow; original family dinner/content untouched.
+
+QA fixes: repeated eaten writes now return the already-saved state without changing actor/time instead of reporting a false version conflict. Both response buttons lock when a meal is eaten; correction restores them. Completed results use diary wording rather than inviting replies. Diary disclosure now has a visible chevron. Dashboard tests distinguish the result links from matching diary links.
+
+### Widget hardening and the shared milestone
+See docs/widget-qa.md for product rules, the input/error/concurrency/privacy coverage matrix and repeatable commands. Latest review passed 168 client tests and 16 database-backed widget tests. Client/API validators normalize invisible separators and spaces, reject control-only/oversized data and duplicate Unicode names, and keep valid emoji/punctuation as plain text. Publishing is limited to the rolling past week through the next year. Saves and reads have a 15-second deadline; an uncertain save preserves its retry key and offers a check-before-retry path. Offline views explain why saving/spinning is unavailable.
+
+Home’s expanded seven-day diary includes a small shared three-day milestone: each date with a recorded eaten meal counts once. Repeated spins, votes, duplicate installations and multiple meals on the same day do not add progress. No leaderboard, separate points store or additional required step was added. The main flow remains spin privately, publish, optionally reply, then record eaten.
+
+Migration 021_spin_meal_versions.sql (local only) records the exact meal revision used by new trial spins, preventing a rename-away-and-back from reviving a stale pick. Existing matching legacy picks are backfilled with the current revision because their original revision was not stored. Missing widget/result links now require explicit recovery instead of silently opening a different result. No visual redesign or deployment was performed in this pass.
+
+### Dinner Spinner — Wheel & Table UI (24 October 2026)
+
+Scoped independent review is complete: Reviewee's follow-up marks DS-001 (London
+calendar consistency), DS-002 (retained Personal diary links) and DS-003 (API fixture
+date) resolved by source inspection. This is not a fresh runtime regression pass;
+tests/browser/database checks were not performed in the review/repair cycle.
+Commit, push and release preparation are now authorised. Production upload and
+migrations 018–021 remain separate release steps; do not copy local family data.
+
+Widget date rules use the API's Europe/London calendar for the publication default/range,
+seven-day diary, upcoming choices, Today/Tomorrow labels and eaten availability, regardless
+of the viewer's timezone. Calendar-key arithmetic and labels avoid viewer-zone/DST shifts.
+An open publish dialog refreshes its bounds from the shared clock while retaining the selected
+date and draft. Retained choices on a now-personal installation link to My widgets; current
+family installations link to Family widgets, preserving the exact result and permissions.
+
+Implemented the approved option 1 from the isolated design review. The private wheel and published family result now sit side by side when the shared content container has enough width; on mobile the wheel comes first. The existing shared MealDiary gains a board layout below both panels, with today first, full meal-slot/status links and the shared HorizontalScroll for contained phone scrolling. Home keeps its existing list diary and shared milestone.
+
+Meal names are available in a small WidgetMeals component using the shared Modal. Family response details, ownership/settings and private trial history are secondary disclosures; the duplicate shelf install tile is removed because the page action already opens the library. Existing meal links scroll to the requested published result while ordinary visits lead with the wheel. Styles remain colocated and use Nimbus tokens and each user's accent. The wheel's shared size token is now 28rem and still constrained by available width.
+
+TypeScript/Vite production build passed. Visually reviewed locally as Gary/Dad at desktop and phone widths, including the meal modal, response disclosure, diary and direct meal link. Fixed a diary min-content sizing overflow; final page widths fit their viewport (desktop 1338px, phone 347 CSS px). No automated tests run in this UI implementation turn, no new saved family records, no API/migration changes, no commit/push/deployment. Evidence: workspace work/dinner-spinner-designs/evidence/implemented-wheel-table-desktop.png.

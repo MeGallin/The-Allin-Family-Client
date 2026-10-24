@@ -26,8 +26,21 @@ const labels: Record<string, string> = {
   closesAt: 'Voting closes',
   choices: 'Choices',
   choice: 'Vote',
+  kind: 'Widget type',
+  ownerId: 'Widget owner ID',
+  visibility: 'Visibility',
+  mealCount: 'Meal choices',
+  version: 'Revision',
+  spinId: 'Saved pick ID',
+  publicationId: 'Published suggestion ID',
+  forDate: 'Meal date',
+  mealType: 'Meal slot',
+  eaten: 'Recorded as eaten',
+  response: 'Dinner response',
 }
 function display(value: unknown, key: string): string {
+  if (key === 'response' && value === 'agree') return 'Happy with that'
+  if (key === 'response' && value === 'another') return 'Suggest another'
   if (key === 'travelLines' && Array.isArray(value) && !value.length) return 'Switched off'
   if (key === 'holidayRegion' && typeof value === 'string')
     return (
