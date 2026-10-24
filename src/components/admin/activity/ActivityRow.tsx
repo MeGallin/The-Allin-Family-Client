@@ -11,6 +11,10 @@ const nouns: Record<string, string> = {
   widget: 'widget',
 }
 const verbs: Record<string, string> = {
+  installed: 'installed',
+  new_game: 'started a new game on',
+  restarted: 'restarted',
+  completed: 'completed',
   created: 'added',
   edited: 'edited',
   removed: 'removed',
@@ -48,7 +52,9 @@ export function ActivityRow({ entry, day }: { entry: ActivityEntry; day?: string
       <p>
         <strong>{entry.actor.displayName}</strong>{' '}
         {verbs[entry.action] ?? entry.action.replaceAll('_', ' ')}{' '}
-        {nouns[entry.entityType] ?? 'content'}
+        {entry.entityType === 'widget' && (entry.after?.kind ?? entry.before?.kind) === 'sudoku'
+          ? 'personal Sudoku'
+          : (nouns[entry.entityType] ?? 'content')}
         {typeof title === 'string' && (
           <>
             : <strong>{title}</strong>

@@ -50,6 +50,7 @@ export const shoppingApi = createApi({
     'Travel',
     'TravelPreferences',
     'Widgets',
+    'Sudoku',
   ],
   refetchOnFocus: true,
   refetchOnReconnect: true,

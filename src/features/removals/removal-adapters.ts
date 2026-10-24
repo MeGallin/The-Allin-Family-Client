@@ -1,3 +1,5 @@
+import { sudokuApi } from '../../services/sudoku-query'
+import { executeSudokuWrite } from '../sudoku/sudoku-actions'
 import { pollsApi } from '../../services/polls-query'
 import { executePollWrite } from '../polls/polls-actions'
 import type { AppDispatch, RootState } from '../../app/store'
@@ -20,6 +22,17 @@ type Adapter = {
 const body = ({ item }: PendingRemoval) => ({ id: item.id, version: item.version })
 /** Only domain differences live here; timing, Undo and safety checks live in the listener. */
 export const removalAdapters: Record<RemovalDomain, Adapter> = {
+  sudoku: {
+    busy: (state) => state.sudokuUi.busy,
+    latest: (state, ownerId) => {
+      const data = sudokuApi.endpoints.getSudoku.select(ownerId)(state).data
+      return data ? (data.game ? [data.game] : []) : undefined
+    },
+    remove: (dispatch, entry) =>
+      dispatch(
+        executeSudokuWrite({ action: 'remove', body: { ...body(entry), requestKey: entry.token } }),
+      ),
+  },
   widgets: {
     busy: (state) => state.widgetsUi.busy,
     latest: (state, ownerId) =>

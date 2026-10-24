@@ -31,6 +31,13 @@ function mount(overrides: Partial<Parameters<typeof WidgetLibrary>[0]> = {}) {
             installations={[]}
             loading={false}
             error={false}
+            sudoku={{
+              installed: false,
+              ready: true,
+              loading: false,
+              removing: false,
+              onInstall: vi.fn(),
+            }}
             {...overrides}
           />
         ),
@@ -56,6 +63,9 @@ describe('Widget Store catalogue and real action boundaries', () => {
       '/my-space?view=family&tool=polls',
     )
     expect(screen.getByText('Available · Personal or family')).not.toBeNull()
+    expect(
+      (screen.getByRole('button', { name: 'Install Sudoku' }) as HTMLButtonElement).disabled,
+    ).toBe(false)
     fireEvent.click(screen.getByRole('button', { name: 'Install Dinner Spinner' }))
     expect(onAdd).toHaveBeenCalledOnce()
     expect(router.state.location.search).toBe('?view=library')
@@ -124,7 +134,7 @@ describe('Widget Store catalogue and real action boundaries', () => {
   it('combines category/search filtering and recovers an empty result', () => {
     mount()
     fireEvent.click(screen.getByRole('button', { name: 'Games' }))
-    expect(screen.getByRole('button', { name: /Sudoku/ })).not.toBeNull()
+    expect(screen.getByRole('button', { name: 'About Sudoku' })).not.toBeNull()
     expect(screen.queryByRole('button', { name: /Focus Timer/ })).toBeNull()
     fireEvent.change(screen.getByRole('searchbox', { name: 'Search widgets' }), {
       target: { value: 'Daily' },
@@ -140,7 +150,7 @@ describe('Widget Store catalogue and real action boundaries', () => {
       'true',
     )
   })
-  it.each(['Sudoku', 'Focus Timer', 'Daily Word', 'Countdowns'])(
+  it.each(['Focus Timer', 'Daily Word', 'Countdowns'])(
     'keeps %s proposed with no install action',
     (name) => {
       const { onAdd } = mount()

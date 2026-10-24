@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useState, type ReactNode } from 'react'
 import { EyeOff, Settings2, Trash2, Utensils } from 'lucide-react'
 import type { FamilyWidget } from '../../features/widgets/types'
 import { useWidgets } from '../../features/widgets/useWidgets'
@@ -30,6 +30,8 @@ export function WidgetShelf({
   onRemove,
   builtin,
   onBuiltinSelect,
+  extraShelfItem,
+  alternateContent,
 }: {
   scope: 'mine' | 'family'
   selectedId: string
@@ -37,6 +39,8 @@ export function WidgetShelf({
   onEdit: (widget: FamilyWidget) => void
   onRemove: (widget: FamilyWidget) => void
   builtin?: BuiltinWidget
+  extraShelfItem?: ReactNode
+  alternateContent?: ReactNode
   onBuiltinSelect: (id: BuiltinWidgetId) => void
 }) {
   const { widgets, ownerId, pending, offline, spin, hide, removals, mealRemoval } = useWidgets()
@@ -44,19 +48,21 @@ export function WidgetShelf({
     scope === 'family' ? widget.visibility === 'family' : widget.owner.id === ownerId,
   )
   const visible = scoped.filter((widget) => !widget.hidden)
-  const selected = builtin
-    ? undefined
-    : selectedId
-      ? visible.find((widget) => widget.id === selectedId)
-      : visible[0]
+  const selected =
+    builtin || alternateContent
+      ? undefined
+      : selectedId
+        ? visible.find((widget) => widget.id === selectedId)
+        : visible[0]
   const own = selected?.owner.id === ownerId
   const removal = selected && removals[selected.id]
   const [menuOpen, setMenuOpen] = useState(false)
   return (
     <div className="widget-shelf">
-      {(scope === 'family' || visible.length > 0) && (
+      {(scope === 'family' || visible.length > 0 || !!extraShelfItem) && (
         <HorizontalScroll className="widget-shelf__scroller" label="Your widget shelf">
           <div className="widget-shelf__collection">
+            {extraShelfItem}
             {scope === 'family' &&
               builtinWidgets.map((widget) => (
                 <button
@@ -94,6 +100,7 @@ export function WidgetShelf({
           </div>
         </HorizontalScroll>
       )}
+      {alternateContent}
       {builtin && (
         <section aria-label={builtin.title}>
           <Suspense fallback={<LoadingState label={'Opening ' + builtin.title + '…'} />}>
@@ -101,7 +108,7 @@ export function WidgetShelf({
           </Suspense>
         </section>
       )}
-      {selectedId && !selected && !builtin && (
+      {selectedId && !selected && !builtin && !alternateContent && (
         <ContentSurface>
           <h2>This widget isn’t available here</h2>
           <p className="note">

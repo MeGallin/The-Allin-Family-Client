@@ -48,8 +48,9 @@ export const widgetCatalogue: readonly WidgetStoreApp[] = [
     title: 'Sudoku',
     subtitle: 'A little room to think.',
     category: 'games',
-    availability: 'proposed',
-    description: 'An idea for a future number puzzle widget. Not available to install or use.',
+    availability: 'available',
+    description:
+      'One personal Sudoku installation per account. Play unique 9×9 puzzles with three starting levels, pencil marks and saved progress in My widgets. Your game is never shared with Family widgets.',
     previews: ['Nine squares. A fresh challenge.', 'A puzzle at your pace.'],
   },
   {

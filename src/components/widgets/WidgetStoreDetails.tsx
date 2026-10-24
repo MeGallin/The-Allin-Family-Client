@@ -17,6 +17,8 @@ export function WidgetStoreDetails({
   action,
   onClose,
   onInstall,
+  visibility,
+  availability,
 }: {
   app: WidgetStoreApp
   installations: FamilyWidget[]
@@ -25,6 +27,8 @@ export function WidgetStoreDetails({
   action: ReactNode
   onClose: () => void
   onInstall: () => void
+  visibility?: string
+  availability?: string
 }) {
   return (
     <Modal
@@ -51,27 +55,29 @@ export function WidgetStoreDetails({
         <span>
           Visibility
           <strong>
-            {app.availability === 'proposed'
-              ? 'Proposed'
-              : app.id === 'dinner'
-                ? 'Personal or family'
-                : 'Shared family'}
+            {visibility ??
+              (app.availability === 'proposed'
+                ? 'Proposed'
+                : app.id === 'dinner'
+                  ? 'Personal or family'
+                  : 'Shared family')}
           </strong>
         </span>
         <span>
           Availability
           <strong>
-            {app.availability === 'proposed'
-              ? 'Proposed'
-              : app.id === 'dinner'
-                ? ready
-                  ? installations.length
-                    ? 'Installed'
-                    : 'Available'
-                  : loading
-                    ? 'Checking status'
-                    : 'Status unavailable'
-                : 'Installed'}
+            {availability ??
+              (app.availability === 'proposed'
+                ? 'Proposed'
+                : app.id === 'dinner'
+                  ? ready
+                    ? installations.length
+                      ? 'Installed'
+                      : 'Available'
+                    : loading
+                      ? 'Checking status'
+                      : 'Status unavailable'
+                  : 'Installed')}
           </strong>
         </span>
       </div>
@@ -98,7 +104,9 @@ export function WidgetStoreDetails({
                     ? 'Private ideas. Shared dinner choices.'
                     : app.availability === 'installed'
                       ? 'One shared family tool.'
-                      : 'A future idea — not yet available.'}
+                      : app.availability === 'proposed'
+                        ? 'A future idea — not yet available.'
+                        : 'Your personal game, saved for you.'}
               </p>
             </div>
           ))}

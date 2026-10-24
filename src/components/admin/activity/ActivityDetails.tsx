@@ -27,6 +27,7 @@ const labels: Record<string, string> = {
   choices: 'Choices',
   choice: 'Vote',
   kind: 'Widget type',
+  difficulty: 'Starting level',
   ownerId: 'Widget owner ID',
   visibility: 'Visibility',
   mealCount: 'Meal choices',

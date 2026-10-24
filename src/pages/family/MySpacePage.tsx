@@ -1,6 +1,7 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { Grid2X2, Library, Plus, Users } from 'lucide-react'
+import { useSudoku } from '../../features/sudoku/useSudoku'
 import { useWidgets } from '../../features/widgets/useWidgets'
 import { useEditingRecord } from '../../hooks/useEditingRecord'
 import type { FamilyWidget } from '../../features/widgets/types'
@@ -16,6 +17,12 @@ import { RemovalConfirmation } from '../../components/removals/RemovalConfirmati
 import { WidgetLibrary } from '../../components/widgets/WidgetLibrary'
 import { WidgetShelf } from '../../components/widgets/WidgetShelf'
 import { activeBuiltinWidget } from '../../features/widgets/builtin-widgets'
+const SudokuWorkspace = lazy(() => import('../../components/sudoku/SudokuWorkspace'))
+const SudokuInstall = lazy(() =>
+  import('../../components/sudoku/SudokuInstall').then((module) => ({
+    default: module.SudokuInstall,
+  })),
+)
 const WidgetComposer = lazy(() => import('../../components/widgets/WidgetComposer'))
 const tabs = [
   { id: 'library', label: 'Widget Library', icon: Library },
@@ -37,35 +44,55 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     mealRemoval,
     removals,
   } = useWidgets()
+  const sudoku = useSudoku()
+  const [installSudoku, setInstallSudoku] = useState(false)
   const [search, setSearch] = useSearchParams()
   const view = ['widgets', 'family'].includes(search.get('view') ?? '')
     ? search.get('view')!
     : 'library'
+  const sudokuSelected = view === 'widgets' && search.get('tool') === 'sudoku'
   const builtin = activeBuiltinWidget(search)
   const builtinRequested = view === 'family' && (search.has('tool') || !!builtin)
   const inView = widgets.filter((widget) =>
     view === 'family' ? widget.visibility === 'family' : widget.owner.id === ownerId,
   )
   useEffect(() => {
-    if (failure?.status === 401 || failure?.code === 'password_change_required') onSessionExpired()
-  }, [failure?.status, failure?.code, onSessionExpired])
+    if (
+      failure?.status === 401 ||
+      failure?.code === 'password_change_required' ||
+      sudoku.failure?.status === 401 ||
+      sudoku.failure?.code === 'password_change_required'
+    )
+      onSessionExpired()
+  }, [
+    failure?.status,
+    failure?.code,
+    sudoku.failure?.status,
+    sudoku.failure?.code,
+    onSessionExpired,
+  ])
   const editing = useEditingRecord(
-    widgets.filter((widget) => !builtinRequested && widget.owner.id === ownerId),
-    builtinRequested ? null : search.get('edit'),
+    widgets.filter((widget) => !builtinRequested && !sudokuSelected && widget.owner.id === ownerId),
+    builtinRequested || sudokuSelected ? null : search.get('edit'),
   )
   const removing = widgets.find(
     (widget) =>
-      !builtinRequested && widget.id === search.get('remove') && widget.owner.id === ownerId,
+      !builtinRequested &&
+      !sudokuSelected &&
+      widget.id === search.get('remove') &&
+      widget.owner.id === ownerId,
   )
   const mealParent = widgets.find(
     (widget) =>
       !builtinRequested &&
+      !sudokuSelected &&
       widget.owner.id === ownerId &&
       widget.meals.some((meal) => meal.id === search.get('removeMeal')),
   )
   const meal = mealParent?.meals.find((item) => item.id === search.get('removeMeal'))
   function change(values: Record<string, string>) {
     clearError()
+    sudoku.clearError()
     setSearch((current) => {
       const next = new URLSearchParams(current)
       for (const key of ['compose', 'edit', 'remove', 'removeMeal']) next.delete(key)
@@ -90,6 +117,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     !loading &&
     !error &&
     !builtinRequested &&
+    !sudokuSelected &&
     ((search.has('edit') && !editing) ||
       (search.has('remove') && !removing) ||
       (search.has('removeMeal') && !meal))
@@ -100,7 +128,14 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
         description={builtin?.description ?? 'Little apps for everyday family life.'}
         action={
           view === 'library' ? (
-            <RefreshButton label="Refresh your widgets" disabled={pending} onClick={refresh} />
+            <RefreshButton
+              label="Refresh your widgets"
+              disabled={pending || sudoku.pending}
+              onClick={() => {
+                refresh()
+                sudoku.refresh()
+              }}
+            />
           ) : (
             <button type="button" onClick={() => change({ view: 'library' })}>
               <Icon icon={Plus} />
@@ -145,6 +180,13 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
             installations={widgets.filter((widget) => !removals[widget.id])}
             loading={loading}
             error={!!error}
+            sudoku={{
+              installed: !!sudoku.game && !sudoku.removals[sudoku.game.id],
+              ready: sudoku.known && !sudoku.error,
+              loading: sudoku.loading,
+              removing: !!(sudoku.game && sudoku.removals[sudoku.game.id]),
+              onInstall: () => setInstallSudoku(true),
+            }}
           />
         ) : builtinRequested && !builtin ? (
           <ContentSurface>
@@ -157,20 +199,52 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
           <LoadingState label="Opening your widgets…" />
         ) : (
           <>
-            {view !== 'family' && !error && !inView.some((widget) => !widget.hidden) && (
-              <ContentSurface>
-                <EmptyState icon={Grid2X2} title="No widgets installed yet">
-                  <p>
-                    Browse the Widget Library and add Dinner Spinner to create your own meal
-                    choices.
-                  </p>
-                  <button type="button" onClick={() => change({ view: 'library' })}>
-                    Explore the library
-                  </button>
-                </EmptyState>
-              </ContentSurface>
-            )}
+            {view !== 'family' &&
+              !sudokuSelected &&
+              !sudoku.game &&
+              !error &&
+              !inView.some((widget) => !widget.hidden) && (
+                <ContentSurface>
+                  <EmptyState icon={Grid2X2} title="No widgets installed yet">
+                    <p>
+                      Browse the Widget Library and add Dinner Spinner to create your own meal
+                      choices.
+                    </p>
+                    <button type="button" onClick={() => change({ view: 'library' })}>
+                      Explore the library
+                    </button>
+                  </EmptyState>
+                </ContentSurface>
+              )}
             <WidgetShelf
+              extraShelfItem={
+                view === 'widgets' && sudoku.game ? (
+                  <button
+                    type="button"
+                    className="secondary"
+                    aria-pressed={sudokuSelected}
+                    onClick={() => change({ view: 'widgets', tool: 'sudoku' })}
+                    disabled={!!sudoku.removals[sudoku.game.id]}
+                  >
+                    <Icon icon={Grid2X2} />
+                    <span>
+                      <strong>Sudoku</strong>
+                      <small>Installed · Personal</small>
+                    </span>
+                  </button>
+                ) : undefined
+              }
+              alternateContent={
+                sudokuSelected ? (
+                  <Suspense fallback={<LoadingState label="Opening Sudoku…" />}>
+                    <SudokuWorkspace
+                      key={sudoku.ownerId ?? 'signed-out'}
+                      onInstall={() => setInstallSudoku(true)}
+                      onExit={() => change({ view: 'widgets' })}
+                    />
+                  </Suspense>
+                ) : undefined
+              }
               scope={view === 'family' ? 'family' : 'mine'}
               selectedId={search.get('widget') ?? ''}
               onSelect={(id) => change({ widget: id })}
@@ -182,6 +256,18 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
           </>
         )}
       </Tabs>
+      {installSudoku && (
+        <Suspense fallback={<LoadingState label="Opening Sudoku installation…" />}>
+          <SudokuInstall
+            key={sudoku.ownerId ?? 'signed-out'}
+            onClose={() => setInstallSudoku(false)}
+            onInstalled={() => {
+              setInstallSudoku(false)
+              change({ view: 'widgets', tool: 'sudoku' })
+            }}
+          />
+        </Suspense>
+      )}
       {missing && (
         <p role="status">
           This widget or meal is no longer available.{' '}
@@ -190,7 +276,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
           </button>
         </p>
       )}
-      {!builtinRequested && (search.get('compose') === 'spinner' || editing) && (
+      {!builtinRequested && !sudokuSelected && (search.get('compose') === 'spinner' || editing) && (
         <Suspense fallback={<LoadingState label="Opening widget settings…" />}>
           <WidgetComposer
             key={editing?.id ?? 'new'}

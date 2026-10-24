@@ -1177,8 +1177,8 @@ another installation through the existing composer. Private remains the composer
 default, with Family selectable. No meals or installations are created merely by
 browsing. Queued removals are excluded from catalogue install summaries.
 
-Sudoku, Focus Timer, Daily Word and Countdowns remain Proposed and cannot be
-installed. No fake prices, ratings, download counts or live-looking sample data.
+Focus Timer, Daily Word and Countdowns remain Proposed and cannot be installed.
+Sudoku is now available as a personal game (see the local implementation below). No fake prices, ratings, download counts or live-looking sample data.
 My widgets and Family widgets retain their working shelf, forms, private trials,
 publication/reply/eaten/history, hide/show, ownership and delayed Undo flows.
 
@@ -1218,3 +1218,51 @@ package built. Parent coordinates FileZilla upload (assets first, index last),
 preserving production `.htaccess` and the existing API/private storage. No API or
 database release is required. Live upload/hash/browser acceptance is a separate
 release step and is not asserted by the local build or QA above.
+
+### Personal Sudoku v1 — local development, 24 October 2026
+
+Sudoku is available in the Widget Store and opens at
+`/my-space?view=widgets&tool=sudoku`. One installation belongs only to the signed-in
+account and appears in My widgets, never the Family shelf. It uses a separate
+owner-only Sudoku snapshot/table; no Dinner Spinner records or meal payloads.
+
+The 9×9 game supports fixed clues, peer/matching-number/conflict highlights,
+pencil marks, keyboard navigation with one grid Tab stop, large mobile number
+controls, clear, bounded in-memory Undo/Redo, pause/hide and completed feedback.
+Save progress is explicit and prominent; unsaved edits participate in the existing
+route/unload draft guard. Board, notes and pause are saved to the database. Undo
+history resets on refresh. New/restart require confirmation. Removal uses the
+shared 20-second Undo lifecycle. Starting/reinstalling a game replaces the current
+puzzle; this v1 does not archive playable old games or add a timer/statistics.
+
+Easy/Medium/Hard start with 42/36/30 clues. The server builds its own valid solved
+patterns and removes clues only after bounded solution counting proves uniqueness.
+These are clue-density levels, not independently human-rated solving difficulty.
+Generation is bounded and happens before owner locks; failure leaves the existing
+game untouched. Saves use immutable givens, typed entries/notes, session ownership,
+optimistic versions and retry-key checks. A conflicting local draft remains on
+screen until the user explicitly loads the latest game. Only lifecycle metadata
+reaches admin activity, never private board/pencil data.
+
+Migration `022_sudoku.sql` was applied only to the guarded isolated local database
+after a retained private full dump. No game was seeded. Existing 23 table row counts
+were preserved (migration ledger +1); the new table was empty. See
+[Sudoku implementation](docs/sudoku.md) for contracts, release order and limits.
+TypeScript/Vite/PHP syntax/source checks were performed; no Sudoku automated or
+functional gameplay tests were added/run in this implementation request. Existing
+obsolete Store test expectations/fixtures were maintained without executing them.
+Changes in both repositories remain local/uncommitted/unpushed/undeployed.
+
+### Subsequent authorised Sudoku QA — 24 October 2026
+
+Focused client board/helper/cache/removal tests and a disposable API/privacy/
+concurrency suite were added and executed after the implementation-only request.
+Parent also completed local owner-account gameplay and normal soft cleanup.
+Two status-copy defects were fixed: old success feedback no longer accompanies
+new unsaved edits, and recorded completion no longer asks for another Save.
+See [Sudoku](docs/sudoku.md) for repeatable commands, coverage and limits, and the
+workspace `reports/cody/2026-10-24-sudoku-qa.md` for final execution evidence.
+No commit, push, deployment or production migration occurred in this QA scope.
+Final one-worker client suite: **203 tests / 48 files passed** in 202.95s. Isolated
+API suite: **10 passed** in 7.56s, disposable cleanup confirmed. Final client build
+passed TypeScript/Vite (3,172 modules, Vite 2.86s); independent QA review clear.

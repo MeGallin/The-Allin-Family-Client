@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
+import { SUDOKU_PATH } from '../../features/sudoku/types'
 import { Search } from 'lucide-react'
 import { builtinWidgetPath } from '../../features/widgets/builtin-widgets'
 import {
@@ -44,11 +45,19 @@ export function WidgetLibrary({
   installations,
   loading,
   error,
+  sudoku,
 }: {
   onAdd: () => void
   installations: FamilyWidget[]
   loading: boolean
   error: boolean
+  sudoku?: {
+    installed: boolean
+    ready: boolean
+    loading: boolean
+    removing: boolean
+    onInstall: () => void
+  }
 }) {
   const [category, setCategory] = useState('all')
   const [query, setQuery] = useState('')
@@ -72,13 +81,43 @@ export function WidgetLibrary({
         .includes(query.trim().toLocaleLowerCase()),
   )
   const builtins = filtered.filter((app) => app.availability === 'installed')
-  const dinner = filtered.find((app) => app.id === 'dinner')
+  const available = filtered.filter((app) => app.availability === 'available')
   const proposed = filtered.filter((app) => app.availability === 'proposed')
   function install() {
     setSelected(null)
     onAdd()
   }
   function action(app: WidgetStoreApp) {
+    if (app.id === 'sudoku')
+      return sudoku?.installed ? (
+        <Link
+          className="pill-action"
+          to={SUDOKU_PATH}
+          onClick={() => setSelected(null)}
+          aria-label="Open Sudoku"
+        >
+          OPEN
+        </Link>
+      ) : (
+        <button
+          type="button"
+          className="pill-action"
+          disabled={!sudoku?.ready || sudoku.removing}
+          onClick={() => {
+            setSelected(null)
+            sudoku?.onInstall()
+          }}
+          aria-label="Install Sudoku"
+        >
+          {sudoku?.removing
+            ? 'REMOVING'
+            : sudoku?.ready
+              ? 'INSTALL'
+              : sudoku?.loading
+                ? 'LOADING'
+                : 'UNAVAILABLE'}
+        </button>
+      )
     if (app.availability === 'proposed')
       return <span className="pill-action pill-action--proposed">PROPOSED</span>
     const path =
@@ -125,7 +164,19 @@ export function WidgetLibrary({
           <span className="app-name">{app.title}</span>
           <span className="app-subtitle">{app.subtitle}</span>
           <span className="app-scope">
-            {app.id === 'dinner' ? dinnerStatus : 'Installed · Shared family tool'}
+            {app.id === 'dinner'
+              ? dinnerStatus
+              : app.id === 'sudoku'
+                ? sudoku?.installed
+                  ? 'Installed · Personal'
+                  : sudoku?.removing
+                    ? 'Removal pending · Undo available'
+                    : sudoku?.ready
+                      ? 'Available · Personal only'
+                      : sudoku?.loading
+                        ? 'Checking installation…'
+                        : 'Installation status unavailable'
+                : 'Installed · Shared family tool'}
           </span>
         </button>
         {action(app)}
@@ -222,18 +273,9 @@ export function WidgetLibrary({
           <div className="app-rows">{builtins.map(row)}</div>
         </StoreSection>
       )}
-      {dinner && (
-        <StoreSection
-          title={
-            !ready
-              ? 'Dinner Spinner'
-              : installations.length
-                ? 'Your Dinner Spinner'
-                : 'Available to make your own'
-          }
-          note="Personal or family"
-        >
-          <div className="app-rows">{row(dinner)}</div>
+      {available.length > 0 && (
+        <StoreSection title="Personal and family apps" note="Install or open">
+          <div className="app-rows">{available.map(row)}</div>
         </StoreSection>
       )}
       {proposed.length > 0 && (
@@ -283,8 +325,22 @@ export function WidgetLibrary({
         <WidgetStoreDetails
           app={selected}
           installations={installations}
-          ready={ready}
-          loading={loading}
+          ready={selected.id === 'sudoku' ? !!sudoku?.ready : ready}
+          visibility={selected.id === 'sudoku' ? 'Personal only' : undefined}
+          availability={
+            selected.id === 'sudoku'
+              ? !sudoku?.ready
+                ? sudoku?.loading
+                  ? 'Checking status'
+                  : 'Status unavailable'
+                : sudoku.installed
+                  ? 'Installed'
+                  : sudoku.removing
+                    ? 'Removal pending'
+                    : 'Available'
+              : undefined
+          }
+          loading={selected.id === 'sudoku' ? !!sudoku?.loading : loading}
           action={action(selected)}
           onClose={() => setSelected(null)}
           onInstall={install}

@@ -94,3 +94,29 @@ installations 4/5 completed normal delayed soft removal; original widget 1 and i
 meals/publication remained unchanged. Final mobile document 347px/viewport 355px,
 console warnings/errors empty; screenshot workspace work/widget-store-qa-20261024/
 mobile-clean.png. No cross-account/concurrent-user or production QA claim.
+
+## Sudoku v1 — implementation acceptance notes
+
+Sudoku is now Available/Personal, not Proposed. Focus Timer, Daily Word and
+Countdowns remain Proposed. Existing Store test fixtures/expectations were adjusted
+for this contract without adding/running cases in the implementation request.
+
+Later authorised gameplay QA should cover generated uniqueness/clue targets and
+budget failure, actual owner-only install/progress/notes/pause/reload, wrong entries,
+completion, keyboard/one-tab-stop/mobile keypad, in-memory Undo/Redo, explicit Save
+and dirty route/unload guard, stale versions/uncertain retries, new/restart confirm,
+account switching and normal 20-second removal/Undo. Store/empty/modal read-only
+presentation was inspected by the parent; no game was created or seeded. Full
+contract and release ordering: [Sudoku](sudoku.md).
+
+### Subsequent authorised Sudoku QA — 24 October 2026
+
+Focused tests now cover board keyboard/pencil/Undo/Redo, Save/error/retry/conflict,
+draft guarding, completion copy, Redux owner cache/session reset and real shared
+20-second Undo removal with mocked HTTP. API tests use a unique disposable local
+database/account and independent solution counting; see [Sudoku](sudoku.md).
+Parent browser gameplay passed all three clue targets, persistence, pause,
+completion and mobile controls. SDKQA001/002 status-copy defects were repaired
+and rechecked. Temporary game cleanup finished through normal delayed soft removal;
+only the original Family Dinner Spinner remained, Store Install became available,
+and current-load warnings/errors were empty. No live changes were made.

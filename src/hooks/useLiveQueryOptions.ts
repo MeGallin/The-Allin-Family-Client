@@ -25,7 +25,7 @@ export function useLiveQueryOptions(path: string, busy = false, always = false) 
       (entry) =>
         '/' + entry.domain === path ||
         (entry.domain === 'shopping' && path === '/lists') ||
-        (path === '/my-space' && ['widgets', 'widgetMeals'].includes(entry.domain)),
+        (path === '/my-space' && ['widgets', 'widgetMeals', 'sudoku'].includes(entry.domain)),
     ),
   )
   const foreground = useSyncExternalStore(subscribe, canRefresh, () => false)
