@@ -70,10 +70,10 @@ export function WidgetLibrary({ onAdd }: { onAdd: () => void }) {
         </ContentSurface>
         {planned.map((item) => (
           <ContentSurface key={item.title} className="widget-library__planned">
+            <span className="widget-library__proposal">Proposed</span>
             <Icon icon={item.icon} />
             <h3>{item.title}</h3>
             <p>{item.copy}</p>
-            <span className="note">Planned · not yet available</span>
           </ContentSurface>
         ))}
       </div>
