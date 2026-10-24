@@ -37,7 +37,8 @@
   font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
-.widget-library__catalogue button {
+.widget-library__catalogue button,
+.widget-library__catalogue .button-link {
   margin-top: auto;
 }
 .widget-library__planned {

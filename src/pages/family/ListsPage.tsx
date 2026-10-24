@@ -14,7 +14,7 @@ import { ShoppingControls } from '../../components/family/shopping/ShoppingContr
 import { shoppingSort, shoppingFilter, shoppingView } from '../../features/shopping/shopping-view'
 import { useCollectionFilters } from '../../hooks/useCollectionFilters'
 
-export default function ListsPage() {
+export default function ListsPage({ embedded = false }: { embedded?: boolean }) {
   const { items: shopping, add, pending, loading, error, refresh, feedback } = useShopping()
   const { query, sort, filter, setQuery, setSort, setFilter, reset } = useCollectionFilters({
     sort: shoppingSort,
@@ -50,7 +50,9 @@ export default function ListsPage() {
   }
   return (
     <div className="page-stack page-enter lists-page">
-      <PageHeader title="Little things, sorted." description="One list. Everyone’s essentials." />
+      {!embedded && (
+        <PageHeader title="Little things, sorted." description="One list. Everyone’s essentials." />
+      )}
       <div className="content-layout">
         <div className="content-layout__main">
           <ShoppingControls

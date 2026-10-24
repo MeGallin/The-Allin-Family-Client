@@ -8,6 +8,7 @@ import { useCollectionWindow } from '../../hooks/useCollectionWindow'
 import { CollectionMore } from '../../components/ui/CollectionMore'
 import { useEditingRecord } from '../../hooks/useEditingRecord'
 import { pollActionPath } from '../../features/polls/poll-links'
+import { builtinWidgetPath } from '../../features/widgets/builtin-widgets'
 import { lazy, Suspense, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import { Vote } from 'lucide-react'
@@ -23,7 +24,7 @@ import { PollCard } from '../../components/family/polls/PollCard'
 import './PollsPage.css'
 const PollComposer = lazy(() => import('../../components/family/polls/PollComposer'))
 const PollRemoval = lazy(() => import('../../components/family/polls/PollRemoval'))
-export default function PollsPage() {
+export default function PollsPage({ embedded = false }: { embedded?: boolean }) {
   const { polls, loading, pending, error, feedback, refresh, clearError } = usePolls()
   const now = useNow()
   const user = useAppSelector((state) => state.auth.user)
@@ -59,10 +60,7 @@ export default function PollsPage() {
     const next = new URLSearchParams(params)
     next.delete('q')
     next.set('show', isPollClosed(requested, now) ? 'closed' : 'open')
-    void navigate(
-      { pathname: '/polls', search: next.toString(), hash: location.hash },
-      { replace: true },
-    )
+    void navigate(builtinWidgetPath('polls', next.toString(), location.hash), { replace: true })
   }, [
     loading,
     now,
@@ -78,27 +76,29 @@ export default function PollsPage() {
   const close = () => {
     const next = new URLSearchParams(params)
     for (const key of ['compose', 'edit', 'remove']) next.delete(key)
-    void navigate(
-      { pathname: '/polls', search: next.toString(), hash: location.hash },
-      { replace: true },
-    )
+    void navigate(builtinWidgetPath('polls', next.toString(), location.hash), { replace: true })
     clearError()
   }
+  const create = (
+    <Link
+      className="button-link"
+      to={pollActionPath(location.search, location.hash, 'compose', 'poll')}
+      onClick={clearError}
+    >
+      Create a poll
+    </Link>
+  )
   return (
     <div className="page-stack page-enter">
-      <PageHeader
-        title="Have a say"
-        description="Shared questions, one vote each, and results everyone can see."
-        action={
-          <Link
-            className="button-link"
-            to={pollActionPath(location.search, location.hash, 'compose', 'poll')}
-            onClick={clearError}
-          >
-            Create a poll
-          </Link>
-        }
-      />
+      {embedded ? (
+        <div className="actions">{create}</div>
+      ) : (
+        <PageHeader
+          title="Have a say"
+          description="Shared questions, one vote each, and results everyone can see."
+          action={create}
+        />
+      )}
       <ContentSurface>
         {polls.length > 0 && (
           <ViewControls

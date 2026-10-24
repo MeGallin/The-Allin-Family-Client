@@ -2,6 +2,8 @@ import { CalendarDays, Grid2X2, Plus, Puzzle, Timer, Utensils } from 'lucide-rea
 import { Icon } from '../ui/Icon'
 import { ContentSurface } from '../ui/ContentSurface'
 import { DinnerWheel } from './DinnerWheel'
+import { Link } from 'react-router'
+import { builtinWidgets, builtinWidgetPath } from '../../features/widgets/builtin-widgets'
 import './WidgetLibrary.css'
 const planned = [
   {
@@ -56,6 +58,17 @@ export function WidgetLibrary({ onAdd }: { onAdd: () => void }) {
         />
       </ContentSurface>
       <div className="widget-library__catalogue">
+        {builtinWidgets.map((widget) => (
+          <ContentSurface key={widget.id}>
+            <Icon icon={widget.icon} />
+            <h3>{widget.title}</h3>
+            <p>{widget.description}</p>
+            <span className="note">Installed · Shared family tool</span>
+            <Link className="button-link secondary" to={builtinWidgetPath(widget.id)}>
+              Open {widget.title}
+            </Link>
+          </ContentSurface>
+        ))}
         <ContentSurface>
           <Icon icon={Utensils} />
           <h3>Dinner Spinner</h3>

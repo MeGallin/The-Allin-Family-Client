@@ -2,6 +2,7 @@ import { Link } from 'react-router'
 import { CheckCheck } from 'lucide-react'
 import { useShopping } from '../../../features/shopping/useShopping'
 import { shoppingView } from '../../../features/shopping/shopping-view'
+import { builtinWidgetPath } from '../../../features/widgets/builtin-widgets'
 import { Panel } from '../../ui/Panel'
 import { Icon } from '../../ui/Icon'
 import { ShoppingList } from './ShoppingList'
@@ -12,7 +13,7 @@ export function ShoppingPreview() {
   const needed = shoppingView(shopping, '', 'priority', 'needed')
   const remaining = needed.length
   return (
-    <Panel title="Shopping" action={<Link to="/lists">Open list</Link>}>
+    <Panel title="Shopping" action={<Link to={builtinWidgetPath('shopping')}>Open list</Link>}>
       {error && shopping.length > 0 && (
         <div>
           <p className="error" role="alert">
@@ -34,7 +35,7 @@ export function ShoppingPreview() {
                   ? 'All picked up'
                   : 'Nothing on the list yet'}
             </strong>
-            <Link to="/lists">Add something for the next shop</Link>
+            <Link to={builtinWidgetPath('shopping')}>Add something for the next shop</Link>
           </span>
         </p>
       ) : (
@@ -52,7 +53,9 @@ export function ShoppingPreview() {
       )}
       {remaining > 3 && (
         <p className="shopping-preview__more">
-          <Link to="/lists?show=needed">See {remaining - 3} more to pick up</Link>
+          <Link to={builtinWidgetPath('shopping', 'show=needed')}>
+            See {remaining - 3} more to pick up
+          </Link>
         </p>
       )}
     </Panel>

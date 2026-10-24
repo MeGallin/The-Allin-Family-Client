@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import { useLocation } from 'react-router'
+import { activeBuiltinWidget } from '../features/widgets/builtin-widgets'
 import { useAppSelector } from '../app/store-hooks'
 
 function subscribe(listener: () => void) {
@@ -16,7 +17,9 @@ const canRefresh = () => document.visibilityState === 'visible' && navigator.onL
 
 /** Shared reads follow the visible route; queued removals retain their safety snapshot. */
 export function useLiveQueryOptions(path: string, busy = false, always = false) {
-  const { pathname } = useLocation()
+  const { pathname, search } = useLocation()
+  const activeTool =
+    pathname === '/my-space' ? activeBuiltinWidget(new URLSearchParams(search)) : undefined
   const queued = useAppSelector((state) =>
     Object.values(state.removals.entries).some(
       (entry) =>
@@ -26,7 +29,13 @@ export function useLiveQueryOptions(path: string, busy = false, always = false) 
     ),
   )
   const foreground = useSyncExternalStore(subscribe, canRefresh, () => false)
-  const needed = always || pathname === '/' || pathname === path || queued || busy
+  const needed =
+    always ||
+    pathname === '/' ||
+    pathname === path ||
+    activeTool?.legacyPath === path ||
+    queued ||
+    busy
   return {
     skip: !needed || (!foreground && !queued && !busy),
     pollingInterval: needed && foreground && !busy ? (always ? 60_000 : 15_000) : 0,

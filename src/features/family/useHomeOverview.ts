@@ -5,6 +5,7 @@ import { pollsApi } from '../../services/polls-query'
 import { shoppingApi } from '../../services/shopping-query'
 import { upcomingEvents } from '../../lib/dates'
 import { useNow } from '../../hooks/useNow'
+import { builtinWidgetPath } from '../widgets/builtin-widgets'
 
 export function useHomeOverview() {
   // Read the same subscribed caches as the family pages; no duplicate home endpoint/store.
@@ -17,7 +18,7 @@ export function useHomeOverview() {
   return [
     {
       kind: 'shopping' as const,
-      to: '/lists?show=needed',
+      to: builtinWidgetPath('shopping', 'show=needed'),
       label: 'Still to pick up',
       count: shopping.data ? shopping.data.items.filter((item) => !item.checked).length : null,
       error: !!shopping.error,
@@ -31,7 +32,7 @@ export function useHomeOverview() {
     },
     {
       kind: 'polls' as const,
-      to: '/polls',
+      to: builtinWidgetPath('polls'),
       label: livePolls.open.length
         ? livePolls.open.length === 1
           ? 'Live poll'

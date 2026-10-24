@@ -8,11 +8,10 @@ import { FamilyLayout } from '../components/layout/FamilyLayout'
 import { ShoppingSync } from '../features/shopping/ShoppingSync'
 import { CalendarSync } from '../features/calendar/CalendarSync'
 import { MemoriesSync } from '../features/memories/MemoriesSync'
+import { LegacyWidgetRedirect } from '../components/widgets/LegacyWidgetRedirect'
 const FamilyHomePage = lazy(() => import('../pages/family/FamilyHomePage'))
-const PollsPage = lazy(() => import('../pages/family/PollsPage'))
 const CalendarPage = lazy(() => import('../pages/family/CalendarPage'))
 const MemoriesPage = lazy(() => import('../pages/family/MemoriesPage'))
-const ListsPage = lazy(() => import('../pages/family/ListsPage'))
 const PersonalNotesPage = lazy(() => import('../pages/family/PersonalNotesPage'))
 const AdminPage = lazy(() => import('../pages/admin/AdminPage'))
 const ProfilePage = lazy(() => import('../pages/profile/ProfilePage'))
@@ -68,10 +67,10 @@ function ProtectedFamilyRoutes(props: FamilyRouterProps) {
             }
           >
             <Route index element={<FamilyHomePage />} />
-            <Route path="polls" element={<PollsPage />} />
+            <Route path="polls" element={<LegacyWidgetRedirect tool="polls" />} />
             <Route path="calendar" element={<CalendarPage />} />
             <Route path="memories" element={<MemoriesPage />} />
-            <Route path="lists" element={<ListsPage />} />
+            <Route path="lists" element={<LegacyWidgetRedirect tool="shopping" />} />
             <Route
               path="notes"
               element={<PersonalNotesPage onSessionExpired={onSessionExpired} />}

@@ -35,7 +35,9 @@ export function DraftProtectionProvider({ children }: { children: ReactNode }) {
     const current = new URLSearchParams(currentLocation.search)
     const next = new URLSearchParams(nextLocation.search)
     // Filters and anchors keep mounted drafts; editor and admin-view changes can close them.
-    return ['compose', 'edit', 'remove', 'view'].some((key) => current.get(key) !== next.get(key))
+    return ['compose', 'edit', 'remove', 'view', 'tool', 'widget'].some(
+      (key) => current.get(key) !== next.get(key),
+    )
   })
   const blockerRef = useRef(blocker)
   useEffect(() => {

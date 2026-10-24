@@ -14,6 +14,7 @@ import { CollectionToolbar } from '../../components/ui/CollectionToolbar'
 import { RemovalConfirmation } from '../../components/removals/RemovalConfirmation'
 import { WidgetLibrary } from '../../components/widgets/WidgetLibrary'
 import { WidgetShelf } from '../../components/widgets/WidgetShelf'
+import { activeBuiltinWidget } from '../../features/widgets/builtin-widgets'
 const WidgetComposer = lazy(() => import('../../components/widgets/WidgetComposer'))
 const tabs = [
   { id: 'library', label: 'Widget Library', icon: Library },
@@ -38,6 +39,8 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
   const view = ['widgets', 'family'].includes(search.get('view') ?? '')
     ? search.get('view')!
     : 'library'
+  const builtin = activeBuiltinWidget(search)
+  const builtinRequested = view === 'family' && (search.has('tool') || !!builtin)
   const inView = widgets.filter((widget) =>
     view === 'family' ? widget.visibility === 'family' : widget.owner.id === ownerId,
   )
@@ -45,14 +48,16 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     if (failure?.status === 401 || failure?.code === 'password_change_required') onSessionExpired()
   }, [failure?.status, failure?.code, onSessionExpired])
   const editing = useEditingRecord(
-    widgets.filter((widget) => widget.owner.id === ownerId),
-    search.get('edit'),
+    widgets.filter((widget) => !builtinRequested && widget.owner.id === ownerId),
+    builtinRequested ? null : search.get('edit'),
   )
   const removing = widgets.find(
-    (widget) => widget.id === search.get('remove') && widget.owner.id === ownerId,
+    (widget) =>
+      !builtinRequested && widget.id === search.get('remove') && widget.owner.id === ownerId,
   )
   const mealParent = widgets.find(
     (widget) =>
+      !builtinRequested &&
       widget.owner.id === ownerId &&
       widget.meals.some((meal) => meal.id === search.get('removeMeal')),
   )
@@ -62,9 +67,17 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     setSearch((current) => {
       const next = new URLSearchParams(current)
       for (const key of ['compose', 'edit', 'remove', 'removeMeal']) next.delete(key)
-      if (values.compose === 'spinner' || (values.view && values.view !== current.get('view')))
+      if (values.tool || values.widget || values.view || values.compose === 'spinner') {
+        for (const key of ['q', 'sort', 'show']) next.delete(key)
+      }
+      if (values.widget || values.view || values.compose === 'spinner') next.delete('tool')
+      if (
+        values.tool ||
+        values.compose === 'spinner' ||
+        (values.view && values.view !== current.get('view'))
+      )
         next.delete('widget')
-      if (values.widget || values.view || values.compose === 'spinner')
+      if (values.tool || values.widget || values.view || values.compose === 'spinner')
         for (const key of ['meal', 'mealDate', 'mealType']) next.delete(key)
       for (const [key, value] of Object.entries(values)) next.set(key, value)
       return next
@@ -74,14 +87,18 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
   const missing =
     !loading &&
     !error &&
+    !builtinRequested &&
     ((search.has('edit') && !editing) ||
       (search.has('remove') && !removing) ||
       (search.has('removeMeal') && !meal))
   return (
     <div className="page-stack page-enter">
       <PageHeader
-        title="Widgets"
-        description="Explore the library, add your own tools or join in with widgets shared by the family."
+        title={builtin?.title ?? 'Widgets'}
+        description={
+          builtin?.description ??
+          'Explore the library, add your own tools or join in with widgets shared by the family.'
+        }
         action={
           <button type="button" onClick={() => change({ view: 'library' })}>
             <Icon icon={Plus} />
@@ -95,20 +112,22 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
         onChange={(value) => change({ view: value })}
         label="Widget sections"
       >
-        <CollectionToolbar
-          label="Refresh your widgets"
-          busy={pending}
-          feedback={feedback}
-          onRefresh={refresh}
-        >
-          <p className="note">
-            {view === 'library'
-              ? 'The same widget library is available to everyone in the family.'
-              : view === 'family'
-                ? 'Shared setups everyone can use. Each owner controls their own settings.'
-                : 'Your saved setups. Choose which ones to keep personal or share with family.'}
-          </p>
-        </CollectionToolbar>
+        {!builtin && (
+          <CollectionToolbar
+            label="Refresh your widgets"
+            busy={pending}
+            feedback={feedback}
+            onRefresh={refresh}
+          >
+            <p className="note">
+              {view === 'library'
+                ? 'The same widget library is available to everyone in the family.'
+                : view === 'family'
+                  ? 'Your shared family tools, plus setups shared by their owners.'
+                  : 'Your saved setups. Choose which ones to keep personal or share with family.'}
+            </p>
+          </CollectionToolbar>
+        )}
         {error && (
           <p className="error" role="alert">
             {error}
@@ -116,20 +135,23 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
         )}
         {view === 'library' ? (
           <WidgetLibrary onAdd={() => change({ compose: 'spinner' })} />
-        ) : loading ? (
+        ) : builtinRequested && !builtin ? (
+          <ContentSurface>
+            <h2>This family tool isn’t available</h2>
+            <button type="button" onClick={() => change({ view: 'family' })}>
+              Open Family widgets
+            </button>
+          </ContentSurface>
+        ) : loading && !builtin ? (
           <LoadingState label="Opening your widgets…" />
         ) : (
           <>
-            {!error && !inView.some((widget) => !widget.hidden) && (
+            {view !== 'family' && !error && !inView.some((widget) => !widget.hidden) && (
               <ContentSurface>
-                <EmptyState
-                  icon={view === 'family' ? Users : Grid2X2}
-                  title={view === 'family' ? 'No shared widgets yet' : 'No widgets installed yet'}
-                >
+                <EmptyState icon={Grid2X2} title="No widgets installed yet">
                   <p>
-                    {view === 'family'
-                      ? 'Create a spinner and choose Family visibility to let everyone join in.'
-                      : 'Browse the Widget Library and add Dinner Spinner to create your own meal choices.'}
+                    Browse the Widget Library and add Dinner Spinner to create your own meal
+                    choices.
                   </p>
                   <button type="button" onClick={() => change({ view: 'library' })}>
                     Explore the library
@@ -143,6 +165,8 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
               onSelect={(id) => change({ widget: id })}
               onEdit={edit}
               onRemove={(widget) => change({ remove: widget.id })}
+              builtin={builtin}
+              onBuiltinSelect={(id) => change({ view: 'family', tool: id })}
             />
           </>
         )}
@@ -155,7 +179,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
           </button>
         </p>
       )}
-      {(search.get('compose') === 'spinner' || editing) && (
+      {!builtinRequested && (search.get('compose') === 'spinner' || editing) && (
         <Suspense fallback={<LoadingState label="Opening widget settings…" />}>
           <WidgetComposer
             key={editing?.id ?? 'new'}

@@ -9,6 +9,7 @@ import { LoadingState } from '../ui/LoadingState'
 import { PendingRemovals } from '../removals/PendingRemovals'
 import { FamilyBrand } from '../brand/FamilyBrand'
 import { FamilyFooter } from '../brand/FamilyFooter'
+import { activeBuiltinWidget } from '../../features/widgets/builtin-widgets'
 import './FamilyLayout.css'
 
 type Props = {
@@ -21,10 +22,14 @@ type Props = {
 
 export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, error }: Props) {
   const location = useLocation()
+  const tool =
+    location.pathname === '/my-space'
+      ? activeBuiltinWidget(new URLSearchParams(location.search))?.id
+      : undefined
   useLayoutEffect(() => {
     document.getElementById('family-content')?.focus({ preventScroll: true })
     window.scrollTo({ top: 0, behavior: 'instant' })
-  }, [location.pathname])
+  }, [location.pathname, tool])
 
   return (
     <div className="family-layout">

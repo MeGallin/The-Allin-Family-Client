@@ -9,6 +9,7 @@ import { PollTimeRemaining } from '../polls/PollTimeRemaining'
 import { Icon } from '../../ui/Icon'
 import { HomeDataError } from './HomeDataError'
 import { HomeDinnerSummary } from './HomeDinnerSummary'
+import { builtinWidgetPath } from '../../../features/widgets/builtin-widgets'
 import './HomePriorities.css'
 
 export function HomePriorities() {
@@ -31,7 +32,10 @@ export function HomePriorities() {
           className={'home-priority' + (open.length ? ' home-priority--live' : '')}
         >
           <HomeDataError error={polls.error} retry={polls.refresh} />
-          <Link to={poll ? pollLink(poll) : '/polls'} className="home-priority__link">
+          <Link
+            to={poll ? pollLink(poll) : builtinWidgetPath('polls')}
+            className="home-priority__link"
+          >
             <span className="home-priority__label">
               <Icon icon={ChartNoAxesColumn} />
               {polls.loading
@@ -75,7 +79,7 @@ export function HomePriorities() {
         </section>
         <section aria-label="Shopping summary" className="home-priority home-priority--shopping">
           <HomeDataError error={shopping.error} retry={shopping.refresh} />
-          <Link to="/lists?show=needed" className="home-priority__link">
+          <Link to={builtinWidgetPath('shopping', 'show=needed')} className="home-priority__link">
             <span className="home-priority__label">
               <Icon icon={ShoppingBasket} />
               Shopping list

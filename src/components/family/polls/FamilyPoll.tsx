@@ -1,6 +1,7 @@
 import { PollTimeRemaining } from './PollTimeRemaining'
 import { useNow } from '../../../hooks/useNow'
 import { pollLink } from '../../../features/polls/poll-links'
+import { builtinWidgetPath } from '../../../features/widgets/builtin-widgets'
 import { Link } from 'react-router'
 import { usePolls } from '../../../features/polls/usePolls'
 import { homePolls } from '../../../features/family/home-view'
@@ -14,7 +15,10 @@ export function FamilyPoll() {
   const poll = featured ?? recentResult
   return (
     <div id="family-poll" tabIndex={-1} className="family-poll">
-      <Panel title="Polls" action={<Link to={poll ? pollLink(poll) : '/polls'}>View polls</Link>}>
+      <Panel
+        title="Polls"
+        action={<Link to={poll ? pollLink(poll) : builtinWidgetPath('polls')}>View polls</Link>}
+      >
         {!loading &&
           !error &&
           (open.length && nextClosing ? (
@@ -62,7 +66,7 @@ export function FamilyPoll() {
             )}
             {open.length > 3 && (
               <p className="note">
-                <Link to="/polls">
+                <Link to={builtinWidgetPath('polls')}>
                   See {open.length - 3} more open {open.length - 3 === 1 ? 'poll' : 'polls'}
                 </Link>
               </p>
@@ -74,7 +78,7 @@ export function FamilyPoll() {
           )
         )}
         {!loading && !error && !featured && (
-          <Link className="button-link" to="/polls?compose=poll">
+          <Link className="button-link" to={builtinWidgetPath('polls', 'compose=poll')}>
             Create a poll
           </Link>
         )}

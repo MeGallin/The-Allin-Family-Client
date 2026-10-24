@@ -1111,3 +1111,51 @@ API private-file hash verification remains incomplete: its private ZIP was creat
 but the download did not complete. Public client hashes do not prove API or `.htaccess`
 contents. TypeScript/Vite and PHP syntax checks passed; automated test suites were
 not rerun for this release.
+
+### Shopping List and Polls as built-in family widgets — 24 October 2026
+
+Shopping List and Polls are always-installed family tools in the Widget Library and
+Family widgets shelf. Library entries open the working tools; My widgets remains
+for user-owned installations. The built-in registry is client configuration, not
+Dinner Spinner database records. Existing shopping items/history and polls/options/
+votes/history use the same authenticated endpoints, cache, ownership rules and
+write/Undo flows. No data is copied, reset or migrated.
+
+Canonical source routes are `/my-space?view=family&tool=shopping` and
+`/my-space?view=family&tool=polls`. Old `/lists` and `/polls` bookmarks replace-redirect
+while preserving filters, editor parameters and hash targets. Home/quick/source
+links use the shared helper; closed-poll links keep their closed filter and exact ID.
+Standalone navigation entries are replaced by Widgets on desktop and the mobile
+bar. Switching tools participates in shared draft protection; route-aware reads and
+pending-removal snapshots continue through the existing feature subscriptions.
+
+The existing feature content mounts lazily inside the shelf with one page heading;
+it retains working forms/history/refresh controls rather than introducing another
+list/poll implementation. Dinner Spinner layout/palette and Proposed cards remain.
+This client-only increment requires no API/schema change. The QA below was local;
+production release is recorded separately.
+Existing route assertions were updated to the new URL contract. Subsequent authorised
+client QA passed all 173 tests across 43 files, including five new isolated router
+regressions for legacy-link preservation, same-path tool/spinner draft protection and
+selected-tool/queued-removal read policy. HTTP is mocked in client tests; these runs
+do not mutate the running app. TypeScript/Vite build passed. Browser save/vote/Undo
+acceptance is recorded separately from these automated results.
+
+Local Gary/Dad browser QA passed for the widget move: two uniquely labelled shopping
+items saved/refreshed with importance, search/filter/sort, checked/edit persistence
+and Dad attribution; a dirty inline edit blocked leaving the tool and stayed intact
+after Keep editing. A temporary four-hour poll saved/refreshed, vote/change/withdraw
+counts remained correct, edited details persisted, and closing recovered the correct
+filter. Legacy Lists/Polls URLs preserved query filters and the exact closed-poll
+anchor/results state. Composer Cancel draft protection and tool-change protection
+worked. On the actual host-clamped 355px phone viewport, both documents were 347px
+wide with usable controls (the requested 390px override was not the actual width).
+
+Poll Undo restored the existing votes; repeated removal completed while viewing
+Shopping. Shopping Undo also restored the item after switching to Polls. Both QA
+shopping items were then removed after the full 20-second countdown; refresh showed
+only the original checked `sugars` item. The removed QA poll remained absent after
+the legacy `show=all` redirect. Current-load console errors were empty; horizontal
+scroll arrows worked in both directions and the viewport was restored. No functional
+issue was found. Soft-deleted history/audit remains; no hard purge was performed.
+This is local QA, not deployment or cross-account/concurrency certification.

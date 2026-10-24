@@ -1,11 +1,9 @@
-import { CalendarDays, Grid2X2, House, Images, ListChecks, NotebookPen, Vote } from 'lucide-react'
+import { CalendarDays, Grid2X2, House, Images, NotebookPen } from 'lucide-react'
 
 export const familyNavigation = [
   { to: '/', label: 'Home', icon: House, end: true },
   { to: '/calendar', label: 'Calendar', icon: CalendarDays },
   { to: '/memories', label: 'Memories', icon: Images },
-  { to: '/lists', label: 'Lists', icon: ListChecks },
-  { to: '/polls', label: 'Polls', icon: Vote, desktopOnly: true },
   { to: '/notes', label: 'Personal notes', mobileLabel: 'Notes', icon: NotebookPen },
-  { to: '/my-space', label: 'Widgets', icon: Grid2X2, desktopOnly: true },
+  { to: '/my-space', label: 'Widgets', icon: Grid2X2 },
 ]

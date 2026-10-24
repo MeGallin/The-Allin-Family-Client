@@ -1,7 +1,12 @@
 import { isPollClosed } from './poll-deadline'
 import type { FamilyPollRecord } from './types'
+import { builtinWidgetPath } from '../widgets/builtin-widgets'
 export function pollLink(poll: Pick<FamilyPollRecord, 'id' | 'closed' | 'closesAt'>) {
-  return `/polls?show=${isPollClosed(poll) ? 'closed' : 'open'}#poll-${poll.id}`
+  return builtinWidgetPath(
+    'polls',
+    `show=${isPollClosed(poll) ? 'closed' : 'open'}`,
+    `#poll-${poll.id}`,
+  )
 }
 export function pollActionPath(
   search: string,
@@ -12,5 +17,5 @@ export function pollActionPath(
   const params = new URLSearchParams(search)
   for (const key of ['compose', 'edit', 'remove']) params.delete(key)
   params.set(action, value)
-  return '/polls?' + params.toString() + hash
+  return builtinWidgetPath('polls', params.toString(), hash)
 }

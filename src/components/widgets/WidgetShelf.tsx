@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { EyeOff, Settings2, Trash2, Utensils } from 'lucide-react'
 import type { FamilyWidget } from '../../features/widgets/types'
 import { useWidgets } from '../../features/widgets/useWidgets'
@@ -13,34 +13,66 @@ import { PublishedDinner } from './PublishedDinner'
 import { MealDiary } from './MealDiary'
 import { WidgetMeals } from './WidgetMeals'
 import { familyMeals } from '../../features/widgets/meal-diary'
+import {
+  builtinWidgets,
+  type BuiltinWidget,
+  type BuiltinWidgetId,
+} from '../../features/widgets/builtin-widgets'
+import { LoadingState } from '../ui/LoadingState'
 import './WidgetShelf.css'
+const ShoppingWidget = lazy(() => import('../../pages/family/ListsPage'))
+const PollsWidget = lazy(() => import('../../pages/family/PollsPage'))
 export function WidgetShelf({
   scope,
   selectedId,
   onSelect,
   onEdit,
   onRemove,
+  builtin,
+  onBuiltinSelect,
 }: {
   scope: 'mine' | 'family'
   selectedId: string
   onSelect: (id: string) => void
   onEdit: (widget: FamilyWidget) => void
   onRemove: (widget: FamilyWidget) => void
+  builtin?: BuiltinWidget
+  onBuiltinSelect: (id: BuiltinWidgetId) => void
 }) {
   const { widgets, ownerId, pending, offline, spin, hide, removals, mealRemoval } = useWidgets()
   const scoped = widgets.filter((widget) =>
     scope === 'family' ? widget.visibility === 'family' : widget.owner.id === ownerId,
   )
   const visible = scoped.filter((widget) => !widget.hidden)
-  const selected = selectedId ? visible.find((widget) => widget.id === selectedId) : visible[0]
+  const selected = builtin
+    ? undefined
+    : selectedId
+      ? visible.find((widget) => widget.id === selectedId)
+      : visible[0]
   const own = selected?.owner.id === ownerId
   const removal = selected && removals[selected.id]
   const [menuOpen, setMenuOpen] = useState(false)
   return (
     <div className="widget-shelf">
-      {visible.length > 0 && (
+      {(scope === 'family' || visible.length > 0) && (
         <HorizontalScroll className="widget-shelf__scroller" label="Your widget shelf">
           <div className="widget-shelf__collection">
+            {scope === 'family' &&
+              builtinWidgets.map((widget) => (
+                <button
+                  type="button"
+                  className="secondary"
+                  key={widget.id}
+                  aria-pressed={builtin?.id === widget.id}
+                  onClick={() => onBuiltinSelect(widget.id)}
+                >
+                  <Icon icon={widget.icon} />
+                  <span>
+                    <strong>{widget.title}</strong>
+                    <small>Installed · Family</small>
+                  </span>
+                </button>
+              ))}
             {visible.map((widget) => (
               <button
                 type="button"
@@ -62,7 +94,14 @@ export function WidgetShelf({
           </div>
         </HorizontalScroll>
       )}
-      {selectedId && !selected && (
+      {builtin && (
+        <section aria-label={builtin.title}>
+          <Suspense fallback={<LoadingState label={'Opening ' + builtin.title + '…'} />}>
+            {builtin.id === 'shopping' ? <ShoppingWidget embedded /> : <PollsWidget embedded />}
+          </Suspense>
+        </section>
+      )}
+      {selectedId && !selected && !builtin && (
         <ContentSurface>
           <h2>This widget isn’t available here</h2>
           <p className="note">

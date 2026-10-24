@@ -301,7 +301,9 @@ describe('Week Ahead dashboard', () => {
     const view = show(<HomePriorities />)
     const section = screen.getByRole('region', { name: 'Family polls' })
     expect(within(section).getByText('2 live polls')).toBeTruthy()
-    expect(within(section).getByRole('link').getAttribute('href')).toBe('/polls?show=open#poll-1')
+    expect(within(section).getByRole('link').getAttribute('href')).toBe(
+      '/my-space?show=open&view=family&tool=polls#poll-1',
+    )
     expect(within(section).getByText('1h left')).toBeTruthy()
     state.now += 5 * 3600000
     vi.setSystemTime(state.now)
@@ -311,7 +313,9 @@ describe('Week Ahead dashboard', () => {
       </MemoryRouter>,
     )
     expect(within(section).getByText('Voting closed')).toBeTruthy()
-    expect(within(section).getByRole('link').getAttribute('href')).toBe('/polls?show=closed#poll-2')
+    expect(within(section).getByRole('link').getAttribute('href')).toBe(
+      '/my-space?show=closed&view=family&tool=polls#poll-2',
+    )
     expect(screen.queryByRole('radio')).toBeNull()
     expect(screen.queryByRole('checkbox')).toBeNull()
     expect(fetch).not.toHaveBeenCalled()
@@ -337,7 +341,9 @@ describe('Week Ahead dashboard', () => {
     const summary = screen.getByRole('region', { name: 'Shopping summary' })
     expect(within(summary).getByText('2')).toBeTruthy()
     expect(within(summary).getByText('1 important')).toBeTruthy()
-    expect(within(summary).getByRole('link').getAttribute('href')).toBe('/lists?show=needed')
+    expect(within(summary).getByRole('link').getAttribute('href')).toBe(
+      '/my-space?show=needed&view=family&tool=shopping',
+    )
     expect(screen.queryByRole('button')).toBeNull()
   })
   it('keeps personal notes as a private destination without fetching their content', () => {

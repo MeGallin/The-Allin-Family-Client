@@ -93,23 +93,25 @@ describe('Home live poll summaries', () => {
     expect(screen.queryByRole('radio')).toBeNull()
     expect(screen.queryByRole('button', { name: 'Withdraw my vote' })).toBeNull()
     expect(screen.getByRole('link', { name: 'Question 2' }).getAttribute('href')).toBe(
-      '/polls?show=open#poll-2',
+      '/my-space?show=open&view=family&tool=polls#poll-2',
     )
     expect(screen.getByText('1 question needs your vote.')).toBeTruthy()
     expect(screen.getByRole('link', { name: /Next closes.*Question 1/ }).getAttribute('href')).toBe(
-      '/polls?show=open#poll-1',
+      '/my-space?show=open&view=family&tool=polls#poll-1',
     )
     expect(screen.getByRole('link', { name: 'View polls' }).getAttribute('href')).toBe(
-      '/polls?show=open#poll-2',
+      '/my-space?show=open&view=family&tool=polls#poll-2',
     )
-    expect(screen.getByRole('link', { name: /2\s*Live polls/ }).getAttribute('href')).toBe('/polls')
+    expect(screen.getByRole('link', { name: /2\s*Live polls/ }).getAttribute('href')).toBe(
+      '/my-space?view=family&tool=polls',
+    )
     await act(async () => {
       await vi.advanceTimersByTimeAsync(2020)
     })
     expect(screen.getByText('1 poll open')).toBeTruthy()
     expect(screen.getByText('You’re up to date. Your votes are saved.')).toBeTruthy()
     expect(screen.getByRole('link', { name: /Next closes.*Question 2/ }).getAttribute('href')).toBe(
-      '/polls?show=open#poll-2',
+      '/my-space?show=open&view=family&tool=polls#poll-2',
     )
     await act(async () => {
       await vi.advanceTimersByTimeAsync(3000)
