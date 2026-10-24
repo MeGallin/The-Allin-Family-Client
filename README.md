@@ -1053,8 +1053,8 @@ Scoped independent review is complete: Reviewee's follow-up marks DS-001 (London
 calendar consistency), DS-002 (retained Personal diary links) and DS-003 (API fixture
 date) resolved by source inspection. This is not a fresh runtime regression pass;
 tests/browser/database checks were not performed in the review/repair cycle.
-Commit, push and release preparation are now authorised. Production upload and
-migrations 018–021 remain separate release steps; do not copy local family data.
+The completed production migration/upload and live acceptance steps are recorded
+below. No local family data was copied to production.
 
 Widget date rules use the API's Europe/London calendar for the publication default/range,
 seven-day diary, upcoming choices, Today/Tomorrow labels and eaten availability, regardless
@@ -1068,3 +1068,46 @@ Implemented the approved option 1 from the isolated design review. The private w
 Meal names are available in a small WidgetMeals component using the shared Modal. Family response details, ownership/settings and private trial history are secondary disclosures; the duplicate shelf install tile is removed because the page action already opens the library. Existing meal links scroll to the requested published result while ordinary visits lead with the wheel. Styles remain colocated and use Nimbus tokens and each user's accent. The wheel's shared size token is now 28rem and still constrained by available width.
 
 TypeScript/Vite production build passed. Visually reviewed locally as Gary/Dad at desktop and phone widths, including the meal modal, response disclosure, diary and direct meal link. Fixed a diary min-content sizing overflow; final page widths fit their viewport (desktop 1338px, phone 347 CSS px). No automated tests run in this UI implementation turn, no new saved family records, no API/migration changes, no commit/push/deployment. Evidence: workspace work/dinner-spinner-designs/evidence/implemented-wheel-table-desktop.png.
+
+### Widget production migration, upload and live QA — 24 October 2026
+
+Client `5a84866` and API `47dc2b4` were committed and pushed, then packaged separately.
+This release record supersedes the historical local-only/migration-pending notes above.
+
+1. Enabled application maintenance and captured fresh database/site/configuration/photo
+   backups. Archive copies matched their download hashes; database gzip and full home
+   gzip/tar integrity checks passed. Restored the final paused production snapshot into
+   a new isolated scratch database, preserving earlier recovery evidence.
+2. Compared all 16 original tables against the restored snapshot: counts matched,
+   both directions of NULL-safe binary per-column comparisons had zero mismatches,
+   and all 14 metadata comparisons had zero differences.
+3. Rehearsed migrations 018–021 in order, inserting each ledger row separately only
+   after its DDL succeeded. Original rows remained unchanged. Applied the same reviewed
+   steps to live through phpMyAdmin file import while maintenance remained active.
+4. Rechecked all original data and complete live/scratch schema: zero mismatches or
+   differences. All 24 compact checks matched: each database had 23 tables, exactly
+   21 expected ledger names (four new), no unexpected table/ledger names, and seven
+   empty widget tables before authorised live activity. No local examples were copied.
+5. Uploaded the API's 26 source files then front controller, followed by the client's
+   121 assets then index, using FileZilla; the transfer queue was empty. Public read-only
+   HTTP verification matched all 122 client index/asset byte counts and SHA-256 hashes
+   to the built package. `.htaccess` is not a public HTTP hash check target.
+
+Maintenance was completed and the live site resumed. Gary/Dad live acceptance
+passed: Widgets navigation/Library; Personal and Family QA installations and refresh
+persistence; private trials staying unpublished until explicit publication; Home's
+exact-result link; agree/suggest-another/clear replies surviving refresh; eaten diary
+persistence and response locking; correction restoring the uneaten state. At 390×844,
+wheel/modal content was readable without page overflow (382px document width);
+desktop viewport was restored and the current-load console had no errors.
+
+Both temporary QA installations were removed through the shared 20-second Undo flow
+(Undo tested, then removal repeated). Refresh confirmed no active QA widgets or Home
+QA results; soft-deleted audit/history remains by design. Existing real content was
+not edited for these checks. This was an owner-account walkthrough, not fresh
+multi-account/privacy/concurrency or cross-timezone automated coverage.
+
+API private-file hash verification remains incomplete: its private ZIP was created
+but the download did not complete. Public client hashes do not prove API or `.htaccess`
+contents. TypeScript/Vite and PHP syntax checks passed; automated test suites were
+not rerun for this release.
