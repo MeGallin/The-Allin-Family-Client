@@ -1159,3 +1159,62 @@ the legacy `show=all` redirect. Current-load console errors were empty; horizont
 scroll arrows worked in both directions and the viewport was restored. No functional
 issue was found. Soft-deleted history/audit remains; no hard purge was performed.
 This is local QA, not deployment or cross-account/concurrency certification.
+
+### Widget Store presentation — local implementation, 24 October 2026
+
+The approved Apple App Store / Google Play inspired design replaces the Library's
+large introductory card with illustrated feature covers, category/search browsing,
+compact app rows and a proposed-app shelf. The current app shell, Nimbus accent,
+type scale and three tabs are retained. Widget artwork uses intentional individual
+identities; it is decorative and never renders real family content.
+
+App icon/name and promotional covers open a shared accessible Modal with illustrative
+preview galleries, factual scope/category/availability and real Open/Install actions.
+Shopping List and Polls stay installed built-in family singletons. Dinner Spinner
+status comes from the authenticated installation snapshot: existing setups open
+through their exact shelf routes; details list accessible installations and permit
+another installation through the existing composer. Private remains the composer
+default, with Family selectable. No meals or installations are created merely by
+browsing. Queued removals are excluded from catalogue install summaries.
+
+Sudoku, Focus Timer, Daily Word and Countdowns remain Proposed and cannot be
+installed. No fake prices, ratings, download counts or live-looking sample data.
+My widgets and Family widgets retain their working shelf, forms, private trials,
+publication/reply/eaten/history, hide/show, ownership and delayed Undo flows.
+
+This presentation increment changes only the client. No API/schema/dependency
+changes or migrations are required. Source/build verification is recorded in the
+implementation handoff; automated tests and persisted-write browser QA were not
+performed for this implementation-only request. Changes remain uncommitted and
+undeployed pending review and separate release authorisation.
+
+### Subsequent authorised Widget Store QA — 24 October 2026
+
+Added 14 focused mocked regressions covering catalogue availability, actual
+personal/family/hidden installations, loading/error states, category/search/reset,
+all four Proposed entries, Open/Install boundaries, dialog cancellation/focus,
+existing composer routing and queued-removal status. Focused run passed 25 tests
+across four files. Default full run passed 186 tests but the existing WeekAhead
+360-day test exceeded its unchanged five-second limit under parallel host load.
+That file passed all 11 cases in isolation; the full one-worker rerun then passed
+all 187 tests across 45 files in 194.33 seconds. No timeout was increased.
+
+Parent local Gary/Dad browser QA passed real Personal/Family installation and
+refresh persistence, exact Open targets, all tabs, built-ins, search/categories/
+reset, Proposed without installation, Escape focus and mobile shared scrolling.
+Personal setup stayed absent from the Family shelf. Both temporary installations
+4/5 were removed through the normal 20-second soft-removal flow; refresh showed
+only original widget 1. Its existing meals/publication were untouched. Final mobile
+presentation recheck passed after small wheel/header/category-scrollbar fixes:
+document 347px within actual 355px viewport, current-load console warnings/errors
+empty. This is local owner-account QA, not cross-account/concurrency certification
+or a live deployment. Changes remain uncommitted and undeployed.
+
+### Widget Store release preparation — 24 October 2026
+
+Following the completed local QA and independent review, the user authorised the
+reviewed client changes to be committed/pushed and the standard client deployment
+package built. Parent coordinates FileZilla upload (assets first, index last),
+preserving production `.htaccess` and the existing API/private storage. No API or
+database release is required. Live upload/hash/browser acceptance is a separate
+release step and is not asserted by the local build or QA above.

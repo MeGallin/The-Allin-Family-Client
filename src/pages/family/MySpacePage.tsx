@@ -10,6 +10,7 @@ import { Icon } from '../../components/ui/Icon'
 import { ContentSurface } from '../../components/ui/ContentSurface'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { LoadingState } from '../../components/ui/LoadingState'
+import { RefreshButton } from '../../components/ui/RefreshButton'
 import { CollectionToolbar } from '../../components/ui/CollectionToolbar'
 import { RemovalConfirmation } from '../../components/removals/RemovalConfirmation'
 import { WidgetLibrary } from '../../components/widgets/WidgetLibrary'
@@ -34,6 +35,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     refresh,
     remove,
     mealRemoval,
+    removals,
   } = useWidgets()
   const [search, setSearch] = useSearchParams()
   const view = ['widgets', 'family'].includes(search.get('view') ?? '')
@@ -92,18 +94,19 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
       (search.has('remove') && !removing) ||
       (search.has('removeMeal') && !meal))
   return (
-    <div className="page-stack page-enter">
+    <div className={'page-stack page-enter' + (view === 'library' ? ' widget-store-page' : '')}>
       <PageHeader
-        title={builtin?.title ?? 'Widgets'}
-        description={
-          builtin?.description ??
-          'Explore the library, add your own tools or join in with widgets shared by the family.'
-        }
+        title={builtin?.title ?? 'Widget Store'}
+        description={builtin?.description ?? 'Little apps for everyday family life.'}
         action={
-          <button type="button" onClick={() => change({ view: 'library' })}>
-            <Icon icon={Plus} />
-            Install a widget
-          </button>
+          view === 'library' ? (
+            <RefreshButton label="Refresh your widgets" disabled={pending} onClick={refresh} />
+          ) : (
+            <button type="button" onClick={() => change({ view: 'library' })}>
+              <Icon icon={Plus} />
+              Browse the store
+            </button>
+          )
         }
       />
       <Tabs
@@ -112,7 +115,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
         onChange={(value) => change({ view: value })}
         label="Widget sections"
       >
-        {!builtin && (
+        {!builtin && view !== 'library' && (
           <CollectionToolbar
             label="Refresh your widgets"
             busy={pending}
@@ -120,13 +123,16 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
             onRefresh={refresh}
           >
             <p className="note">
-              {view === 'library'
-                ? 'The same widget library is available to everyone in the family.'
-                : view === 'family'
-                  ? 'Your shared family tools, plus setups shared by their owners.'
-                  : 'Your saved setups. Choose which ones to keep personal or share with family.'}
+              {view === 'family'
+                ? 'Your shared family tools, plus setups shared by their owners.'
+                : 'Your saved setups. Choose which ones to keep personal or share with family.'}
             </p>
           </CollectionToolbar>
+        )}
+        {view === 'library' && feedback && (
+          <p className="note" role="status">
+            {feedback}
+          </p>
         )}
         {error && (
           <p className="error" role="alert">
@@ -134,7 +140,12 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
           </p>
         )}
         {view === 'library' ? (
-          <WidgetLibrary onAdd={() => change({ compose: 'spinner' })} />
+          <WidgetLibrary
+            onAdd={() => change({ compose: 'spinner' })}
+            installations={widgets.filter((widget) => !removals[widget.id])}
+            loading={loading}
+            error={!!error}
+          />
         ) : builtinRequested && !builtin ? (
           <ContentSurface>
             <h2>This family tool isn’t available</h2>

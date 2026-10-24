@@ -61,3 +61,36 @@ no further repair requested in scope. This does not establish runtime acceptance
 No tests were added or executed for these repairs. Prior passing results above predate
 these changes. Cross-zone, midnight/DST and privacy-transition browser/runtime checks
 remain proposed verification requiring separate authorisation.
+
+## Widget Store presentation acceptance (local implementation)
+
+The Widget Library uses the approved storefront design. Category/search controls,
+feature artwork, app identities and detail galleries are catalogue presentation,
+not another implementation of Shopping List, Polls or Dinner Spinner.
+
+For later authorised QA, check: keyboard category/search/detail/close navigation;
+mobile feature/proposed/gallery horizontal scrolling; built-in Open preserving the
+same data sources; Dinner installed status and exact Personal/Family Open targets;
+additional installation through the unchanged composer; Proposed apps without an
+install action; existing My/Family draft protection and Undo. Also check unavailable
+installation status during loading/offline/failure, rather than a false Available
+claim. Preview artwork is visibly illustrative and contains no real family data.
+
+These are acceptance notes, not executed test results. No tests were added or run
+for the implementation-only request.
+
+### Executed authorised Store QA
+
+The subsequent QA request authorised tests and local browser writes. Added 14
+mocked store regressions; focused 25/4 passed. Default full run was 186 passed and
+one unchanged WeekAhead five-second timeout under load; isolated WeekAhead 11/11
+and full constrained run `npx vitest run --maxWorkers=1` passed 187/45 in 194.33s.
+No timeout or production behaviour was weakened.
+
+Parent verified local real Personal/Family install/persistence/privacy of placement,
+exact Open and additional installation, three tabs, built-ins, search/categories/
+reset, Proposed, Escape focus and mobile feature/gallery scrolling. Both temporary
+installations 4/5 completed normal delayed soft removal; original widget 1 and its
+meals/publication remained unchanged. Final mobile document 347px/viewport 355px,
+console warnings/errors empty; screenshot workspace work/widget-store-qa-20261024/
+mobile-clean.png. No cross-account/concurrent-user or production QA claim.

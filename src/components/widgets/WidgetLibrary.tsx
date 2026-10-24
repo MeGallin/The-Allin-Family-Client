@@ -1,95 +1,295 @@
-import { CalendarDays, Grid2X2, Plus, Puzzle, Timer, Utensils } from 'lucide-react'
-import { Icon } from '../ui/Icon'
-import { ContentSurface } from '../ui/ContentSurface'
-import { DinnerWheel } from './DinnerWheel'
+import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
-import { builtinWidgets, builtinWidgetPath } from '../../features/widgets/builtin-widgets'
+import { Search } from 'lucide-react'
+import { builtinWidgetPath } from '../../features/widgets/builtin-widgets'
+import {
+  widgetCatalogue,
+  widgetInstallationPath,
+  type WidgetStoreApp,
+} from '../../features/widgets/widget-catalogue'
+import type { FamilyWidget } from '../../features/widgets/types'
+import { Icon } from '../ui/Icon'
+import { HorizontalScroll } from '../ui/HorizontalScroll'
+import { WidgetAppIcon, WidgetPromoArt } from './WidgetStoreArt'
+import { WidgetStoreDetails } from './WidgetStoreDetails'
 import './WidgetLibrary.css'
-const planned = [
-  {
-    title: 'Sudoku',
-    icon: Grid2X2,
-    copy: 'A quiet challenge at your own pace, with saved progress.',
-  },
-  {
-    title: 'Focus Timer',
-    icon: Timer,
-    copy: 'Make a little space to concentrate, then take a gentle break.',
-  },
-  {
-    title: 'Daily Word',
-    icon: Puzzle,
-    copy: 'A small daily word challenge to keep your mind moving.',
-  },
-  {
-    title: 'Countdowns',
-    icon: CalendarDays,
-    copy: 'Keep something you’re looking forward to close at hand.',
-  },
-]
-export function WidgetLibrary({ onAdd }: { onAdd: () => void }) {
+
+const categories = [
+  ['all', 'Discover'],
+  ['family', 'Family'],
+  ['games', 'Games'],
+  ['tools', 'Tools'],
+] as const
+function StoreSection({
+  title,
+  note,
+  children,
+}: {
+  title: string
+  note: string
+  children: ReactNode
+}) {
   return (
-    <div className="widget-library">
-      <ContentSurface className="widget-library__featured">
-        <div>
-          <p className="eyebrow">First in the library</p>
-          <h2>Dinner, with a twist.</h2>
-          <p>
-            Install your own meal wheel or one for the family. Try private spins, then publish a
-            suggestion everyone can respond to.
-          </p>
-          <button type="button" onClick={onAdd}>
-            <Icon icon={Plus} />
-            Install Dinner Spinner
-          </button>
-          <p className="note">
-            Each installation has its own meal list. Trial picks stay private; only published
-            suggestions are shared.
-          </p>
+    <section className="store-section">
+      <header className="store-section-head">
+        <h2>{title}</h2>
+        <p>{note}</p>
+      </header>
+      {children}
+    </section>
+  )
+}
+export function WidgetLibrary({
+  onAdd,
+  installations,
+  loading,
+  error,
+}: {
+  onAdd: () => void
+  installations: FamilyWidget[]
+  loading: boolean
+  error: boolean
+}) {
+  const [category, setCategory] = useState('all')
+  const [query, setQuery] = useState('')
+  const [selected, setSelected] = useState<WidgetStoreApp | null>(null)
+  const ready = !loading && !error
+  const firstInstallation = installations.find((widget) => !widget.hidden) ?? installations[0]
+  const personal = installations.filter((widget) => widget.visibility === 'private').length
+  const family = installations.filter((widget) => widget.visibility === 'family').length
+  const dinnerStatus = !ready
+    ? loading
+      ? 'Checking installations…'
+      : 'Installation status unavailable'
+    : installations.length
+      ? `Installed · ${personal} personal, ${family} family`
+      : 'Available · Personal or family'
+  const filtered = widgetCatalogue.filter(
+    (app) =>
+      (category === 'all' || app.category === category) &&
+      (app.title + ' ' + app.subtitle)
+        .toLocaleLowerCase()
+        .includes(query.trim().toLocaleLowerCase()),
+  )
+  const builtins = filtered.filter((app) => app.availability === 'installed')
+  const dinner = filtered.find((app) => app.id === 'dinner')
+  const proposed = filtered.filter((app) => app.availability === 'proposed')
+  function install() {
+    setSelected(null)
+    onAdd()
+  }
+  function action(app: WidgetStoreApp) {
+    if (app.availability === 'proposed')
+      return <span className="pill-action pill-action--proposed">PROPOSED</span>
+    const path =
+      app.id === 'shopping' || app.id === 'polls'
+        ? builtinWidgetPath(app.id)
+        : firstInstallation
+          ? widgetInstallationPath(firstInstallation)
+          : null
+    if (app.id !== 'dinner' || (ready && path))
+      return (
+        <Link
+          className="pill-action"
+          to={path!}
+          onClick={() => setSelected(null)}
+          aria-label={'Open ' + app.title}
+        >
+          OPEN
+        </Link>
+      )
+    return (
+      <button
+        type="button"
+        className="pill-action"
+        onClick={install}
+        disabled={!ready}
+        aria-label={'Install ' + app.title}
+      >
+        {ready ? 'INSTALL' : loading ? 'LOADING' : 'UNAVAILABLE'}
+      </button>
+    )
+  }
+  function row(app: WidgetStoreApp) {
+    return (
+      <article className="app-row" key={app.id}>
+        <button
+          type="button"
+          className="app-icon-button"
+          onClick={() => setSelected(app)}
+          aria-label={'About ' + app.title}
+        >
+          <WidgetAppIcon id={app.id} />
+        </button>
+        <button type="button" className="app-pick" onClick={() => setSelected(app)}>
+          <span className="app-name">{app.title}</span>
+          <span className="app-subtitle">{app.subtitle}</span>
+          <span className="app-scope">
+            {app.id === 'dinner' ? dinnerStatus : 'Installed · Shared family tool'}
+          </span>
+        </button>
+        {action(app)}
+      </article>
+    )
+  }
+  return (
+    <div className="widget-store">
+      <div className="store-toolbar">
+        <div className="category-chips" role="group" aria-label="Widget categories">
+          {categories.map(([id, label]) => (
+            <button
+              type="button"
+              key={id}
+              onClick={() => setCategory(id)}
+              aria-pressed={category === id}
+            >
+              {label}
+            </button>
+          ))}
         </div>
-        <DinnerWheel
-          compact
-          meals={[
-            { title: 'Your meals' },
-            { title: 'Your choices' },
-            { title: 'One pick' },
-            { title: 'Together' },
-          ]}
-        />
-      </ContentSurface>
-      <div className="widget-library__catalogue">
-        {builtinWidgets.map((widget) => (
-          <ContentSurface key={widget.id}>
-            <Icon icon={widget.icon} />
-            <h3>{widget.title}</h3>
-            <p>{widget.description}</p>
-            <span className="note">Installed · Shared family tool</span>
-            <Link className="button-link secondary" to={builtinWidgetPath(widget.id)}>
-              Open {widget.title}
-            </Link>
-          </ContentSurface>
-        ))}
-        <ContentSurface>
-          <Icon icon={Utensils} />
-          <h3>Dinner Spinner</h3>
-          <p>
-            Equal chances. Private trials. Published dinner suggestions with clear family replies.
-          </p>
-          <span className="note">Available · Personal or family</span>
-          <button className="secondary" type="button" onClick={onAdd}>
-            <Icon icon={Plus} />
-            Install widget
-          </button>
-        </ContentSurface>
-        {planned.map((item) => (
-          <ContentSurface key={item.title} className="widget-library__planned">
-            <span className="widget-library__proposal">Proposed</span>
-            <Icon icon={item.icon} />
-            <h3>{item.title}</h3>
-            <p>{item.copy}</p>
-          </ContentSurface>
-        ))}
+        <label className="store-search">
+          <Icon icon={Search} />
+          <input
+            type="search"
+            placeholder="Search the store"
+            aria-label="Search widgets"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </label>
       </div>
+      {category === 'all' && !query.trim() && (
+        <HorizontalScroll className="store-features" label="Featured widgets">
+          <div className="feature-shelf">
+            <button
+              type="button"
+              className="store-feature"
+              onClick={() => setSelected(widgetCatalogue[2])}
+            >
+              <span>
+                <span className="feature-kicker">Featured app</span>
+                <strong>
+                  Give dinner
+                  <br />a fresh spin.
+                </strong>
+                <span className="feature-caption">
+                  A little inspiration.
+                  <br />A choice to share.
+                </span>
+              </span>
+              <WidgetPromoArt />
+              <span className="feature-app">
+                <WidgetAppIcon id="dinner" />
+                <span>
+                  <b>Dinner Spinner</b>
+                  {ready && installations.length
+                    ? 'Installed · Open your choices'
+                    : 'Personal or family'}
+                </span>
+              </span>
+            </button>
+            <button
+              type="button"
+              className="store-feature store-feature--everyday"
+              onClick={() => setSelected(widgetCatalogue[0])}
+            >
+              <span>
+                <span className="feature-kicker">Everyday family essentials</span>
+                <strong>
+                  Life’s little
+                  <br />
+                  things, together.
+                </strong>
+                <span className="feature-caption">
+                  Shopping List &amp; Polls.
+                  <br />
+                  Already part of the family.
+                </span>
+              </span>
+              <WidgetPromoArt family />
+              <span className="feature-app">
+                <WidgetAppIcon id="shopping" />
+                <span>
+                  <b>Built for sharing</b>2 installed family apps
+                </span>
+              </span>
+            </button>
+          </div>
+        </HorizontalScroll>
+      )}
+      {builtins.length > 0 && (
+        <StoreSection title="Installed for the family" note="Ready to open">
+          <div className="app-rows">{builtins.map(row)}</div>
+        </StoreSection>
+      )}
+      {dinner && (
+        <StoreSection
+          title={
+            !ready
+              ? 'Dinner Spinner'
+              : installations.length
+                ? 'Your Dinner Spinner'
+                : 'Available to make your own'
+          }
+          note="Personal or family"
+        >
+          <div className="app-rows">{row(dinner)}</div>
+        </StoreSection>
+      )}
+      {proposed.length > 0 && (
+        <StoreSection title="Coming later" note="Proposed ideas">
+          <p className="proposal-caption">
+            Ideas for future apps. Not available to install or use.
+          </p>
+          <HorizontalScroll className="store-proposals" label="Proposed widgets">
+            <div className="icon-covers">
+              {proposed.map((app) => (
+                <button
+                  type="button"
+                  key={app.id}
+                  className="icon-cover"
+                  onClick={() => setSelected(app)}
+                >
+                  <WidgetAppIcon id={app.id} />
+                  <span>
+                    <span className="app-name">{app.title}</span>
+                    <span className="app-subtitle">
+                      {app.category === 'games' ? 'Games' : 'Tools'} · Proposed
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </HorizontalScroll>
+        </StoreSection>
+      )}
+      {filtered.length === 0 && (
+        <div className="empty-store">
+          <h2>No matching widgets</h2>
+          <p>Try another name or category.</p>
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => {
+              setQuery('')
+              setCategory('all')
+            }}
+          >
+            Clear filters
+          </button>
+        </div>
+      )}
+      {selected && (
+        <WidgetStoreDetails
+          app={selected}
+          installations={installations}
+          ready={ready}
+          loading={loading}
+          action={action(selected)}
+          onClose={() => setSelected(null)}
+          onInstall={install}
+        />
+      )}
     </div>
   )
 }
