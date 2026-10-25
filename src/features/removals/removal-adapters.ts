@@ -1,3 +1,5 @@
+import { dailyWordApi } from '../../services/daily-word-query'
+import { executeDailyWordWrite } from '../daily-word/daily-word-actions'
 import { sudokuApi } from '../../services/sudoku-query'
 import { executeSudokuWrite } from '../sudoku/sudoku-actions'
 import { pollsApi } from '../../services/polls-query'
@@ -22,6 +24,26 @@ type Adapter = {
 const body = ({ item }: PendingRemoval) => ({ id: item.id, version: item.version })
 /** Only domain differences live here; timing, Undo and safety checks live in the listener. */
 export const removalAdapters: Record<RemovalDomain, Adapter> = {
+  dailyWord: {
+    busy: (state) => state.dailyWordUi.busy,
+    latest: (state, ownerId) => {
+      const data = dailyWordApi.endpoints.getDailyWord.select(ownerId)(state).data
+      return data
+        ? data.installed
+          ? [{ id: 'daily-word', title: 'Daily Word', version: data.installationVersion }]
+          : []
+        : undefined
+    },
+    remove: async (dispatch, entry) =>
+      !!(
+        await dispatch(
+          executeDailyWordWrite({
+            action: 'remove',
+            body: { version: entry.item.version, requestKey: entry.token },
+          }),
+        )
+      ).receipt,
+  },
   sudoku: {
     busy: (state) => state.sudokuUi.busy,
     latest: (state, ownerId) => {

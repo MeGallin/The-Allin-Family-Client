@@ -13,6 +13,7 @@ export const featureNames: Record<string, string> = {
   user_profile: 'Profiles and preferences',
   user_account: 'Family accounts',
   widget: 'Widgets',
+  daily_word: 'Daily Word lifecycle',
 }
 export function chartDate(day: string, full = false) {
   return format(parseISO(day), full ? 'EEEE, d MMM yyyy' : 'd MMM')

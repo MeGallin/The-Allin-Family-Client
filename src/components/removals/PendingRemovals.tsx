@@ -5,6 +5,11 @@ import { removalUndone } from '../../features/removals/removals-slice'
 import { REMOVAL_DELAY_MS } from '../../features/removals/removals-slice'
 import { Icon } from '../ui/Icon'
 import './PendingRemovals.css'
+const domainLabels: Record<string, string> = {
+  notes: 'Private note',
+  sudoku: 'Sudoku',
+  dailyWord: 'Daily Word',
+}
 
 export function PendingRemovals() {
   const dispatch = useAppDispatch()
@@ -62,10 +67,7 @@ export function PendingRemovals() {
                 <Icon icon={LoaderCircle} className="pending-removals__spinner" />
                 <div>
                   <strong>{entry.item.title}</strong>
-                  <span className="note">
-                    {' '}
-                    · {entry.domain === 'notes' ? 'Private note' : entry.domain}
-                  </span>
+                  <span className="note"> · {domainLabels[entry.domain] ?? entry.domain}</span>
                   <p>
                     {entry.sending
                       ? 'Removing…'

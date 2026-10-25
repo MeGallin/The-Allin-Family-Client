@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { Grid2X2, Library, Plus, Users } from 'lucide-react'
+import { useDailyWord } from '../../features/daily-word/useDailyWord'
 import { useSudoku } from '../../features/sudoku/useSudoku'
 import { useWidgets } from '../../features/widgets/useWidgets'
 import { useEditingRecord } from '../../hooks/useEditingRecord'
@@ -17,6 +18,9 @@ import { RemovalConfirmation } from '../../components/removals/RemovalConfirmati
 import { WidgetLibrary } from '../../components/widgets/WidgetLibrary'
 import { WidgetShelf } from '../../components/widgets/WidgetShelf'
 import { activeBuiltinWidget } from '../../features/widgets/builtin-widgets'
+const DailyWordWorkspace = lazy(() => import('../../components/daily-word/DailyWordWorkspace'))
+const DailyWordInstall = lazy(() => import('../../components/daily-word/DailyWordInstall'))
+const DailyWordResults = lazy(() => import('../../components/daily-word/DailyWordResults'))
 const SudokuWorkspace = lazy(() => import('../../components/sudoku/SudokuWorkspace'))
 const SudokuInstall = lazy(() =>
   import('../../components/sudoku/SudokuInstall').then((module) => ({
@@ -45,14 +49,19 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     removals,
   } = useWidgets()
   const sudoku = useSudoku()
+  const word = useDailyWord()
+  const [installWord, setInstallWord] = useState(false)
   const [installSudoku, setInstallSudoku] = useState(false)
   const [search, setSearch] = useSearchParams()
   const view = ['widgets', 'family'].includes(search.get('view') ?? '')
     ? search.get('view')!
     : 'library'
   const sudokuSelected = view === 'widgets' && search.get('tool') === 'sudoku'
+  const wordSelected = view === 'widgets' && search.get('tool') === 'word'
+  const wordResultsSelected = view === 'family' && search.get('tool') === 'word-results'
   const builtin = activeBuiltinWidget(search)
-  const builtinRequested = view === 'family' && (search.has('tool') || !!builtin)
+  const builtinRequested =
+    view === 'family' && !wordResultsSelected && (search.has('tool') || !!builtin)
   const inView = widgets.filter((widget) =>
     view === 'family' ? widget.visibility === 'family' : widget.owner.id === ownerId,
   )
@@ -61,24 +70,39 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
       failure?.status === 401 ||
       failure?.code === 'password_change_required' ||
       sudoku.failure?.status === 401 ||
-      sudoku.failure?.code === 'password_change_required'
+      sudoku.failure?.code === 'password_change_required' ||
+      word.failure?.status === 401 ||
+      word.failure?.code === 'password_change_required'
     )
       onSessionExpired()
   }, [
     failure?.status,
     failure?.code,
+    word.failure?.status,
+    word.failure?.code,
     sudoku.failure?.status,
     sudoku.failure?.code,
     onSessionExpired,
   ])
   const editing = useEditingRecord(
-    widgets.filter((widget) => !builtinRequested && !sudokuSelected && widget.owner.id === ownerId),
-    builtinRequested || sudokuSelected ? null : search.get('edit'),
+    widgets.filter(
+      (widget) =>
+        !builtinRequested &&
+        !sudokuSelected &&
+        !wordSelected &&
+        !wordResultsSelected &&
+        widget.owner.id === ownerId,
+    ),
+    builtinRequested || sudokuSelected || wordSelected || wordResultsSelected
+      ? null
+      : search.get('edit'),
   )
   const removing = widgets.find(
     (widget) =>
       !builtinRequested &&
       !sudokuSelected &&
+      !wordSelected &&
+      !wordResultsSelected &&
       widget.id === search.get('remove') &&
       widget.owner.id === ownerId,
   )
@@ -86,6 +110,8 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     (widget) =>
       !builtinRequested &&
       !sudokuSelected &&
+      !wordSelected &&
+      !wordResultsSelected &&
       widget.owner.id === ownerId &&
       widget.meals.some((meal) => meal.id === search.get('removeMeal')),
   )
@@ -93,6 +119,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
   function change(values: Record<string, string>) {
     clearError()
     sudoku.clearError()
+    word.clearError()
     setSearch((current) => {
       const next = new URLSearchParams(current)
       for (const key of ['compose', 'edit', 'remove', 'removeMeal']) next.delete(key)
@@ -118,6 +145,8 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     !error &&
     !builtinRequested &&
     !sudokuSelected &&
+    !wordSelected &&
+    !wordResultsSelected &&
     ((search.has('edit') && !editing) ||
       (search.has('remove') && !removing) ||
       (search.has('removeMeal') && !meal))
@@ -134,6 +163,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
               onClick={() => {
                 refresh()
                 sudoku.refresh()
+                word.refresh()
               }}
             />
           ) : (
@@ -180,6 +210,13 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
             installations={widgets.filter((widget) => !removals[widget.id])}
             loading={loading}
             error={!!error}
+            word={{
+              installed: word.installed && !word.removals['daily-word'],
+              ready: word.known && !word.error,
+              loading: word.loading,
+              removing: !!word.removals['daily-word'],
+              onInstall: () => setInstallWord(true),
+            }}
             sudoku={{
               installed: !!sudoku.game && !sudoku.removals[sudoku.game.id],
               ready: sudoku.known && !sudoku.error,
@@ -201,7 +238,10 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
           <>
             {view !== 'family' &&
               !sudokuSelected &&
+              !wordSelected &&
+              !wordResultsSelected &&
               !sudoku.game &&
+              !word.installed &&
               !error &&
               !inView.some((widget) => !widget.hidden) && (
                 <ContentSurface>
@@ -218,24 +258,64 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
               )}
             <WidgetShelf
               extraShelfItem={
-                view === 'widgets' && sudoku.game ? (
-                  <button
-                    type="button"
-                    className="secondary"
-                    aria-pressed={sudokuSelected}
-                    onClick={() => change({ view: 'widgets', tool: 'sudoku' })}
-                    disabled={!!sudoku.removals[sudoku.game.id]}
-                  >
-                    <Icon icon={Grid2X2} />
-                    <span>
-                      <strong>Sudoku</strong>
-                      <small>Installed · Personal</small>
-                    </span>
-                  </button>
-                ) : undefined
+                <>
+                  {view === 'family' && (
+                    <button
+                      type="button"
+                      className="secondary"
+                      aria-pressed={wordResultsSelected}
+                      onClick={() => change({ view: 'family', tool: 'word-results' })}
+                    >
+                      <span>
+                        <strong>Daily Word results</strong>
+                        <small>Finished · Shared by choice</small>
+                      </span>
+                    </button>
+                  )}
+                  {view === 'widgets' && word.installed && (
+                    <button
+                      type="button"
+                      className="secondary"
+                      aria-pressed={wordSelected}
+                      disabled={!!word.removals['daily-word']}
+                      onClick={() => change({ view: 'widgets', tool: 'word' })}
+                    >
+                      <span>
+                        <strong>Daily Word</strong>
+                        <small>Installed · Personal</small>
+                      </span>
+                    </button>
+                  )}
+                  {view === 'widgets' && sudoku.game ? (
+                    <button
+                      type="button"
+                      className="secondary"
+                      aria-pressed={sudokuSelected}
+                      onClick={() => change({ view: 'widgets', tool: 'sudoku' })}
+                      disabled={!!sudoku.removals[sudoku.game.id]}
+                    >
+                      <Icon icon={Grid2X2} />
+                      <span>
+                        <strong>Sudoku</strong>
+                        <small>Installed · Personal</small>
+                      </span>
+                    </button>
+                  ) : undefined}
+                </>
               }
               alternateContent={
-                sudokuSelected ? (
+                wordSelected ? (
+                  <Suspense fallback={<LoadingState label="Opening Daily Word…" />}>
+                    <DailyWordWorkspace
+                      key={word.ownerId ?? 'signed-out'}
+                      onInstall={() => setInstallWord(true)}
+                    />
+                  </Suspense>
+                ) : wordResultsSelected ? (
+                  <Suspense fallback={<LoadingState label="Opening Daily Word results…" />}>
+                    <DailyWordResults key={word.ownerId ?? 'signed-out'} />
+                  </Suspense>
+                ) : sudokuSelected ? (
                   <Suspense fallback={<LoadingState label="Opening Sudoku…" />}>
                     <SudokuWorkspace
                       key={sudoku.ownerId ?? 'signed-out'}
@@ -256,6 +336,18 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
           </>
         )}
       </Tabs>
+      {installWord && (
+        <Suspense fallback={<LoadingState label="Opening Daily Word installation…" />}>
+          <DailyWordInstall
+            key={word.ownerId ?? 'signed-out'}
+            onClose={() => setInstallWord(false)}
+            onInstalled={() => {
+              setInstallWord(false)
+              change({ view: 'widgets', tool: 'word' })
+            }}
+          />
+        </Suspense>
+      )}
       {installSudoku && (
         <Suspense fallback={<LoadingState label="Opening Sudoku installation…" />}>
           <SudokuInstall
@@ -276,17 +368,21 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
           </button>
         </p>
       )}
-      {!builtinRequested && !sudokuSelected && (search.get('compose') === 'spinner' || editing) && (
-        <Suspense fallback={<LoadingState label="Opening widget settings…" />}>
-          <WidgetComposer
-            key={editing?.id ?? 'new'}
-            widget={editing}
-            onClose={() => change({})}
-            onSaved={() => change({ view: 'widgets' })}
-            onRemoveMeal={(meal) => change({ removeMeal: meal.id })}
-          />
-        </Suspense>
-      )}
+      {!builtinRequested &&
+        !sudokuSelected &&
+        !wordSelected &&
+        !wordResultsSelected &&
+        (search.get('compose') === 'spinner' || editing) && (
+          <Suspense fallback={<LoadingState label="Opening widget settings…" />}>
+            <WidgetComposer
+              key={editing?.id ?? 'new'}
+              widget={editing}
+              onClose={() => change({})}
+              onSaved={() => change({ view: 'widgets' })}
+              onRemoveMeal={(meal) => change({ removeMeal: meal.id })}
+            />
+          </Suspense>
+        )}
       {removing && (
         <RemovalConfirmation
           item={removing}

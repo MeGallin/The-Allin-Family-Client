@@ -38,6 +38,13 @@ function mount(overrides: Partial<Parameters<typeof WidgetLibrary>[0]> = {}) {
               removing: false,
               onInstall: vi.fn(),
             }}
+            word={{
+              installed: false,
+              ready: true,
+              loading: false,
+              removing: false,
+              onInstall: vi.fn(),
+            }}
             {...overrides}
           />
         ),
@@ -139,7 +146,7 @@ describe('Widget Store catalogue and real action boundaries', () => {
     fireEvent.change(screen.getByRole('searchbox', { name: 'Search widgets' }), {
       target: { value: 'Daily' },
     })
-    expect(screen.getByRole('button', { name: /Daily Word/ })).not.toBeNull()
+    expect(screen.getByRole('button', { name: 'About Daily Word' })).not.toBeNull()
     expect(screen.queryByRole('button', { name: /Sudoku/ })).toBeNull()
     fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'not-a-widget' } })
     expect(screen.getByText('No matching widgets')).not.toBeNull()
@@ -150,23 +157,20 @@ describe('Widget Store catalogue and real action boundaries', () => {
       'true',
     )
   })
-  it.each(['Focus Timer', 'Daily Word', 'Countdowns'])(
-    'keeps %s proposed with no install action',
-    (name) => {
-      const { onAdd } = mount()
-      fireEvent.click(screen.getByRole('button', { name: new RegExp(name + '.*Proposed') }))
-      const dialog = within(screen.getByRole('dialog', { name: 'Widget Store' }))
-      expect(
-        dialog.getByText(
-          'Proposed app — not available to install or use. These covers illustrate an idea.',
-        ),
-      ).not.toBeNull()
-      expect(dialog.queryByRole('button', { name: /Install/ })).toBeNull()
-      expect(dialog.queryByRole('link', { name: /Open/ })).toBeNull()
-      expect(onAdd).not.toHaveBeenCalled()
-      expect(fetch).not.toHaveBeenCalled()
-    },
-  )
+  it.each(['Focus Timer', 'Countdowns'])('keeps %s proposed with no install action', (name) => {
+    const { onAdd } = mount()
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(name + '.*Proposed') }))
+    const dialog = within(screen.getByRole('dialog', { name: 'Widget Store' }))
+    expect(
+      dialog.getByText(
+        'Proposed app — not available to install or use. These covers illustrate an idea.',
+      ),
+    ).not.toBeNull()
+    expect(dialog.queryByRole('button', { name: /Install/ })).toBeNull()
+    expect(dialog.queryByRole('link', { name: /Open/ })).toBeNull()
+    expect(onAdd).not.toHaveBeenCalled()
+    expect(fetch).not.toHaveBeenCalled()
+  })
   it('uses the shared dialog close/Escape lifecycle to restore its opener without losing filters', () => {
     mount()
     fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'Dinner' } })

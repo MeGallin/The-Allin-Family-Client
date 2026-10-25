@@ -9,9 +9,12 @@ const nouns: Record<string, string> = {
   user_profile: 'profile',
   user_account: 'account',
   widget: 'widget',
+  daily_word: 'personal Daily Word',
 }
 const verbs: Record<string, string> = {
   installed: 'installed',
+  word_result_shared: 'shared a finished result from',
+  word_result_withdrawn: 'withdrew a shared result from',
   new_game: 'started a new game on',
   restarted: 'restarted',
   completed: 'completed',

@@ -9,6 +9,7 @@ import calendarUi from '../features/calendar/calendar-ui-slice'
 import memoriesUi from '../features/memories/memories-ui-slice'
 import notesUi from '../features/notes/notes-ui-slice'
 import membersUi from '../features/members/members-ui-slice'
+import dailyWordUi from '../features/daily-word/daily-word-ui-slice'
 import sudokuUi from '../features/sudoku/sudoku-ui-slice'
 import widgetsUi from '../features/widgets/widgets-ui-slice'
 import { shoppingApi } from '../services/shopping-query'
@@ -28,6 +29,7 @@ export const createAppStore = () =>
       membersUi,
       widgetsUi,
       sudokuUi,
+      dailyWordUi,
       removals,
       [shoppingApi.reducerPath]: shoppingApi.reducer,
     },

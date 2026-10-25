@@ -51,6 +51,8 @@ export const shoppingApi = createApi({
     'TravelPreferences',
     'Widgets',
     'Sudoku',
+    'DailyWord',
+    'DailyWordResults',
   ],
   refetchOnFocus: true,
   refetchOnReconnect: true,

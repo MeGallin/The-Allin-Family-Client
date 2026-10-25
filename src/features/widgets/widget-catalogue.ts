@@ -67,8 +67,9 @@ export const widgetCatalogue: readonly WidgetStoreApp[] = [
     title: 'Daily Word',
     subtitle: 'Find your next word.',
     category: 'games',
-    availability: 'proposed',
-    description: 'An idea for a future word challenge. Not available to install or use.',
+    availability: 'available',
+    description:
+      'One shared five-letter word each London day, six valid guesses and private saved progress. Share a finished result with family only when you choose. Removing and reinstalling keeps today’s attempts.',
     previews: ['A little word play.', 'Something to puzzle over.'],
   },
   {

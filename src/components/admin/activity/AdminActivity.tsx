@@ -31,8 +31,8 @@ export default function AdminActivity() {
       <header>
         <h2 id={id + '-title'}>Family activity</h2>
         <p className="note">
-          See who added, edited, removed, liked or voted on shared content. Personal notes remain
-          private.
+          See changes to shared content and app lifecycle activity. Personal notes and private Daily
+          Word progress remain private.
         </p>
       </header>
       <div className="admin-activity__filters">
@@ -51,7 +51,7 @@ export default function AdminActivity() {
             }}
           >
             {[
-              ['', 'All shared activity'],
+              ['', 'All activity'],
               ['shopping_item', 'Shopping'],
               ['calendar_event', 'Calendar'],
               ['memory', 'Memories and likes'],
@@ -59,6 +59,7 @@ export default function AdminActivity() {
               ['user_profile', featureNames.user_profile],
               ['user_account', 'Family accounts'],
               ['widget', 'Widgets'],
+              ['daily_word', 'Daily Word lifecycle'],
             ].map(([value, label]) => (
               <option key={value} value={value}>
                 {label}

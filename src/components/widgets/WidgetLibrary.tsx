@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
+import { WORD_PATH } from '../../features/daily-word/types'
 import { SUDOKU_PATH } from '../../features/sudoku/types'
 import { Search } from 'lucide-react'
 import { builtinWidgetPath } from '../../features/widgets/builtin-widgets'
@@ -46,11 +47,19 @@ export function WidgetLibrary({
   loading,
   error,
   sudoku,
+  word,
 }: {
   onAdd: () => void
   installations: FamilyWidget[]
   loading: boolean
   error: boolean
+  word?: {
+    installed: boolean
+    ready: boolean
+    loading: boolean
+    removing: boolean
+    onInstall: () => void
+  }
   sudoku?: {
     installed: boolean
     ready: boolean
@@ -88,13 +97,14 @@ export function WidgetLibrary({
     onAdd()
   }
   function action(app: WidgetStoreApp) {
-    if (app.id === 'sudoku')
-      return sudoku?.installed ? (
+    if (app.id === 'sudoku' || app.id === 'word') {
+      const personal = app.id === 'word' ? word : sudoku
+      return personal?.installed ? (
         <Link
           className="pill-action"
-          to={SUDOKU_PATH}
+          to={app.id === 'word' ? WORD_PATH : SUDOKU_PATH}
           onClick={() => setSelected(null)}
-          aria-label="Open Sudoku"
+          aria-label={'Open ' + app.title}
         >
           OPEN
         </Link>
@@ -102,22 +112,23 @@ export function WidgetLibrary({
         <button
           type="button"
           className="pill-action"
-          disabled={!sudoku?.ready || sudoku.removing}
+          disabled={!personal?.ready || personal.removing}
           onClick={() => {
             setSelected(null)
-            sudoku?.onInstall()
+            personal?.onInstall()
           }}
-          aria-label="Install Sudoku"
+          aria-label={'Install ' + app.title}
         >
-          {sudoku?.removing
+          {personal?.removing
             ? 'REMOVING'
-            : sudoku?.ready
+            : personal?.ready
               ? 'INSTALL'
-              : sudoku?.loading
+              : personal?.loading
                 ? 'LOADING'
                 : 'UNAVAILABLE'}
         </button>
       )
+    }
     if (app.availability === 'proposed')
       return <span className="pill-action pill-action--proposed">PROPOSED</span>
     const path =
@@ -166,14 +177,14 @@ export function WidgetLibrary({
           <span className="app-scope">
             {app.id === 'dinner'
               ? dinnerStatus
-              : app.id === 'sudoku'
-                ? sudoku?.installed
+              : app.id === 'sudoku' || app.id === 'word'
+                ? (app.id === 'word' ? word : sudoku)?.installed
                   ? 'Installed · Personal'
-                  : sudoku?.removing
+                  : (app.id === 'word' ? word : sudoku)?.removing
                     ? 'Removal pending · Undo available'
-                    : sudoku?.ready
+                    : (app.id === 'word' ? word : sudoku)?.ready
                       ? 'Available · Personal only'
-                      : sudoku?.loading
+                      : (app.id === 'word' ? word : sudoku)?.loading
                         ? 'Checking installation…'
                         : 'Installation status unavailable'
                 : 'Installed · Shared family tool'}
@@ -325,22 +336,32 @@ export function WidgetLibrary({
         <WidgetStoreDetails
           app={selected}
           installations={installations}
-          ready={selected.id === 'sudoku' ? !!sudoku?.ready : ready}
-          visibility={selected.id === 'sudoku' ? 'Personal only' : undefined}
+          ready={
+            selected.id === 'sudoku' || selected.id === 'word'
+              ? !!(selected.id === 'word' ? word : sudoku)?.ready
+              : ready
+          }
+          visibility={
+            selected.id === 'sudoku' || selected.id === 'word' ? 'Personal only' : undefined
+          }
           availability={
-            selected.id === 'sudoku'
-              ? !sudoku?.ready
-                ? sudoku?.loading
+            selected.id === 'sudoku' || selected.id === 'word'
+              ? !(selected.id === 'word' ? word : sudoku)?.ready
+                ? (selected.id === 'word' ? word : sudoku)?.loading
                   ? 'Checking status'
                   : 'Status unavailable'
-                : sudoku.installed
+                : (selected.id === 'word' ? word : sudoku)!.installed
                   ? 'Installed'
-                  : sudoku.removing
+                  : (selected.id === 'word' ? word : sudoku)!.removing
                     ? 'Removal pending'
                     : 'Available'
               : undefined
           }
-          loading={selected.id === 'sudoku' ? !!sudoku?.loading : loading}
+          loading={
+            selected.id === 'sudoku' || selected.id === 'word'
+              ? !!(selected.id === 'word' ? word : sudoku)?.loading
+              : loading
+          }
           action={action(selected)}
           onClose={() => setSelected(null)}
           onInstall={install}

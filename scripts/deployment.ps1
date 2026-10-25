@@ -118,11 +118,18 @@ function Invoke-FamilyDeployment {
             }
         }
         if ($includeApi) {
+            if (Test-Path -LiteralPath (Join-Path $api 'src/daily-word.php')) {
+                foreach ($asset in @('answers.txt', 'guesses.txt', 'COPYRIGHT.txt', 'provenance.json')) {
+                    if (-not (Test-Path -LiteralPath (Join-Path $api "src/daily-word-data/$asset") -PathType Leaf)) { throw "Missing Daily Word runtime asset: $asset" }
+                }
+            }
             foreach ($relative in @('index.php', '.htaccess', '.env.example')) {
                 Copy-VerifiedFile (Join-Path $api $relative) (Join-Path $stage "api/$relative")
             }
             foreach ($file in Get-ChildItem -LiteralPath (Join-Path $api 'src') -Recurse -Force -File) {
-                if ($file.Extension -ne '.php') { throw "Unexpected API runtime file: $($file.Name)" }
+                $relativeRuntime = $file.FullName.Substring((Join-Path $api 'src').Length + 1).Replace('\', '/')
+                $wordAsset = $relativeRuntime -cin @('daily-word-data/answers.txt', 'daily-word-data/guesses.txt', 'daily-word-data/COPYRIGHT.txt', 'daily-word-data/provenance.json')
+                if ($file.Extension -ne '.php' -and -not $wordAsset) { throw "Unexpected API runtime file: $($file.Name)" }
                 Copy-VerifiedFile $file.FullName (Join-Path $stage ('api/' + $file.FullName.Substring($api.Length + 1)))
             }
             foreach ($file in Get-ChildItem -LiteralPath (Join-Path $stage 'api') -Recurse -File -Filter '*.php') {
