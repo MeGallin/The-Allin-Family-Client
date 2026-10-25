@@ -1470,3 +1470,28 @@ then client assets before index.html LAST, preserving hosting routing/private
 storage and existing remote assets. Public hashes/health and live owner-browser
 acceptance are subsequent gates, not implied by package preparation. Private
 release evidence: API `.local/production-releases/20261025-uiux/`.
+
+### UIUX/clock release complete — 25 October 2026
+
+Deployed runtime commits: client55f951bb5935f6faa873cf1f0e479628c906c4d6 and
+API8c6ec81492caa458447050171e2b1ca4820724ca. Final verification53/53 tests,
+TypeScript/Vite2.60s, formatting/whitespace/PHP checks passed. Reviewee independently
+verified reviewed scope and all134 client/37 API package hashes plus retained
+prior-package backups. No migration or database/configuration change required.
+
+Parent FileZilla uploaded only API travel.php8691bytes, then132 client assets,
+then1079-byte index.html LAST (success2777→2911, queue empty/no failures observed).
+Existing815-byte hosting.htaccess, API.env, Word data, private photos/sessions and
+old remote assets were preserved. Read-only public verification passed133/133
+exact HTTP200/bytes/SHA256 and API health200/statusok; no cache mismatch.
+
+Live Gary/Dad desktop/320px acceptance passed: centered compact clock controls,
+explicit range Apply/Enter and restored state; exact event/occurrence read-only
+refresh/Back to Home day dialog; truthful Today/Earlier/empty Calendar results and
+Clear search preserving sort; readable navigation/Profile/TfL; quiet active-tool
+hierarchy with installed Focus Ready25:00 unchanged; all nine chart labels/totals
+and safe known/unknown widget activity. Browser warnings/errors empty. No family
+content was written; live clock restored analogue24h/default7-day Home range.
+Proof workspace `work/uiux-release-20261025/`; final release handoff
+`reports/cody/2026-10-25-uiux-release.md`. This final README-only follow-up does not
+change the deployed runtime/packages and requires no rebuild or upload.
