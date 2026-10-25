@@ -1,5 +1,11 @@
 import { exactDate } from '../../../lib/friendly-dates'
 import type { ActivityEntry } from '../../../features/activity/types'
+import {
+  isWidgetActivity,
+  widgetMetadataKeys,
+  widgetKindName,
+  widgetMetadataValue,
+} from '../../../features/activity/widget-context'
 const labels: Record<string, string> = {
   title: 'Title',
   detail: 'Details',
@@ -41,6 +47,18 @@ const labels: Record<string, string> = {
   response: 'Dinner response',
 }
 function display(value: unknown, key: string): string {
+  if (key === 'kind') return widgetKindName(value) ?? 'Type not identified'
+  if (key === 'mealType' && typeof value === 'string')
+    return (
+      (
+        { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', other: 'Other meal' } as Record<
+          string,
+          string
+        >
+      )[value] ?? 'Not recorded'
+    )
+  if (key === 'visibility')
+    return value === 'family' ? 'Family' : value === 'private' ? 'Personal' : 'Not recorded'
   if (key === 'response' && value === 'agree') return 'Happy with that'
   if (key === 'response' && value === 'another') return 'Suggest another'
   if (key === 'travelLines' && Array.isArray(value) && !value.length) return 'Switched off'
@@ -64,9 +82,15 @@ function display(value: unknown, key: string): string {
   return String(value)
 }
 export function ActivityDetails({ entry }: { entry: ActivityEntry }) {
+  const value = (side: 'before' | 'after', key: string) =>
+    isWidgetActivity(entry) ? widgetMetadataValue(key, entry[side]?.[key]) : entry[side]?.[key]
   const keys = Array.from(
     new Set([...Object.keys(entry.before ?? {}), ...Object.keys(entry.after ?? {})]),
-  ).filter((key) => JSON.stringify(entry.before?.[key]) !== JSON.stringify(entry.after?.[key]))
+  ).filter(
+    (key) =>
+      (!isWidgetActivity(entry) || widgetMetadataKeys.has(key)) &&
+      JSON.stringify(entry.before?.[key]) !== JSON.stringify(entry.after?.[key]),
+  )
   return (
     <details className="admin-activity__details">
       <summary>Change details</summary>
@@ -82,10 +106,10 @@ export function ActivityDetails({ entry }: { entry: ActivityEntry }) {
             <dt>{labels[key] ?? key}</dt>
             <dd>
               <span>Before: </span>
-              {display(entry.before?.[key], key)}
+              {display(value('before', key), key)}
               <br />
               <span>After: </span>
-              {display(entry.after?.[key], key)}
+              {display(value('after', key), key)}
             </dd>
           </div>
         ))}

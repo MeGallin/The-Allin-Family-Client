@@ -11,7 +11,7 @@ import './TravelPreferencesForm.css'
 
 export function TravelPreferencesForm() {
   const query = travelApi.useGetTravelPreferencesQuery()
-  if (query.isLoading) return <LoadingState label="Loading your travel choices…" />
+  if (query.isLoading) return <LoadingState label="Loading your TfL choices…" />
   return (
     <>
       <p className="note">
@@ -21,7 +21,7 @@ export function TravelPreferencesForm() {
       {query.isError && (
         <div role="alert">
           <p className="error">
-            {shoppingError(query.error)?.message ?? 'Travel choices are unavailable.'}
+            {shoppingError(query.error)?.message ?? 'TfL choices are unavailable.'}
           </p>
           <button
             type="button"
@@ -30,7 +30,7 @@ export function TravelPreferencesForm() {
               void query.refetch()
             }}
           >
-            Reload travel choices
+            Reload TfL choices
           </button>
         </div>
       )}
@@ -64,7 +64,7 @@ function TravelEditor({ preferences }: { preferences: TravelPreferences }) {
       setFeedback(
         saved.lines.length
           ? 'Saved. Your calendar will show disruptions for these lines.'
-          : 'Saved. Travel indicators are switched off.',
+          : 'Saved. TfL indicators are switched off.',
       )
     } catch {
       /* Preserve choices and display mutation error. */
@@ -76,7 +76,7 @@ function TravelEditor({ preferences }: { preferences: TravelPreferences }) {
         <Icon icon={TrainFront} />
         <span>
           <strong>Your regular lines</strong>
-          <small>{lines.length ? `${lines.length} selected` : 'Travel indicators off'}</small>
+          <small>{lines.length ? `${lines.length} selected` : 'TfL indicators off'}</small>
         </span>
         <label className="travel-preferences__all">
           <input
@@ -140,7 +140,7 @@ function TravelEditor({ preferences }: { preferences: TravelPreferences }) {
       ))}
       {conflict && (
         <div role="alert">
-          <p className="note">Your travel choices changed elsewhere. Your draft is still here.</p>
+          <p className="note">Your TfL choices changed elsewhere. Your draft is still here.</p>
           <button
             className="secondary"
             type="button"
@@ -154,7 +154,7 @@ function TravelEditor({ preferences }: { preferences: TravelPreferences }) {
               })
             }
           >
-            Discard draft and load saved travel choices
+            Discard draft and load saved TfL choices
           </button>
         </div>
       )}
@@ -168,11 +168,7 @@ function TravelEditor({ preferences }: { preferences: TravelPreferences }) {
         aria-busy={mutation.isLoading}
         disabled={!dirty || mutation.isLoading || conflict}
       >
-        {mutation.isLoading
-          ? 'Saving…'
-          : !dirty && feedback
-            ? 'Choices saved'
-            : 'Save travel choices'}
+        {mutation.isLoading ? 'Saving…' : !dirty && feedback ? 'Choices saved' : 'Save TfL choices'}
       </button>
       <p className="note" role="status">
         {feedback}

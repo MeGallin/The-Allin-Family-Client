@@ -64,7 +64,7 @@ it('ends the busy state after saving and clearly distinguishes saved and editabl
   })
   state.save.mockReturnValue({ unwrap: () => pending })
   const view = render(<TravelPreferencesForm />)
-  const initial = screen.getByRole('button', { name: 'Save travel choices' }) as HTMLButtonElement
+  const initial = screen.getByRole('button', { name: 'Save TfL choices' }) as HTMLButtonElement
   expect(initial.disabled).toBe(true)
   expect(initial.getAttribute('aria-busy')).toBe('false')
   fireEvent.click(screen.getByRole('checkbox', { name: 'Central' }))
@@ -85,7 +85,7 @@ it('ends the busy state after saving and clearly distinguishes saved and editabl
     screen.getByText('Saved. Your calendar will show disruptions for these lines.'),
   ).toBeTruthy()
   fireEvent.click(screen.getByRole('checkbox', { name: 'Central' }))
-  const editable = screen.getByRole('button', { name: 'Save travel choices' }) as HTMLButtonElement
+  const editable = screen.getByRole('button', { name: 'Save TfL choices' }) as HTMLButtonElement
   expect(editable.disabled).toBe(false)
   expect(editable.getAttribute('aria-busy')).toBe('false')
 })

@@ -109,27 +109,38 @@ function OwnerClock({ ownerId }: { ownerId: number }) {
           </span>
           {period && <span className="current-clock__period">{period}</span>}
         </time>
-        <div className="current-clock__controls" role="group" aria-label="Clock display">
+        <div
+          className={
+            'current-clock__controls' +
+            (preference.analogue ? '' : ' current-clock__controls--digital')
+          }
+          role="group"
+          aria-label="Clock display"
+        >
           <button
             type="button"
-            className="current-clock__control secondary"
+            className="current-clock__control current-clock__control--mode secondary"
             aria-label="Analogue clock"
             aria-pressed={preference.analogue}
             title={preference.analogue ? 'Show digital clock' : 'Show analogue clock'}
             onClick={() => choose({ ...preference, analogue: !preference.analogue })}
           >
-            <Icon icon={Clock3} />
+            <span className="current-clock__mode-mark" aria-hidden="true">
+              <Icon icon={Clock3} />
+            </span>
           </button>
           {!preference.analogue && (
             <button
               type="button"
-              className="current-clock__control secondary"
+              className="current-clock__control current-clock__control--format secondary"
               aria-label="12-hour time"
               aria-pressed={preference.hour12}
               title={preference.hour12 ? 'Use 24-hour time' : 'Use 12-hour time'}
               onClick={() => choose({ ...preference, hour12: !preference.hour12 })}
             >
-              {preference.hour12 ? '12h' : '24h'}
+              <span className="current-clock__format-mark" aria-hidden="true">
+                {preference.hour12 ? '12h' : '24h'}
+              </span>
             </button>
           )}
         </div>

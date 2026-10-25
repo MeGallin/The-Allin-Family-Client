@@ -32,6 +32,7 @@ export function WidgetShelf({
   onBuiltinSelect,
   extraShelfItem,
   alternateContent,
+  compactShelf = false,
 }: {
   scope: 'mine' | 'family'
   selectedId: string
@@ -41,6 +42,7 @@ export function WidgetShelf({
   builtin?: BuiltinWidget
   extraShelfItem?: ReactNode
   alternateContent?: ReactNode
+  compactShelf?: boolean
   onBuiltinSelect: (id: BuiltinWidgetId) => void
 }) {
   const { widgets, ownerId, pending, offline, spin, hide, removals, mealRemoval } = useWidgets()
@@ -60,45 +62,53 @@ export function WidgetShelf({
   return (
     <div className="widget-shelf">
       {(scope === 'family' || visible.length > 0 || !!extraShelfItem) && (
-        <HorizontalScroll className="widget-shelf__scroller" label="Your widget shelf">
-          <div className="widget-shelf__collection">
-            {extraShelfItem}
-            {scope === 'family' &&
-              builtinWidgets.map((widget) => (
+        <details
+          className={'widget-shelf__chooser' + (compactShelf ? ' is-compact' : '')}
+          open={compactShelf ? undefined : true}
+        >
+          <summary>Choose another widget</summary>
+          <HorizontalScroll className="widget-shelf__scroller" label="Your widget shelf">
+            <div className="widget-shelf__collection">
+              {extraShelfItem}
+              {scope === 'family' &&
+                builtinWidgets.map((widget) => (
+                  <button
+                    type="button"
+                    className="secondary"
+                    key={widget.id}
+                    aria-pressed={builtin?.id === widget.id}
+                    onClick={() => onBuiltinSelect(widget.id)}
+                  >
+                    <Icon icon={widget.icon} />
+                    <span>
+                      <strong>{widget.title}</strong>
+                      <small>Installed · Family</small>
+                    </span>
+                  </button>
+                ))}
+              {visible.map((widget) => (
                 <button
                   type="button"
                   className="secondary"
                   key={widget.id}
-                  aria-pressed={builtin?.id === widget.id}
-                  onClick={() => onBuiltinSelect(widget.id)}
+                  aria-pressed={widget.id === selected?.id}
+                  onClick={() => onSelect(widget.id)}
                 >
-                  <Icon icon={widget.icon} />
+                  <Icon icon={Utensils} />
                   <span>
                     <strong>{widget.title}</strong>
-                    <small>Installed · Family</small>
+                    <small>
+                      {widget.owner.id === ownerId
+                        ? 'Your wheel'
+                        : 'Shared by ' + widget.owner.name}{' '}
+                      · {widget.visibility === 'private' ? 'Personal' : 'Family'}
+                    </small>
                   </span>
                 </button>
               ))}
-            {visible.map((widget) => (
-              <button
-                type="button"
-                className="secondary"
-                key={widget.id}
-                aria-pressed={widget.id === selected?.id}
-                onClick={() => onSelect(widget.id)}
-              >
-                <Icon icon={Utensils} />
-                <span>
-                  <strong>{widget.title}</strong>
-                  <small>
-                    {widget.owner.id === ownerId ? 'Your wheel' : 'Shared by ' + widget.owner.name}{' '}
-                    · {widget.visibility === 'private' ? 'Personal' : 'Family'}
-                  </small>
-                </span>
-              </button>
-            ))}
-          </div>
-        </HorizontalScroll>
+            </div>
+          </HorizontalScroll>
+        </details>
       )}
       {alternateContent}
       {builtin && (

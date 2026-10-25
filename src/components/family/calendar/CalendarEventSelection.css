@@ -1,0 +1,16 @@
+.calendar-selection__note {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.calendar-selection__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-4);
+}
+.calendar-selection__actions a {
+  min-height: var(--control-min-height);
+  display: inline-flex;
+  align-items: center;
+}

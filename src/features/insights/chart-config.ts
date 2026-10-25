@@ -16,6 +16,13 @@ export const featureNames: Record<string, string> = {
   daily_word: 'Daily Word lifecycle',
   focus_timer: 'Focus Timer lifecycle',
 }
+export const featureChartNames: Record<string, string> = {
+  ...featureNames,
+  user_profile: 'Profiles',
+  user_account: 'Accounts',
+  daily_word: 'Daily Word',
+  focus_timer: 'Focus Timer',
+}
 export function chartDate(day: string, full = false) {
   return format(parseISO(day), full ? 'EEEE, d MMM yyyy' : 'd MMM')
 }

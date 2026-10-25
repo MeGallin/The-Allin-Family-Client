@@ -1,6 +1,6 @@
 import { addDays, format, startOfDay } from 'date-fns'
 import { Link, useSearchParams } from 'react-router'
-import { useId } from 'react'
+import { useEffect, useId, useState, useTransition } from 'react'
 import { ArrowUpRight, CalendarDays, Cake, Check } from 'lucide-react'
 import { useCalendar } from '../../../features/calendar/useCalendar'
 import { useNow } from '../../../hooks/useNow'
@@ -24,6 +24,7 @@ import { useTravel } from '../../../features/travel/useTravel'
 import { prepareTravelView } from '../../../features/travel/travel-view'
 import { travelCalendarIndicator } from './CalendarTravel'
 import { calendarDayPlans } from './calendar-day-plans'
+import { calendarEventPath } from '../../../features/calendar/calendar-selection'
 import './WeekPlanner.css'
 import './WeekPlannerLayout.css'
 
@@ -35,6 +36,14 @@ export function WeekPlanner() {
     Number.isInteger(requestedDays) && requestedDays >= 4 && requestedDays <= 360
       ? requestedDays
       : 7
+  const [rangeDraft, setRangeDraft] = useState(() => String(dayCount))
+  const [lastApplied, setLastApplied] = useState<number | null>(null)
+  const [applying, startApplying] = useTransition()
+  useEffect(() => setRangeDraft(String(dayCount)), [dayCount])
+  const proposedDays = Number(rangeDraft)
+  const validRange =
+    rangeDraft !== '' && Number.isInteger(proposedDays) && proposedDays >= 4 && proposedDays <= 360
+  const rangeChanged = validRange && proposedDays !== dayCount
   const { events, loading, error, refresh } = useCalendar()
   const now = useNow()
   const context = useWeekContext()
@@ -45,6 +54,7 @@ export function WeekPlanner() {
   const travelForDay = prepareTravelView(travelFeed.data, travelFeed.isError, now)
   const weather = context.data?.weather
   const today = startOfDay(now)
+  const rangeEnd = addDays(today, dayCount - 1)
   const upcoming = upcomingEvents(events, now)
   const days = Array.from({ length: dayCount }, (_, index) => addDays(today, index))
   const visiblePlans = calendarDayPlans(events, now, dayCount)
@@ -69,8 +79,22 @@ export function WeekPlanner() {
         className="week-planner"
       >
         <p className="week-planner__range-caption" role="status">
-          {format(today, 'd MMM yyyy')} – {format(addDays(today, dayCount - 1), 'd MMM yyyy')} ·
-          Select a day to make a plan.
+          {applying ? (
+            'Applying day range…'
+          ) : !validRange ? (
+            'Enter a whole number from 4 to 360.'
+          ) : rangeChanged ? (
+            `${proposedDays} days selected · Apply to update`
+          ) : (
+            <>
+              {format(
+                today,
+                today.getFullYear() === rangeEnd.getFullYear() ? 'd MMM' : 'd MMM yyyy',
+              )}{' '}
+              – {format(rangeEnd, 'd MMM yyyy')}
+              {lastApplied === dayCount ? ' · Range applied' : ''}
+            </>
+          )}
         </p>
         <HomeDataError error={error} retry={refresh} />
         {loading ? (
@@ -85,15 +109,17 @@ export function WeekPlanner() {
                   className="week-planner__range"
                   onSubmit={(event) => {
                     event.preventDefault()
-                    const value = Number(new FormData(event.currentTarget).get('days'))
-                    if (!Number.isInteger(value) || value < 4 || value > 360) return
-                    setSearch(
-                      (current) => {
-                        const next = new URLSearchParams(current)
-                        next.set('days', String(value))
-                        return next
-                      },
-                      { replace: true },
+                    if (!rangeChanged || applying) return
+                    setLastApplied(proposedDays)
+                    startApplying(() =>
+                      setSearch(
+                        (current) => {
+                          const next = new URLSearchParams(current)
+                          next.set('days', String(proposedDays))
+                          return next
+                        },
+                        { replace: true },
+                      ),
                     )
                   }}
                 >
@@ -101,7 +127,6 @@ export function WeekPlanner() {
                     Days<span className="sr-only"> to show (4–360)</span>
                   </label>
                   <input
-                    key={dayCount}
                     id={rangeId}
                     name="days"
                     type="number"
@@ -109,16 +134,31 @@ export function WeekPlanner() {
                     max="360"
                     step="1"
                     required
-                    defaultValue={dayCount}
+                    value={rangeDraft}
+                    aria-describedby={rangeId + '-hint'}
+                    aria-invalid={!validRange}
+                    onChange={(event) => {
+                      setRangeDraft(event.target.value)
+                      setLastApplied(null)
+                    }}
                   />
                   <button
                     type="submit"
-                    className="icon-button secondary"
-                    aria-label="Show days"
+                    className={
+                      'icon-button week-planner__apply ' +
+                      (rangeChanged ? 'week-planner__apply--pending' : 'secondary')
+                    }
+                    aria-label={rangeChanged ? `Apply ${proposedDays} days` : 'Apply days'}
+                    disabled={!rangeChanged || applying}
                     title="Apply day range"
                   >
-                    <Icon icon={Check} />
+                    <span className="week-planner__apply-mark" aria-hidden="true">
+                      <Icon icon={Check} />
+                    </span>
                   </button>
+                  <span id={rangeId + '-hint'} className="sr-only">
+                    Apply a whole number from 4 to 360 to update the displayed calendar.
+                  </span>
                 </form>
               }
             >
@@ -222,7 +262,7 @@ export function WeekPlanner() {
             )}
             {travelFeed.isError && !travelFeed.data && (
               <p className="weather-warnings-status" role="status">
-                Travel updates are unavailable.{' '}
+                TfL updates are unavailable.{' '}
                 <a
                   href="https://tfl.gov.uk/tube-dlr-overground/status/"
                   target="_blank"
@@ -251,7 +291,7 @@ export function WeekPlanner() {
         ) : (
           <>
             {next ? (
-              <Link className="week-planner__next" to="/calendar">
+              <Link className="week-planner__next" to={calendarEventPath(next)}>
                 <span className="week-planner__date" aria-hidden="true">
                   <strong>{format(eventDate(next), 'd')}</strong>
                   <span>{format(eventDate(next), 'MMM')}</span>
@@ -277,7 +317,7 @@ export function WeekPlanner() {
               </div>
             )}
             {annual && (
-              <Link className="week-planner__annual" to="/calendar">
+              <Link className="week-planner__annual" to={calendarEventPath(annual)}>
                 <Icon icon={Cake} />
                 <span>
                   <small>Another date to remember</small>

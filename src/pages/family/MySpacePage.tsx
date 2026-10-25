@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { Grid2X2, Library, Plus, Users } from 'lucide-react'
 import { useFocusTimer } from '../../features/focus-timer/useFocusTimer'
 import { useDailyWord } from '../../features/daily-word/useDailyWord'
@@ -19,6 +19,7 @@ import { RemovalConfirmation } from '../../components/removals/RemovalConfirmati
 import { WidgetLibrary } from '../../components/widgets/WidgetLibrary'
 import { WidgetShelf } from '../../components/widgets/WidgetShelf'
 import { activeBuiltinWidget } from '../../features/widgets/builtin-widgets'
+import './MySpacePage.css'
 const FocusTimerWorkspace = lazy(() => import('../../components/focus-timer/FocusTimerWorkspace'))
 const FocusTimerInstall = lazy(() => import('../../components/focus-timer/FocusTimerInstall'))
 const DailyWordWorkspace = lazy(() => import('../../components/daily-word/DailyWordWorkspace'))
@@ -64,6 +65,13 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
   const sudokuSelected = view === 'widgets' && search.get('tool') === 'sudoku'
   const focusSelected = view === 'widgets' && search.get('tool') === 'focus'
   const wordSelected = view === 'widgets' && search.get('tool') === 'word'
+  const personalTitle = focusSelected
+    ? 'Focus Timer'
+    : wordSelected
+      ? 'Daily Word'
+      : sudokuSelected
+        ? 'Sudoku'
+        : null
   const wordResultsSelected = view === 'family' && search.get('tool') === 'word-results'
   const builtin = activeBuiltinWidget(search)
   const builtinRequested =
@@ -71,6 +79,18 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
   const inView = widgets.filter((widget) =>
     view === 'family' ? widget.visibility === 'family' : widget.owner.id === ownerId,
   )
+  const visibleSetups = inView.filter((widget) => !widget.hidden)
+  const openedSetup =
+    !personalTitle && !wordResultsSelected && !builtinRequested && !builtin && view !== 'library'
+      ? search.get('widget')
+        ? visibleSetups.find((widget) => widget.id === search.get('widget'))
+        : visibleSetups[0]
+      : undefined
+  const openedTitle =
+    personalTitle ??
+    (wordResultsSelected
+      ? 'Daily Word results'
+      : (builtin?.title ?? (openedSetup ? 'Dinner Spinner' : null)))
   useEffect(() => {
     if (
       failure?.status === 401 ||
@@ -166,12 +186,30 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
       (search.has('remove') && !removing) ||
       (search.has('removeMeal') && !meal))
   return (
-    <div className={'page-stack page-enter' + (view === 'library' ? ' widget-store-page' : '')}>
+    <div
+      className={
+        'page-stack page-enter' +
+        (view === 'library' ? ' widget-store-page' : '') +
+        (openedTitle ? ' opened-widget-tool' : '')
+      }
+    >
       <PageHeader
-        title={builtin?.title ?? 'Widget Store'}
-        description={builtin?.description ?? 'Little apps for everyday family life.'}
+        title={openedTitle ?? 'Widget Store'}
+        description={
+          personalTitle
+            ? 'Personal · saved for your account.'
+            : wordResultsSelected
+              ? 'Shared finished results from your family.'
+              : openedSetup
+                ? `${openedSetup.title} · ${openedSetup.visibility === 'private' ? 'Personal' : 'Family'}`
+                : (builtin?.description ?? 'Little apps for everyday family life.')
+        }
         action={
-          view === 'library' ? (
+          openedTitle ? (
+            <Link className="opened-widget-tool__store" to="/my-space?view=library">
+              Widget Store
+            </Link>
+          ) : view === 'library' ? (
             <RefreshButton
               label="Refresh your widgets"
               disabled={pending || sudoku.pending}
@@ -196,7 +234,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
         onChange={(value) => change({ view: value })}
         label="Widget sections"
       >
-        {!builtin && view !== 'library' && (
+        {!openedTitle && view !== 'library' && (
           <CollectionToolbar
             label="Refresh your widgets"
             busy={pending}
@@ -282,6 +320,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
                 </ContentSurface>
               )}
             <WidgetShelf
+              compactShelf={!!openedTitle}
               extraShelfItem={
                 <>
                   {view === 'family' && (

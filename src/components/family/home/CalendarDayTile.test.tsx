@@ -81,7 +81,7 @@ it('opens every saved plan in the shared modal without replacing the separate ad
   expect(within(dialog).getAllByRole('link', { name: /Open .* in calendar/ })).toHaveLength(5)
   expect(
     within(dialog).getByRole('link', { name: 'Open Plan 5 in calendar' }).getAttribute('href'),
-  ).toBe('/calendar?q=Plan+5')
+  ).toBe('/calendar?event=5&occurrence=2026-10-25')
   expect(within(dialog).getByRole('link', { name: 'Add another plan' }).getAttribute('href')).toBe(
     add.getAttribute('href'),
   )

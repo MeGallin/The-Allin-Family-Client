@@ -1,6 +1,7 @@
 import type { ActivityEntry } from '../../../features/activity/types'
 import { FriendlyTime } from '../../ui/FriendlyTime'
 import { ActivityDetails } from './ActivityDetails'
+import { isWidgetActivity, widgetContext } from '../../../features/activity/widget-context'
 const nouns: Record<string, string> = {
   shopping_item: 'shopping item',
   calendar_event: 'event',
@@ -48,23 +49,33 @@ const verbs: Record<string, string> = {
   dinner_response_withdrawn: 'withdrew their dinner response on',
 }
 export function ActivityRow({ entry, day }: { entry: ActivityEntry; day?: string }) {
-  const title = entry.after?.title ?? entry.before?.title ?? entry.targetName
-  const choice = entry.after?.choice
+  const context = widgetContext(entry)
+  const title = isWidgetActivity(entry)
+    ? null
+    : (entry.after?.title ?? entry.before?.title ?? entry.targetName)
+  const choice = isWidgetActivity(entry) ? null : entry.after?.choice
   return (
     <li className="admin-activity__entry">
       {day && <h3 className="admin-activity__day">{day}</h3>}
       <p>
         <strong>{entry.actor.displayName}</strong>{' '}
         {verbs[entry.action] ?? entry.action.replaceAll('_', ' ')}{' '}
-        {entry.entityType === 'widget' && (entry.after?.kind ?? entry.before?.kind) === 'sudoku'
-          ? 'personal Sudoku'
-          : (nouns[entry.entityType] ?? 'content')}
+        {context?.tool ?? nouns[entry.entityType] ?? 'content'}
         {typeof title === 'string' && (
           <>
             : <strong>{title}</strong>
           </>
         )}
       </p>
+      {context && (
+        <p className="note">
+          {context.reference ? `Record reference #${context.reference}` : 'Reference not recorded'}{' '}
+          · {context.visibility ? `${context.visibility} when recorded` : 'Visibility not recorded'}
+          {context.missing
+            ? ' · Tool type was not recorded in a recognised form for this historical entry.'
+            : ''}
+        </p>
+      )}
       {typeof choice === 'string' && <p className="note">Choice: {choice}</p>}
       <p className="note">
         <FriendlyTime value={entry.occurredAt} />

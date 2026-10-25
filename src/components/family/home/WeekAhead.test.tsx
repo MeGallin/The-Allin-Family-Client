@@ -9,7 +9,7 @@ vi.mock('../../../features/widgets/useWidgets', () => ({
   }),
 }))
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import type { FamilyEvent } from '../../../features/calendar/types'
 import type { FamilyPollRecord } from '../../../features/polls/types'
@@ -142,6 +142,42 @@ beforeEach(() => {
   vi.setSystemTime(state.now)
 })
 describe('Week Ahead dashboard', () => {
+  it('requires explicit valid Apply or Enter, clears reverted pending and disables after URL acceptance', async () => {
+    show(<WeekPlanner />)
+    const input = screen.getByLabelText(/Days to show/)
+    expect((screen.getByRole('button', { name: 'Apply days' }) as HTMLButtonElement).disabled).toBe(
+      true,
+    )
+    fireEvent.change(input, { target: { value: '14' } })
+    expect(screen.getByRole('list', { name: 'Next 7 days' })).toBeTruthy()
+    expect(screen.getByText('14 days selected · Apply to update')).toBeTruthy()
+    expect(
+      screen
+        .getByRole('button', { name: 'Apply 14 days' })
+        .classList.contains('week-planner__apply--pending'),
+    ).toBe(true)
+    fireEvent.change(input, { target: { value: '7' } })
+    expect(screen.queryByText(/selected · Apply/)).toBeNull()
+    expect((screen.getByRole('button', { name: 'Apply days' }) as HTMLButtonElement).disabled).toBe(
+      true,
+    )
+    for (const value of ['', '3', '361', '4.5']) {
+      fireEvent.change(input, { target: { value } })
+      expect(
+        (screen.getByRole('button', { name: 'Apply days' }) as HTMLButtonElement).disabled,
+      ).toBe(true)
+      expect(screen.getByText('Enter a whole number from 4 to 360.')).toBeTruthy()
+      fireEvent.submit(input.closest('form')!)
+      expect(screen.getByRole('list', { name: 'Next 7 days' })).toBeTruthy()
+    }
+    fireEvent.change(input, { target: { value: '14' } })
+    await act(async () => fireEvent.submit(input.closest('form')!))
+    expect(screen.getByRole('list', { name: 'Next 14 days' })).toBeTruthy()
+    expect(screen.getByText(/Range applied/)).toBeTruthy()
+    expect((screen.getByRole('button', { name: 'Apply days' }) as HTMLButtonElement).disabled).toBe(
+      true,
+    )
+  })
   it('retains today’s started plan in its tile while the next diary remains future-only', () => {
     state.now = new Date(2026, 9, 25, 13).getTime()
     const today = {
@@ -204,25 +240,26 @@ describe('Week Ahead dashboard', () => {
     expect(tiles[10].querySelector('.week-planner__day-label')?.textContent).toBe('SunNov')
     expect(screen.getAllByText('Weekend')).toHaveLength(13)
   })
-  it('changes to four days from today, then 360 days across the year boundary', () => {
+  it('changes to four days from today, then 360 days across the year boundary', async () => {
     show(<WeekPlanner />)
     const input = screen.getByLabelText(/Days to show/)
     fireEvent.change(input, { target: { value: '4' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Show days' }))
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Apply 4 days' })))
     expect(
       within(screen.getByRole('list', { name: 'Next 4 days' })).getAllByRole('link', {
         name: /\. Add a plan\.$/,
       }),
     ).toHaveLength(4)
     fireEvent.change(screen.getByLabelText(/Days to show/), { target: { value: '360' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Show days' }))
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Apply 360 days' })))
     const links = within(screen.getByRole('list', { name: 'Next 360 days' })).getAllByRole('link', {
       name: /\. Add a plan\.$/,
     })
     expect(links).toHaveLength(360)
     expect(links[0].getAttribute('href')).toBe('/calendar?compose=event&date=2026-10-22')
     expect(links[359].getAttribute('href')).toBe('/calendar?compose=event&date=2027-10-16')
-  })
+    expect(screen.getByText(/22 Oct 2026.*16 Oct 2027/)).toBeTruthy()
+  }, 15000)
   it('restores a URL range and safely falls back for an invalid range', () => {
     const view = render(
       <MemoryRouter initialEntries={['/?days=30']}>

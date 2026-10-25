@@ -47,9 +47,9 @@ export function TravelNoticeDetails({ notice }: { notice: TravelNotice }) {
               'TfL has not supplied further detail. Check the official service status before travelling.'}
           </p>
         </section>
-        <section className="travel-notice__step" aria-label="Travel advice">
+        <section className="travel-notice__step" aria-label="TfL travel advice">
           <h3>
-            <Icon icon={Route} /> Travel advice
+            <Icon icon={Route} /> TfL travel advice
           </h3>
           <p>{notice.advice || 'TfL has not supplied separate travel advice for this notice.'}</p>
         </section>

@@ -1,11 +1,12 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { format, isWeekend } from 'date-fns'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { ArrowUpRight, Plus } from 'lucide-react'
 import { Icon } from '../../ui/Icon'
 import { IndicatorStrip, type CalendarIndicator } from '../../ui/IndicatorStrip'
 import { Modal } from '../../ui/Modal'
-import { formatEventTime } from '../../../lib/dates'
+import { dateInputValue, formatEventTime } from '../../../lib/dates'
+import { calendarEventPath } from '../../../features/calendar/calendar-selection'
 import './CalendarDayTile.css'
 
 export type CalendarDayTileProps = {
@@ -33,10 +34,30 @@ export function CalendarDayTile({
   indicators,
 }: CalendarDayTileProps) {
   const weekend = isWeekend(date)
-  const [showPlans, setShowPlans] = useState(false)
+  const [search, setSearch] = useSearchParams()
+  const dayKey = dateInputValue(date)
+  const showPlans = search.get('plans') === dayKey
+  function closePlans() {
+    setSearch(
+      (current) => {
+        const next = new URLSearchParams(current)
+        next.delete('plans')
+        return next
+      },
+      { replace: true, preventScrollReset: true },
+    )
+  }
   useEffect(() => {
-    if (plansUnavailable) setShowPlans(false)
-  }, [plansUnavailable])
+    if (plansUnavailable && showPlans)
+      setSearch(
+        (current) => {
+          const next = new URLSearchParams(current)
+          next.delete('plans')
+          return next
+        },
+        { replace: true, preventScrollReset: true },
+      )
+  }, [plansUnavailable, showPlans, setSearch])
   const dayLabel = format(date, 'EEEE d MMMM')
   const summary = plansUnavailable
     ? 'plans unavailable'
@@ -91,7 +112,16 @@ export function CalendarDayTile({
               type="button"
               className="calendar-day-tile__plan has-plan"
               aria-label={`View ${plans.length} ${plans.length === 1 ? 'plan' : 'plans'} for ${dayLabel}`}
-              onClick={() => setShowPlans(true)}
+              onClick={() =>
+                setSearch(
+                  (current) => {
+                    const next = new URLSearchParams(current)
+                    next.set('plans', dayKey)
+                    return next
+                  },
+                  { replace: true, preventScrollReset: true },
+                )
+              }
             >
               {planSummary}
             </button>
@@ -111,7 +141,7 @@ export function CalendarDayTile({
       {showPlans && !plansUnavailable && (
         <Modal
           title={`Plans for ${format(date, 'EEEE d MMMM')}`}
-          onClose={() => setShowPlans(false)}
+          onClose={closePlans}
           scrollable
           className="calendar-day-plans"
         >
@@ -128,8 +158,7 @@ export function CalendarDayTile({
                 <h3>{plan.title}</h3>
                 {plan.detail && <p>{plan.detail}</p>}
                 <Link
-                  to={'/calendar?' + new URLSearchParams({ q: plan.title }).toString()}
-                  onClick={() => setShowPlans(false)}
+                  to={calendarEventPath(plan, dayKey)}
                   aria-label={`Open ${plan.title} in calendar`}
                 >
                   Open in calendar <Icon icon={ArrowUpRight} />
@@ -138,7 +167,7 @@ export function CalendarDayTile({
             ))}
           </ul>
           <div className="calendar-day-plans__actions">
-            <Link to={calendarHref} onClick={() => setShowPlans(false)} className="button-link">
+            <Link to={calendarHref} className="button-link">
               Add another plan
             </Link>
           </div>

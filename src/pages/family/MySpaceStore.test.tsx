@@ -72,10 +72,10 @@ vi.mock('../../components/widgets/WidgetComposer', () => ({
     <button onClick={onSaved}>Existing composer saved</button>
   ),
 }))
-function mount() {
+function mount(url = '/my-space?view=library') {
   const router = createMemoryRouter(
     [{ path: '/my-space', element: <MySpacePage onSessionExpired={vi.fn()} /> }],
-    { initialEntries: ['/my-space?view=library'] },
+    { initialEntries: [url] },
   )
   render(<RouterProvider router={router} />)
   return router
@@ -85,6 +85,20 @@ beforeEach(() => {
   snapshot.removals = {}
 })
 describe('Widget Store integration with existing page routes', () => {
+  it.each([
+    ['focus', 'Focus Timer'],
+    ['word', 'Daily Word'],
+    ['sudoku', 'Sudoku'],
+  ])('identifies opened %s and retains compact Store/tabs without writes', (tool, title) => {
+    const router = mount('/my-space?view=widgets&tool=' + tool)
+    expect(screen.getByRole('heading', { level: 1, name: title })).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'Widget Store' }).getAttribute('href')).toBe(
+      '/my-space?view=library',
+    )
+    expect(screen.getAllByRole('tab')).toHaveLength(3)
+    expect(router.state.location.search).toBe('?view=widgets&tool=' + tool)
+    expect(fetch).not.toHaveBeenCalled()
+  })
   it('hands Install to the existing composer and retains its saved My widgets destination', async () => {
     const router = mount()
     fireEvent.click(screen.getByRole('button', { name: 'Install Dinner Spinner' }))

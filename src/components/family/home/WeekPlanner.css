@@ -24,6 +24,31 @@
 .week-planner__range button {
   width: auto;
 }
+.week-planner__range .week-planner__apply,
+.week-planner__range .week-planner__apply:hover:not(:disabled) {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.week-planner__apply-mark {
+  display: grid;
+  place-items: center;
+  width: calc(var(--control-min-height) / 2);
+  height: calc(var(--control-min-height) / 2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+}
+.week-planner__apply-mark .ui-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+.week-planner__apply--pending .week-planner__apply-mark {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-text-on-action);
+}
 .week-planner__range-caption {
   margin-block: var(--space-3) 0;
   line-height: var(--line-compact);

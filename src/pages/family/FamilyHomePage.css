@@ -5,3 +5,52 @@
 .family-home-grid > * {
   min-width: 0;
 }
+@media (max-width: 599px) {
+  .home-page {
+    gap: var(--space-4);
+  }
+  .home-page > .page-header {
+    gap: var(--space-2);
+  }
+  .home-page > .page-header h1 {
+    font-size: var(--text-2xl);
+  }
+  .home-page > .page-header p {
+    margin-top: var(--space-1);
+    font-size: var(--text-sm);
+  }
+  .home-page .home-diary {
+    padding: var(--space-3);
+  }
+  .home-page .week-planner > .panel__header {
+    padding-block: var(--space-1);
+  }
+  .home-page .week-planner__range-caption {
+    margin-top: var(--space-1);
+    min-height: 2.7em;
+  }
+  .home-page .week-planner__scroll {
+    margin-top: var(--space-1);
+  }
+  .home-page .week-planner__scroll .horizontal-scroll__toolbar {
+    flex-wrap: nowrap;
+    gap: var(--space-1);
+  }
+  .home-page .week-planner__range {
+    gap: var(--space-1);
+  }
+  .home-page .week-planner__range > label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .home-page .week-planner__range input {
+    width: 3.5rem;
+    padding-inline: var(--space-2);
+  }
+  .home-page .horizontal-scroll__controls {
+    gap: var(--space-1);
+  }
+}

@@ -131,3 +131,18 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+.widget-shelf__chooser > summary {
+  display: none;
+}
+.widget-shelf__chooser.is-compact > summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--control-min-height);
+  cursor: pointer;
+  color: var(--color-link);
+  font-size: var(--text-sm);
+}
+.widget-shelf__chooser.is-compact > summary::after {
+  content: '⌄';
+  margin-left: var(--space-2);
+}

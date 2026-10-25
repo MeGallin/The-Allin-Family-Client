@@ -2,3 +2,12 @@
   font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
+.calendar-page__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.calendar-page__status p {
+  margin: 0;
+}

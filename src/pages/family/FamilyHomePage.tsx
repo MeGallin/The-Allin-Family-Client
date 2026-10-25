@@ -12,7 +12,7 @@ export default function FamilyHomePage() {
   const firstName = user.familyName
   useHashTarget()
   return (
-    <div className="page-stack page-enter">
+    <div className="page-stack page-enter home-page">
       <PageHeader
         title="The days ahead."
         description={'Hello, ' + firstName + '. Make room for what matters.'}

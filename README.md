@@ -1395,3 +1395,78 @@ No commit, push, deployment or production migration occurred in this QA scope.
 Final one-worker client suite: **203 tests / 48 files passed** in 202.95s. Isolated
 API suite: **10 passed** in 7.56s, disposable cleanup confirmed. Final client build
 passed TypeScript/Vite (3,172 modules, Vite 2.86s); independent QA review clear.
+
+### Local UI/UX remediation — 25 October 2026
+
+UIUX-001–009 are implemented locally. Calendar now groups all of today’s saved
+plans before future/earlier results and gives one overall no-results message.
+Home opens an exact event ID and occurrence in read-only Calendar details, with
+explicit Edit, missing/moved/off-filter explanations, and existing pending/removal
+guards. Browser Back restores Home’s applied range and selected day. Annual
+occurrences retain the saved anchor and never create additional records.
+
+Mobile navigation keeps complete labels; Profile tabs retain readable text and
+keyboard/draft protection. Home compacts surrounding chrome without changing the
+196px calendar tiles or clock modes. The day-range field uses a controlled draft:
+only valid changed whole numbers 4–360 enable the accent Apply tick; Enter/Apply
+updates the URL, while invalid or reverted values leave the calendar unchanged.
+Cross-year captions include both years. Opened widgets use the actual tool heading,
+a quiet Store return, and a compact chooser without changing tool/session state.
+
+Admin activity uses only existing permitted primitive widget metadata for known
+types, record references and recorded visibility. Missing generic legacy types
+remain explicitly unknown; separate Daily Word/Focus entity types remain known.
+No private setup names, game/timer contents, lookups, capture changes or backfill
+were added. Feature chart labels are readable while numeric series/full text
+totals remain intact; member-chart label behavior is unchanged. Current service
+copy uses TfL; API changes are limited to two validation/conflict error strings.
+No routes, schema, permissions or historical activity payloads changed.
+
+Focused synthetic regressions cover grouping/DST, exact/annual/missing/off-filter
+selection and Back, 20-second removal edit guards, controlled ranges and safe
+activity metadata. Parent browser QA uses only the authorized local owner session;
+no family-record test fixtures, Focus actions or migrations are required. Execution
+logs and actual acceptance evidence are recorded in workspace
+`reports/cody/2026-10-25-uiux-remediation.md`. No commit, push, deployment package
+or production deployment is included in this local task.
+
+Final local acceptance: 47 targeted cases across nine files passed (23 unchanged
+cases plus final 24-case Calendar/range rerun); final TypeScript/Vite build passed
+(Vite 3.91s), changed-source formatting and diff checks passed. Independent
+Reviewee clearance has no outstanding actionable findings; parent verified all
+nine UI/UX changes in the actual local owner browser, including 320px layouts,
+closed-filter Clear search preserving sort, exact read-only selection/Edit-Cancel,
+Back/refresh and pending range controls. No family data was saved during QA;
+Focus remains installed Ready25:00 and clock preferences were restored. Both
+repositories remain local/uncommitted; no release package or deployment occurred.
+
+Local visual trial after UIUX acceptance: the clock display-mode button and Days
+Ahead Apply tick now paint24×24px surfaces at the top-left of their existing
+48×48px native button allocations. Icons are14×14px; horizontal spacing and full
+click/focus targets remain. Clock pressed/hover and valid-dirty Apply colors apply
+to the small child surface. The digital hour-format button is unchanged. No new
+tests or build were requested/run for this reversible visual refinement; parent
+is checking the actual desktop/mobile presentation. Previous47-case/build results
+above refer to the accepted functional implementation before this visual trial.
+Parent desktop/mobile visual acceptance passed: measured painted23.99px/native
+47.997px targets with identical top-left position, actual320px without overflow.
+Original5-day range and analogue clock were restored after presentation checks.
+
+### Authorized UIUX/clock release preparation — 25 October 2026
+
+The user subsequently authorized commit/push and separate client/API packages for
+this reviewed work. Final current-source scoped verification:53 tests/10 files
+passed in59.06s, including all47 UIUX cases and six clock preference/timer cases,
+with temporary Europe/London TZ restored afterward. Changed/new source formatting,
+whitespace and API syntax checks passed. Independent source and parent local
+browser acceptance are recorded in the workspace handoffs; latest clock marks
+are24px with nonoverlapping24×48 targets/8px gap, right-aligned, and format text
+is centered in its full inner width. Days Apply retains its48px native target.
+
+Release uses separate approved client/API build commands. API runtime scope is
+only `api/src/travel.php`’s two TfL message literals; no migration, environment,
+permissions or database data change. Parent uploads that verified API file only,
+then client assets before index.html LAST, preserving hosting routing/private
+storage and existing remote assets. Public hashes/health and live owner-browser
+acceptance are subsequent gates, not implied by package preparation. Private
+release evidence: API `.local/production-releases/20261025-uiux/`.

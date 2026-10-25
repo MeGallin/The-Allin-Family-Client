@@ -14,6 +14,7 @@ export function EventRow({
   day,
   time,
   compact = false,
+  selected = false,
 }: {
   event: FamilyEvent
   onEdit?: (event: FamilyEvent) => void
@@ -21,12 +22,16 @@ export function EventRow({
   day: string
   time: string
   compact?: boolean
+  selected?: boolean
 }) {
   const { removals } = useRemovals('calendar')
   const removal = removals[event.id]
   const date = eventDate(event)
   return (
-    <li className="event-row">
+    <li
+      className={'event-row' + (selected ? ' is-selected' : '')}
+      aria-current={selected ? 'true' : undefined}
+    >
       <div className="event-list__date" aria-hidden="true">
         <span>{new Intl.DateTimeFormat('en-GB', { weekday: 'short' }).format(date)}</span>
         <strong>{date.getDate()}</strong>

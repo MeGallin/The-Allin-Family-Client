@@ -2,7 +2,11 @@ import type { TooltipContentProps } from 'recharts'
 import { StackedActivityChart } from './StackedActivityChart'
 import { Link } from 'react-router'
 import type { InsightSnapshot } from '../../../features/insights/types'
-import { activitySeries, featureNames } from '../../../features/insights/chart-config'
+import {
+  activitySeries,
+  featureNames,
+  featureChartNames,
+} from '../../../features/insights/chart-config'
 import { ActivityLegend, ChartPanel } from './ChartPanel'
 
 function FeatureTooltip({ active, payload }: TooltipContentProps) {
@@ -23,7 +27,10 @@ function FeatureTooltip({ active, payload }: TooltipContentProps) {
   )
 }
 export function FeatureActivity({ data }: { data: InsightSnapshot }) {
-  const features = data.features.map((feature) => ({ ...feature, name: featureNames[feature.key] }))
+  const features = data.features.map((feature) => ({
+    ...feature,
+    name: featureChartNames[feature.key] ?? feature.key,
+  }))
   return (
     <ChartPanel
       title="Where the family takes part"
@@ -35,6 +42,7 @@ export function FeatureActivity({ data }: { data: InsightSnapshot }) {
           data={features}
           tooltip={FeatureTooltip}
           label="Shared activity by feature"
+          fullLabels
         />
       ) : (
         <p className="chart-empty">
@@ -48,7 +56,7 @@ export function FeatureActivity({ data }: { data: InsightSnapshot }) {
           {features.map((feature) => (
             <li key={feature.key}>
               <Link to={'/admin?view=activity&type=' + feature.key + '&days=' + data.days}>
-                {feature.name}
+                {featureNames[feature.key] ?? feature.name}
                 <span>
                   {feature.total} {feature.total === 1 ? 'action' : 'actions'} · View full history
                 </span>

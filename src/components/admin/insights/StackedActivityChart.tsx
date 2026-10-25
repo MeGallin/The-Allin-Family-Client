@@ -16,11 +16,13 @@ export function StackedActivityChart({
   tooltip,
   label,
   height = 272,
+  fullLabels = false,
 }: {
   data: (InsightCounts & { name: string })[]
   tooltip: TooltipProps['content']
   label: string
   height?: number
+  fullLabels?: boolean
 }) {
   return (
     <div className="chart-frame" style={{ height }}>
@@ -43,9 +45,13 @@ export function StackedActivityChart({
           <YAxis
             type="category"
             dataKey="name"
-            width={78}
-            tickFormatter={(name: string) => (name.length > 11 ? name.slice(0, 10) + '…' : name)}
-            tick={{ fill: 'var(--chart-axis)', fontSize: 11 }}
+            width={fullLabels ? 92 : 78}
+            tickFormatter={
+              fullLabels
+                ? undefined
+                : (name: string) => (name.length > 11 ? name.slice(0, 10) + '…' : name)
+            }
+            tick={{ fill: 'var(--chart-axis)', fontSize: fullLabels ? 12 : 11 }}
             axisLine={false}
             tickLine={false}
           />

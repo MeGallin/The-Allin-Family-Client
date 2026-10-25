@@ -1,0 +1,26 @@
+.opened-widget-tool > .page-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+}
+.opened-widget-tool > .page-header p {
+  font-size: var(--text-xs);
+  margin-top: var(--space-1);
+}
+.opened-widget-tool__store {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-min-height);
+  padding-inline: var(--space-2);
+  color: var(--color-link);
+  font-size: var(--text-sm);
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.opened-widget-tool .ft-heading h2,
+.opened-widget-tool .dw-heading h2,
+.opened-widget-tool .sudoku-board__heading h2 {
+  font-size: var(--text-lg);
+}
