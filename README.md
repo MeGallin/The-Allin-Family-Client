@@ -148,6 +148,37 @@ Live Home intentionally remains analogue with saved24h preference. Proof is in
 workspace `work/current-clock-release-20261025/`. This follow-up is documentation
 only; deployed runtime/package above is unchanged and needs no rebuild/upload.
 
+## Home day-plan retention — local correction
+
+Home calendar tiles now use whole viewer-local calendar-day membership instead of
+discarding timed events as soon as their start passes. A saved12:00plan stays on
+today's tile through the day. The future-only Next in your diary and Calendar's
+Coming up/Earlier plans classification retain their existing semantics; no end or
+duration is invented. Annual occurrences project through the existing helper, and
+explicit inclusive-start/exclusive-end bounds exclude yesterday and the extra day.
+
+Multiple saved family events already have independent database IDs/request keys;
+there is no day uniqueness restriction or new API/schema work. Home preserves every
+event and shows a compact first-title/count summary. The separate plan button opens
+the existing shared scrollable Modal with all saved rows, times/all-day labels,
+notes and valid calendar-search source links. The date/add link remains distinct;
+there are no nested interactive controls. Fixed196px Split Glance tiles, forecast,
+indicators and Nimbus layout are unchanged. Date link names contain date/count,
+not an arbitrarily long concatenation of event titles. Unavailable data closes the
+dialog without reopening it after recovery.
+
+Focused Home/helper/tile checks18/18passed under TZ=Europe/London, including the
+25-hour25October2026/repeated-hour boundary, five same-day events with distinct
+creators, duplicate titles, annual projection, date range, future-next separation
+and modal focus/links/recovery. TypeScript/Vite build passed. Parent local Gary
+browser confirmed original Andie at con plus two temporary same-day plans, refresh,
+mobile fit,196px height, Escape/focus and real calendar links. Only those two QA
+entries were soft-removed through normal20second flow; six original events and the
+original Andie row remain. Subsequent user authorisation permits the reviewed
+client-only correction to be committed/pushed and packaged for parent FileZilla
+assets-first/index-last upload. No API package/migration/hosting routing or database
+update is needed; live deployment/acceptance outcomes are recorded after execution.
+
 ## Design system
 
 The Nimbus-inspired theme uses dark navy surfaces, cyan actions, electric-blue

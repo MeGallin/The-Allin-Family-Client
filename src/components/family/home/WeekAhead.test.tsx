@@ -142,6 +142,29 @@ beforeEach(() => {
   vi.setSystemTime(state.now)
 })
 describe('Week Ahead dashboard', () => {
+  it('retains today’s started plan in its tile while the next diary remains future-only', () => {
+    state.now = new Date(2026, 9, 25, 13).getTime()
+    const today = {
+      ...event('31', 'Andie at con', new Date(2026, 9, 25, 12).toISOString()),
+      allDay: false,
+      detail: 'After lunch',
+    }
+    state.events = [today, event('30', 'Yesterday', '2026-10-24T00:00:00Z')]
+    show(<WeekPlanner />)
+    expect(
+      screen.getByRole('button', { name: 'View 1 plan for Sunday 25 October' }).textContent,
+    ).toContain('Andie at con')
+    expect(
+      screen.getByText('1 plan in the next 7 days · 0 upcoming in your family calendar'),
+    ).toBeTruthy()
+    expect(screen.getByText('A little breathing room.')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'View 1 plan for Sunday 25 October' }))
+    const dialog = screen.getByRole('dialog', { name: 'Plans for Sunday 25 October' })
+    expect(within(dialog).getByText('After lunch')).toBeTruthy()
+    expect(within(dialog).getByText('12:00')).toBeTruthy()
+    expect(within(dialog).queryByText('Yesterday')).toBeNull()
+    expect(fetch).not.toHaveBeenCalled()
+  })
   it('places the food-warning badge inside today’s tile only, outside the day navigation link', () => {
     state.food = {
       status: 'ready',
@@ -187,11 +210,15 @@ describe('Week Ahead dashboard', () => {
     fireEvent.change(input, { target: { value: '4' } })
     fireEvent.click(screen.getByRole('button', { name: 'Show days' }))
     expect(
-      within(screen.getByRole('list', { name: 'Next 4 days' })).getAllByRole('link'),
+      within(screen.getByRole('list', { name: 'Next 4 days' })).getAllByRole('link', {
+        name: /\. Add a plan\.$/,
+      }),
     ).toHaveLength(4)
     fireEvent.change(screen.getByLabelText(/Days to show/), { target: { value: '360' } })
     fireEvent.click(screen.getByRole('button', { name: 'Show days' }))
-    const links = within(screen.getByRole('list', { name: 'Next 360 days' })).getAllByRole('link')
+    const links = within(screen.getByRole('list', { name: 'Next 360 days' })).getAllByRole('link', {
+      name: /\. Add a plan\.$/,
+    })
     expect(links).toHaveLength(360)
     expect(links[0].getAttribute('href')).toBe('/calendar?compose=event&date=2026-10-22')
     expect(links[359].getAttribute('href')).toBe('/calendar?compose=event&date=2027-10-16')
@@ -203,7 +230,9 @@ describe('Week Ahead dashboard', () => {
       </MemoryRouter>,
     )
     expect(
-      within(screen.getByRole('list', { name: 'Next 30 days' })).getAllByRole('link'),
+      within(screen.getByRole('list', { name: 'Next 30 days' })).getAllByRole('link', {
+        name: /\. Add a plan\.$/,
+      }),
     ).toHaveLength(30)
     view.unmount()
     render(
@@ -212,7 +241,9 @@ describe('Week Ahead dashboard', () => {
       </MemoryRouter>,
     )
     expect(
-      within(screen.getByRole('list', { name: 'Next 7 days' })).getAllByRole('link'),
+      within(screen.getByRole('list', { name: 'Next 7 days' })).getAllByRole('link', {
+        name: /\. Add a plan\.$/,
+      }),
     ).toHaveLength(7)
   })
   it('renders the matching bank holiday and opens weather details without navigating or adding events', () => {
@@ -236,7 +267,7 @@ describe('Week Ahead dashboard', () => {
     show(<WeekPlanner />)
     expect(
       screen
-        .getByRole('link', { name: 'Friday 25 December, Christmas Day: no plans' })
+        .getByRole('link', { name: 'Friday 25 December, Christmas Day: no plans. Add a plan.' })
         .getAttribute('href'),
     ).toBe('/calendar?compose=event&date=2026-12-25')
     expect(
@@ -256,14 +287,17 @@ describe('Week Ahead dashboard', () => {
     state.events = [event('1', 'Andie at con'), event('2', 'Family lunch')]
     show(<WeekPlanner />)
     const days = screen.getByRole('list', { name: 'Next 7 days' })
-    expect(within(days).getAllByRole('link')).toHaveLength(7)
+    expect(within(days).getAllByRole('link', { name: /\. Add a plan\.$/ })).toHaveLength(7)
     const saturday = within(days).getByRole('link', {
-      name: 'Saturday 24 October: Andie at con; Family lunch',
+      name: 'Saturday 24 October: 2 plans. Add a plan.',
     })
     expect(saturday.getAttribute('href')).toBe('/calendar?compose=event&date=2026-10-24')
-    expect(saturday.textContent).toContain('Andie at con')
-    expect(saturday.textContent).toContain('+1 more')
-    expect(saturday.textContent).not.toContain('Dad')
+    const planSummary = within(days).getByRole('button', {
+      name: 'View 2 plans for Saturday 24 October',
+    })
+    expect(planSummary.textContent).toContain('Andie at con')
+    expect(planSummary.textContent).toContain('2 plans · View all')
+    expect(planSummary.textContent).not.toContain('Dad')
     expect(
       screen.getByText('2 plans in the next 7 days · 2 upcoming in your family calendar'),
     ).toBeTruthy()
@@ -274,7 +308,9 @@ describe('Week Ahead dashboard', () => {
       event('2', 'Next week', '2026-10-29T00:00:00Z'),
     ]
     show(<WeekPlanner />)
-    expect(screen.getByRole('link', { name: 'Saturday 24 October: Birthday' })).toBeTruthy()
+    expect(
+      screen.getByRole('link', { name: 'Saturday 24 October: 1 plan. Add a plan.' }),
+    ).toBeTruthy()
     expect(
       screen.getByText('1 plan in the next 7 days · 2 upcoming in your family calendar'),
     ).toBeTruthy()

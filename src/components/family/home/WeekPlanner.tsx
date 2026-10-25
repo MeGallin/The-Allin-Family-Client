@@ -23,6 +23,7 @@ import { weatherWarningView } from '../../../features/weather-warnings/warning-v
 import { useTravel } from '../../../features/travel/useTravel'
 import { prepareTravelView } from '../../../features/travel/travel-view'
 import { travelCalendarIndicator } from './CalendarTravel'
+import { calendarDayPlans } from './calendar-day-plans'
 import './WeekPlanner.css'
 import './WeekPlannerLayout.css'
 
@@ -46,7 +47,7 @@ export function WeekPlanner() {
   const today = startOfDay(now)
   const upcoming = upcomingEvents(events, now)
   const days = Array.from({ length: dayCount }, (_, index) => addDays(today, index))
-  const visiblePlans = upcoming.filter((event) => eventDate(event) < addDays(today, dayCount))
+  const visiblePlans = calendarDayPlans(events, now, dayCount)
   const plansByDay = new Map<string, typeof upcoming>()
   for (const event of visiblePlans) {
     const key = dateInputValue(eventDate(event))
