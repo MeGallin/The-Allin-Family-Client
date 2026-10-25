@@ -78,14 +78,26 @@ active and resting orientations and conserves curved-chamber sand volume. Exact
 numeric time remains accessible; reduced motion and hidden/offscreen cleanup apply.
 See [docs/focus-timer.md](docs/focus-timer.md) for state, privacy and QA contracts.
 
-Release authorised25October2026: both repositories are prepared for commit/push and
-separate standard deployment packages. API migration024 is additive (three new
-private tables only) and still requires a NEW maintenance-held live DB/Home backup,
-verified scratch restore/rehearsal, schema/old-row preservation checks and separate
-ledger insertion before matching API/client upload. Package generation never runs
-SQL or overwrites hosting configuration/photos. Parent owns live migration/upload
-and acceptance; preparation is not a claim of production deployment. Local Gary's
-Focus installation is intentionally retained Ready25:00 for review.
+Released 25 October 2026: client `8e3b8d908b1b15b544f3f1f74560442824524f9e` and API
+`9a76a0ec1f253ca129a01c852f44521825c21541`. The parent completed fresh maintenance-held
+DB/Home backups, verified scratch restore/rehearsal and additive migration 024,
+preserving all 29 existing tables and rows. Both packages were uploaded with API
+dependencies before its entry point and 133 client assets before index.html.
+All 134 public client files matched package bytes/SHA256; health and seven private
+source/config/asset denial checks passed. Existing hosting configuration/photos and
+old hashed assets were retained. cPanel's NGINX cache initially served the old index
+despite the successful upload; Clear Cache returned Success and the full hash check
+then passed. A cache-busting URL alone was insufficient.
+
+Parent live Gary/Dad acceptance passed: actual one-minute short break, Pause at
+00:37 and reload with identical time/sand, Resume with smooth turn/flow, mobile
+390/page382 and320/page312 fit, and natural00:00 expiry with upperempty, flowoff,
+glassupright and no automatic next session. Done returned Ready25:00. Private
+history correctly records0fullfocus/0focusminutes/1breakminute and the finished
+short break. Installation is intentionally retained Ready; no removal/cleanup was
+requested. Proof is in workspace work/focus-timer-release-20261025. This follow-up
+changes documentation only; deployed runtime commits/packages above are unchanged
+and require no new build/upload.
 
 ## Design system
 

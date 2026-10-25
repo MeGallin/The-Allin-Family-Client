@@ -115,9 +115,18 @@ Exact executed results and limits are recorded in workspace
 `reports/cody/2026-10-25-focus-timer-qa.md`. This remains local work: no commit, push,
 staging, deployment or production migration is authorised by this QA phase.
 
-Subsequent release authorisation25October2026 permits both repository commits/pushes
-and separate standard client/API package builds. Parent owns production backup,
-scratch restore/rehearsal, additive024 migration/verification, upload and live QA.
-Those steps remain pending until separately recorded; earlier QA-only restrictions
-describe that historical phase. The final local visual review intentionally leaves
-Gary's personal Focus installed Ready25:00; do not run old QA cleanup on it.
+The subsequent authorised release on 25 October 2026 completed both repository
+commits/pushes, separate package builds, fresh production backup/scratch rehearsal,
+additive 024 migration with old-data preservation and both uploads. Runtime commits
+are client `8e3b8d908b1b15b544f3f1f74560442824524f9e` and API
+`9a76a0ec1f253ca129a01c852f44521825c21541`. Parent owns production operations and
+actual live acceptance. All 134 public client files matched bytes/SHA256 after
+cPanel NGINX Clear Cache; public health/private-source checks passed 8/8. Earlier
+QA-only restrictions describe that historical phase. Gary's personal installation
+is intentionally retained for review; do not run old QA cleanup on it. Final live
+acceptance passed under Gary/Dad: actual one-minute break, paused00:37/exact reload,
+Resume/turn, mobile320/390fit, natural expiry/no automatic next phase, explicit Done
+and correct private1breakminute history. Installation stays Ready25:00 by request;
+no cleanup/removal. Full evidence and scope limits are in the repository READMEs
+and workspace `reports/cody/2026-10-25-focus-timer-release.md`. Follow-up documentation
+commits do not alter deployed runtime packages and need no rebuild/upload.
