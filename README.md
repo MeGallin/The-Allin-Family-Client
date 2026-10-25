@@ -129,12 +129,24 @@ Focused clock/Home tests passed17/17; the final presentation refinements passed
 six focused clock cases. TypeScript/Vite build passed and
 independent Reviewee review found no outstanding findings. Parent Gary/Dad browser
 acceptance covered desktop/mobile fit, keyboard toggles, correct local time/hands,
-saved choices across refresh and Home→Calendar→Home. Client-only release is
-authorised25October2026: commit/push and a standard client deployment package,
-then parent-owned FileZilla assets-first/index-last upload and live acceptance.
-No API package, migration, dependency, hosting routing or installed Focus change
-is required. Operational results are recorded after actual upload/verification;
-release preparation is not a claim the live clock is already deployed.
+saved choices across refresh and Home→Calendar→Home.
+
+Released25October2026 from client `1505ae5a15aeab0991c589efcc0d5c08ff3bd50d` using
+the standard client-only package:132assets uploaded first, index.html last. All
+133publicfiles(index+assets) matched exact bytes/SHA256 immediately, with no hosting
+cache issue; APIhealth returned200/statusok. Existing hosting.htaccess, oldassets,
+API/configuration and installed Focus were preserved. No API package/migration or
+database test writes were required.
+
+Parent live Gary/Dad acceptance passed: digital24seconds matched browser local
+time,12h/analogue choice survived refresh, keyboardSpace restored digital12hPM and
+Enter returned24h. Analogue remains48px with refined face, exact sr-only time and
+one mode control; digital restores its hour-format control. Mobile320/390overrides
+(actual291/355CSSwidth, pages284/347) fitted digital199.19px and analogue103.99px
+with48pxcontrols, no overflow. Browser warnings/errors were empty; viewport reset.
+Live Home intentionally remains analogue with saved24h preference. Proof is in
+workspace `work/current-clock-release-20261025/`. This follow-up is documentation
+only; deployed runtime/package above is unchanged and needs no rebuild/upload.
 
 ## Design system
 
