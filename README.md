@@ -148,7 +148,7 @@ Live Home intentionally remains analogue with saved24h preference. Proof is in
 workspace `work/current-clock-release-20261025/`. This follow-up is documentation
 only; deployed runtime/package above is unchanged and needs no rebuild/upload.
 
-## Home day-plan retention — local correction
+## Home day-plan retention
 
 Home calendar tiles now use whole viewer-local calendar-day membership instead of
 discarding timed events as soon as their start passes. A saved12:00plan stays on
@@ -174,10 +174,24 @@ and modal focus/links/recovery. TypeScript/Vite build passed. Parent local Gary
 browser confirmed original Andie at con plus two temporary same-day plans, refresh,
 mobile fit,196px height, Escape/focus and real calendar links. Only those two QA
 entries were soft-removed through normal20second flow; six original events and the
-original Andie row remain. Subsequent user authorisation permits the reviewed
-client-only correction to be committed/pushed and packaged for parent FileZilla
-assets-first/index-last upload. No API package/migration/hosting routing or database
-update is needed; live deployment/acceptance outcomes are recorded after execution.
+original saved event remain.
+
+Released25October2026 from client `d1fb57f47e4c6744dc29f56a856353d5bae890f6` using
+the standard client-only package. Parent uploaded132assets then1079byteindex LAST;
+all133publicfiles matched exact status/bytes/SHA256, with no cache mismatch.
+APIhealth returned200/statusok. Existing hosting815byte.htaccess, oldassets,
+API/configuration and installed Focus/clock behaviour were preserved; no API
+package, migration, environment update or live event write was required.
+
+Parent live Gary/Dad read-only acceptance passed: Today retained all3existing
+plans, including two separate same-title12:00records after their starts passed.
+The shared Modal preserved all three rows/notes,196px cardheight, mobile320/390fit,
+Escape/focus return and valid encoded-title calendar searches. Add another plan
+opened the correct today's date and was cancelled without input/save; reload
+retained all3plans. Console warnings/errors empty, viewport reset. Proof is in
+workspace `work/home-day-plans-release-20261025/`. No live events/test data were
+added or deleted. This follow-up changes documentation only: deployed runtime/
+package above is unchanged and requires no new build/upload.
 
 ## Design system
 
