@@ -99,6 +99,43 @@ requested. Proof is in workspace work/focus-timer-release-20261025. This follow-
 changes documentation only; deployed runtime commits/packages above are unchanged
 and require no new build/upload.
 
+## Home current clock
+
+`components/ui/current-clock/CurrentClock` is a reusable display-only component in
+Home's existing PageHeader action slot. It shows the viewer device's local
+hours/minutes/seconds, with digital/analogue and 12-hour AM/PM/24-hour toggle buttons.
+Digital is the default; analogue shows only its three-hand face, retaining exact
+current time as visually hidden accessible text. No extra date, card wrapper or
+calendar tile/body change is introduced.
+The 12/24-hour toggle is shown only in digital mode; switching to analogue hides
+it without changing the saved hour-format preference, which returns with digital.
+The analogue face retains its48px footprint with a layered Nimbus bezel/dial,
+fine minute ticks, stronger hour/cardinal markers, tapered hands and centre cap.
+It uses no SVG gradient IDs, dependency or sweeping animation.
+Controls retain 48px hit targets with quiet Nimbus styling; numeric seconds use
+lighter weight. The timer has aria-live=off and the decorative analogue face is
+hidden from assistive technology. Hands take static one-second snapshots, with no
+sweeping/transition animation, including reduced motion.
+
+All instances share one wall-clock-aligned second presentation timeout, stopped
+while hidden and after the last unmount; focus/visibility refresh actual local time
+rather than counting ticks. The app's existing 30-second useNow/query cadence is
+unchanged. Each authenticated owner stores only two boolean display choices in
+guarded browser-local storage (`allin-family:clock:v1:user:<id>`), with owner-keyed
+state and cross-tab own-key updates. Blocked/malformed storage falls back safely;
+failed writes leave controls usable with a visit-only notice. No API/database,
+account content, timezone override, external dependency or Focus Timer change.
+Focused clock/Home tests passed17/17; the final presentation refinements passed
+six focused clock cases. TypeScript/Vite build passed and
+independent Reviewee review found no outstanding findings. Parent Gary/Dad browser
+acceptance covered desktop/mobile fit, keyboard toggles, correct local time/hands,
+saved choices across refresh and Home→Calendar→Home. Client-only release is
+authorised25October2026: commit/push and a standard client deployment package,
+then parent-owned FileZilla assets-first/index-last upload and live acceptance.
+No API package, migration, dependency, hosting routing or installed Focus change
+is required. Operational results are recorded after actual upload/verification;
+release preparation is not a claim the live clock is already deployed.
+
 ## Design system
 
 The Nimbus-inspired theme uses dark navy surfaces, cyan actions, electric-blue

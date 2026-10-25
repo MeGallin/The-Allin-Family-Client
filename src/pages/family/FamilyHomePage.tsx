@@ -1,6 +1,7 @@
 import { useHashTarget } from '../../hooks/useHashTarget'
 import { useFamilyData } from '../../features/family/useFamilyData'
 import { PageHeader } from '../../components/ui/PageHeader'
+import { CurrentClock } from '../../components/ui/current-clock/CurrentClock'
 import { WeekPlanner } from '../../components/family/home/WeekPlanner'
 import { HomePriorities } from '../../components/family/home/HomePriorities'
 import { HomeDestinations } from '../../components/family/home/HomeDestinations'
@@ -15,6 +16,7 @@ export default function FamilyHomePage() {
       <PageHeader
         title="The days ahead."
         description={'Hello, ' + firstName + '. Make room for what matters.'}
+        action={<CurrentClock ownerId={user.id} />}
       />
       <div className="family-home-grid">
         <WeekPlanner />
