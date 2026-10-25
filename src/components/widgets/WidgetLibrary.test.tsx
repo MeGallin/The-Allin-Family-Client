@@ -38,6 +38,13 @@ function mount(overrides: Partial<Parameters<typeof WidgetLibrary>[0]> = {}) {
               removing: false,
               onInstall: vi.fn(),
             }}
+            focus={{
+              installed: false,
+              ready: true,
+              loading: false,
+              removing: false,
+              onInstall: vi.fn(),
+            }}
             word={{
               installed: false,
               ready: true,
@@ -157,7 +164,7 @@ describe('Widget Store catalogue and real action boundaries', () => {
       'true',
     )
   })
-  it.each(['Focus Timer', 'Countdowns'])('keeps %s proposed with no install action', (name) => {
+  it.each(['Countdowns'])('keeps %s proposed with no install action', (name) => {
     const { onAdd } = mount()
     fireEvent.click(screen.getByRole('button', { name: new RegExp(name + '.*Proposed') }))
     const dialog = within(screen.getByRole('dialog', { name: 'Widget Store' }))

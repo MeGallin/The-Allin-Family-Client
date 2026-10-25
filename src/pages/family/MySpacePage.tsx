@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { Grid2X2, Library, Plus, Users } from 'lucide-react'
+import { useFocusTimer } from '../../features/focus-timer/useFocusTimer'
 import { useDailyWord } from '../../features/daily-word/useDailyWord'
 import { useSudoku } from '../../features/sudoku/useSudoku'
 import { useWidgets } from '../../features/widgets/useWidgets'
@@ -18,6 +19,8 @@ import { RemovalConfirmation } from '../../components/removals/RemovalConfirmati
 import { WidgetLibrary } from '../../components/widgets/WidgetLibrary'
 import { WidgetShelf } from '../../components/widgets/WidgetShelf'
 import { activeBuiltinWidget } from '../../features/widgets/builtin-widgets'
+const FocusTimerWorkspace = lazy(() => import('../../components/focus-timer/FocusTimerWorkspace'))
+const FocusTimerInstall = lazy(() => import('../../components/focus-timer/FocusTimerInstall'))
 const DailyWordWorkspace = lazy(() => import('../../components/daily-word/DailyWordWorkspace'))
 const DailyWordInstall = lazy(() => import('../../components/daily-word/DailyWordInstall'))
 const DailyWordResults = lazy(() => import('../../components/daily-word/DailyWordResults'))
@@ -50,6 +53,8 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
   } = useWidgets()
   const sudoku = useSudoku()
   const word = useDailyWord()
+  const focus = useFocusTimer()
+  const [installFocus, setInstallFocus] = useState(false)
   const [installWord, setInstallWord] = useState(false)
   const [installSudoku, setInstallSudoku] = useState(false)
   const [search, setSearch] = useSearchParams()
@@ -57,6 +62,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     ? search.get('view')!
     : 'library'
   const sudokuSelected = view === 'widgets' && search.get('tool') === 'sudoku'
+  const focusSelected = view === 'widgets' && search.get('tool') === 'focus'
   const wordSelected = view === 'widgets' && search.get('tool') === 'word'
   const wordResultsSelected = view === 'family' && search.get('tool') === 'word-results'
   const builtin = activeBuiltinWidget(search)
@@ -72,12 +78,16 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
       sudoku.failure?.status === 401 ||
       sudoku.failure?.code === 'password_change_required' ||
       word.failure?.status === 401 ||
-      word.failure?.code === 'password_change_required'
+      word.failure?.code === 'password_change_required' ||
+      focus.failure?.status === 401 ||
+      focus.failure?.code === 'password_change_required'
     )
       onSessionExpired()
   }, [
     failure?.status,
     failure?.code,
+    focus.failure?.status,
+    focus.failure?.code,
     word.failure?.status,
     word.failure?.code,
     sudoku.failure?.status,
@@ -89,11 +99,12 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
       (widget) =>
         !builtinRequested &&
         !sudokuSelected &&
+        !focusSelected &&
         !wordSelected &&
         !wordResultsSelected &&
         widget.owner.id === ownerId,
     ),
-    builtinRequested || sudokuSelected || wordSelected || wordResultsSelected
+    builtinRequested || sudokuSelected || focusSelected || wordSelected || wordResultsSelected
       ? null
       : search.get('edit'),
   )
@@ -101,6 +112,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     (widget) =>
       !builtinRequested &&
       !sudokuSelected &&
+      !focusSelected &&
       !wordSelected &&
       !wordResultsSelected &&
       widget.id === search.get('remove') &&
@@ -110,6 +122,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     (widget) =>
       !builtinRequested &&
       !sudokuSelected &&
+      !focusSelected &&
       !wordSelected &&
       !wordResultsSelected &&
       widget.owner.id === ownerId &&
@@ -120,6 +133,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     clearError()
     sudoku.clearError()
     word.clearError()
+    focus.clearError()
     setSearch((current) => {
       const next = new URLSearchParams(current)
       for (const key of ['compose', 'edit', 'remove', 'removeMeal']) next.delete(key)
@@ -145,6 +159,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     !error &&
     !builtinRequested &&
     !sudokuSelected &&
+    !focusSelected &&
     !wordSelected &&
     !wordResultsSelected &&
     ((search.has('edit') && !editing) ||
@@ -164,6 +179,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
                 refresh()
                 sudoku.refresh()
                 word.refresh()
+                focus.refresh()
               }}
             />
           ) : (
@@ -210,6 +226,13 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
             installations={widgets.filter((widget) => !removals[widget.id])}
             loading={loading}
             error={!!error}
+            focus={{
+              installed: focus.installed && !focus.removals['focus-timer'],
+              ready: focus.known && !focus.error,
+              loading: focus.loading,
+              removing: !!focus.removals['focus-timer'],
+              onInstall: () => setInstallFocus(true),
+            }}
             word={{
               installed: word.installed && !word.removals['daily-word'],
               ready: word.known && !word.error,
@@ -238,10 +261,12 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
           <>
             {view !== 'family' &&
               !sudokuSelected &&
+              !focusSelected &&
               !wordSelected &&
               !wordResultsSelected &&
               !sudoku.game &&
               !word.installed &&
+              !focus.installed &&
               !error &&
               !inView.some((widget) => !widget.hidden) && (
                 <ContentSurface>
@@ -269,6 +294,20 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
                       <span>
                         <strong>Daily Word results</strong>
                         <small>Finished · Shared by choice</small>
+                      </span>
+                    </button>
+                  )}
+                  {view === 'widgets' && focus.installed && (
+                    <button
+                      type="button"
+                      className="secondary"
+                      aria-pressed={focusSelected}
+                      disabled={!!focus.removals['focus-timer']}
+                      onClick={() => change({ view: 'widgets', tool: 'focus' })}
+                    >
+                      <span>
+                        <strong>Focus Timer</strong>
+                        <small>Installed · Personal</small>
                       </span>
                     </button>
                   )}
@@ -304,7 +343,14 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
                 </>
               }
               alternateContent={
-                wordSelected ? (
+                focusSelected ? (
+                  <Suspense fallback={<LoadingState label="Opening Focus Timer…" />}>
+                    <FocusTimerWorkspace
+                      key={focus.ownerId ?? 'signed-out'}
+                      onInstall={() => setInstallFocus(true)}
+                    />
+                  </Suspense>
+                ) : wordSelected ? (
                   <Suspense fallback={<LoadingState label="Opening Daily Word…" />}>
                     <DailyWordWorkspace
                       key={word.ownerId ?? 'signed-out'}
@@ -336,6 +382,18 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
           </>
         )}
       </Tabs>
+      {installFocus && (
+        <Suspense fallback={<LoadingState label="Opening Focus Timer installation…" />}>
+          <FocusTimerInstall
+            key={focus.ownerId ?? 'signed-out'}
+            onClose={() => setInstallFocus(false)}
+            onInstalled={() => {
+              setInstallFocus(false)
+              change({ view: 'widgets', tool: 'focus' })
+            }}
+          />
+        </Suspense>
+      )}
       {installWord && (
         <Suspense fallback={<LoadingState label="Opening Daily Word installation…" />}>
           <DailyWordInstall
@@ -370,6 +428,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
       )}
       {!builtinRequested &&
         !sudokuSelected &&
+        !focusSelected &&
         !wordSelected &&
         !wordResultsSelected &&
         (search.get('compose') === 'spinner' || editing) && (

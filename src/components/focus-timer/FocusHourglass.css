@@ -1,0 +1,57 @@
+.ft-hourglass {
+  display: block;
+  width: min(100%, 12rem);
+  height: auto;
+  overflow: visible;
+}
+.ft-glass-body {
+  stroke: var(--color-border-strong);
+  stroke-width: 1.4;
+}
+.ft-glass-rim {
+  stroke: var(--color-text-muted);
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0.55;
+}
+.ft-glass-rim-light {
+  stroke: var(--color-border-strong);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+.ft-glass-shadow {
+  fill: var(--color-text);
+  opacity: 0.05;
+}
+.ft-glass-reflection {
+  fill: none;
+  stroke: var(--color-surface);
+  stroke-width: 4;
+  stroke-linecap: round;
+  opacity: 0.8;
+}
+.ft-glass-reflection-faint {
+  stroke-width: 2;
+  opacity: 0.5;
+}
+.ft-sand-stream {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 0.65;
+  opacity: 0.45;
+  stroke-linecap: round;
+  visibility: hidden;
+}
+.ft-sand-grains {
+  stroke-width: 1.4;
+  stroke-dasharray: 1 7;
+  opacity: 0.9;
+}
+.ft-hourglass[data-flowing='true'] .ft-sand-stream {
+  visibility: visible;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ft-sand-stream {
+    visibility: hidden !important;
+  }
+}

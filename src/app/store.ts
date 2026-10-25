@@ -9,6 +9,7 @@ import calendarUi from '../features/calendar/calendar-ui-slice'
 import memoriesUi from '../features/memories/memories-ui-slice'
 import notesUi from '../features/notes/notes-ui-slice'
 import membersUi from '../features/members/members-ui-slice'
+import focusTimerUi from '../features/focus-timer/focus-timer-ui-slice'
 import dailyWordUi from '../features/daily-word/daily-word-ui-slice'
 import sudokuUi from '../features/sudoku/sudoku-ui-slice'
 import widgetsUi from '../features/widgets/widgets-ui-slice'
@@ -30,6 +31,7 @@ export const createAppStore = () =>
       widgetsUi,
       sudokuUi,
       dailyWordUi,
+      focusTimerUi,
       removals,
       [shoppingApi.reducerPath]: shoppingApi.reducer,
     },

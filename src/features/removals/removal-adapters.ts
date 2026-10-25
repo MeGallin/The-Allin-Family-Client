@@ -1,4 +1,6 @@
 import { dailyWordApi } from '../../services/daily-word-query'
+import { focusTimerApi } from '../../services/focus-timer-query'
+import { executeFocusTimerWrite } from '../focus-timer/focus-timer-actions'
 import { executeDailyWordWrite } from '../daily-word/daily-word-actions'
 import { sudokuApi } from '../../services/sudoku-query'
 import { executeSudokuWrite } from '../sudoku/sudoku-actions'
@@ -24,6 +26,35 @@ type Adapter = {
 const body = ({ item }: PendingRemoval) => ({ id: item.id, version: item.version })
 /** Only domain differences live here; timing, Undo and safety checks live in the listener. */
 export const removalAdapters: Record<RemovalDomain, Adapter> = {
+  focusTimer: {
+    busy: (state) => state.focusTimerUi.busy,
+    latest: (state, ownerId) => {
+      const data = focusTimerApi.endpoints.getFocusTimer.select(ownerId)(state).data
+      return data
+        ? data.installed
+          ? [{ id: 'focus-timer', title: 'Focus Timer', version: data.version }]
+          : []
+        : undefined
+    },
+    remove: async (dispatch, entry) =>
+      !!(
+        await dispatch(async (send, getState) => {
+          const data = focusTimerApi.endpoints.getFocusTimer.select(entry.ownerId)(getState()).data
+          if (!data || data.version !== entry.item.version) return null
+          return send(
+            executeFocusTimerWrite({
+              action: 'remove',
+              body: {
+                version: entry.item.version,
+                generation: data.generation,
+                sessionId: data.session?.id ?? null,
+                requestKey: entry.token,
+              },
+            }),
+          )
+        })
+      )?.receipt,
+  },
   dailyWord: {
     busy: (state) => state.dailyWordUi.busy,
     latest: (state, ownerId) => {

@@ -3,7 +3,7 @@ import {
   Grid2X2,
   NotebookPen,
   ShoppingBasket,
-  Timer,
+  Hourglass,
   Utensils,
   Vote,
 } from 'lucide-react'
@@ -15,7 +15,7 @@ const icons = {
   polls: Vote,
   dinner: Utensils,
   sudoku: Grid2X2,
-  focus: Timer,
+  focus: Hourglass,
   word: NotebookPen,
   countdown: CalendarDays,
 }

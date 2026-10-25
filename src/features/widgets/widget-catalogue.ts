@@ -58,8 +58,9 @@ export const widgetCatalogue: readonly WidgetStoreApp[] = [
     title: 'Focus Timer',
     subtitle: 'Time for one thing.',
     category: 'tools',
-    availability: 'proposed',
-    description: 'An idea for a future focus timer. Not available to install or use.',
+    availability: 'available',
+    description:
+      'A personal focus and break timer with private session history, saved across your devices. Choose your duration and start each phase yourself. Timed minutes do not measure attention.',
     previews: ['Make a little space.', 'One thing at a time.'],
   },
   {

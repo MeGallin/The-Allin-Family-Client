@@ -9,6 +9,7 @@ import { pollsUiReset } from '../features/polls/polls-ui-slice'
 import { abortMemoryWrites } from '../services/memories-api'
 import { memoriesUiReset } from '../features/memories/memories-ui-slice'
 import { notesUiReset } from '../features/notes/notes-ui-slice'
+import { focusTimerUiReset } from '../features/focus-timer/focus-timer-ui-slice'
 import { dailyWordUiReset } from '../features/daily-word/daily-word-ui-slice'
 import { sudokuUiReset } from '../features/sudoku/sudoku-ui-slice'
 import { widgetsUiReset } from '../features/widgets/widgets-ui-slice'
@@ -28,6 +29,7 @@ export function clearPrivateState(dispatch: AppDispatch) {
   dispatch(widgetsUiReset())
   dispatch(sudokuUiReset())
   dispatch(dailyWordUiReset())
+  dispatch(focusTimerUiReset())
   dispatch(membersUiReset())
   dispatch(pollsUiReset())
   dispatch(userReceived(null))

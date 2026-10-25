@@ -11,6 +11,7 @@ export type RemovalDomain =
   | 'widgetMeals'
   | 'sudoku'
   | 'dailyWord'
+  | 'focusTimer'
 export type RemovalRecord = { id: string; title: string; version: number }
 export type PendingRemoval = {
   key: string

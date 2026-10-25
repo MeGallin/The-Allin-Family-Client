@@ -10,6 +10,7 @@ const nouns: Record<string, string> = {
   user_account: 'account',
   widget: 'widget',
   daily_word: 'personal Daily Word',
+  focus_timer: 'personal Focus Timer',
 }
 const verbs: Record<string, string> = {
   installed: 'installed',

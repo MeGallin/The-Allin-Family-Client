@@ -14,6 +14,7 @@ export const featureNames: Record<string, string> = {
   user_account: 'Family accounts',
   widget: 'Widgets',
   daily_word: 'Daily Word lifecycle',
+  focus_timer: 'Focus Timer lifecycle',
 }
 export function chartDate(day: string, full = false) {
   return format(parseISO(day), full ? 'EEEE, d MMM yyyy' : 'd MMM')

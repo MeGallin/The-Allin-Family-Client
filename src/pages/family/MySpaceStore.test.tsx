@@ -48,6 +48,19 @@ vi.mock('../../features/daily-word/useDailyWord', () => ({
     refresh: vi.fn(),
   }),
 }))
+vi.mock('../../features/focus-timer/useFocusTimer', () => ({
+  useFocusTimer: () => ({
+    installed: false,
+    known: true,
+    pending: false,
+    loading: false,
+    error: '',
+    offline: false,
+    removals: {},
+    clearError: vi.fn(),
+    refresh: vi.fn(),
+  }),
+}))
 // These established working views are outside the catalogue route contract being isolated here.
 vi.mock('../../components/widgets/WidgetShelf', () => ({
   WidgetShelf: ({ scope, builtin }: { scope: string; builtin?: { id: string } }) => (

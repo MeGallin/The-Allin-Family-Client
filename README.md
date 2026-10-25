@@ -66,6 +66,27 @@ npm run dev
 Use a Node version supported by the locked Vite release; this setup was checked
 with Node 22.18.0. Vite binds to loopback and requires port 5173 to be available.
 
+## Focus Timer
+
+Focus Timer is a personal Widget Store → Tools installation at
+`/my-space?view=widgets&tool=focus`. Focus25/short5/long15 minute defaults, bounded
+custom durations, private labels/history and explicit Start/Pause/Resume/Finish/
+Reset/next-phase actions use owner-only server intervals and durable receipts.
+It measures timer time, not attention, and makes no closed-browser alarm promise.
+The native SVG hourglass follows actual elapsed progress, turns smoothly between
+active and resting orientations and conserves curved-chamber sand volume. Exact
+numeric time remains accessible; reduced motion and hidden/offscreen cleanup apply.
+See [docs/focus-timer.md](docs/focus-timer.md) for state, privacy and QA contracts.
+
+Release authorised25October2026: both repositories are prepared for commit/push and
+separate standard deployment packages. API migration024 is additive (three new
+private tables only) and still requires a NEW maintenance-held live DB/Home backup,
+verified scratch restore/rehearsal, schema/old-row preservation checks and separate
+ledger insertion before matching API/client upload. Package generation never runs
+SQL or overwrites hosting configuration/photos. Parent owns live migration/upload
+and acceptance; preparation is not a claim of production deployment. Local Gary's
+Focus installation is intentionally retained Ready25:00 for review.
+
 ## Design system
 
 The Nimbus-inspired theme uses dark navy surfaces, cyan actions, electric-blue
@@ -1177,7 +1198,9 @@ another installation through the existing composer. Private remains the composer
 default, with Family selectable. No meals or installations are created merely by
 browsing. Queued removals are excluded from catalogue install summaries.
 
-Focus Timer, Daily Word and Countdowns remain Proposed and cannot be installed.
+At that earlier catalogue stage Focus Timer, Daily Word and Countdowns were Proposed.
+Daily Word is now released and Focus Timer is available in the current authorised
+release; Countdowns remains Proposed.
 Sudoku is now available as a personal game (see the local implementation below). No fake prices, ratings, download counts or live-looking sample data.
 My widgets and Family widgets retain their working shelf, forms, private trials,
 publication/reply/eaten/history, hide/show, ownership and delayed Undo flows.

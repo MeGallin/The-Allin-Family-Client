@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
+import { FOCUS_PATH } from '../../features/focus-timer/types'
 import { WORD_PATH } from '../../features/daily-word/types'
 import { SUDOKU_PATH } from '../../features/sudoku/types'
 import { Search } from 'lucide-react'
@@ -48,11 +49,19 @@ export function WidgetLibrary({
   error,
   sudoku,
   word,
+  focus,
 }: {
   onAdd: () => void
   installations: FamilyWidget[]
   loading: boolean
   error: boolean
+  focus?: {
+    installed: boolean
+    ready: boolean
+    loading: boolean
+    removing: boolean
+    onInstall: () => void
+  }
   word?: {
     installed: boolean
     ready: boolean
@@ -96,13 +105,14 @@ export function WidgetLibrary({
     setSelected(null)
     onAdd()
   }
+  const personalFor = (id: string) => (id === 'focus' ? focus : id === 'word' ? word : sudoku)
   function action(app: WidgetStoreApp) {
-    if (app.id === 'sudoku' || app.id === 'word') {
-      const personal = app.id === 'word' ? word : sudoku
+    if (app.id === 'sudoku' || app.id === 'word' || app.id === 'focus') {
+      const personal = personalFor(app.id)
       return personal?.installed ? (
         <Link
           className="pill-action"
-          to={app.id === 'word' ? WORD_PATH : SUDOKU_PATH}
+          to={app.id === 'focus' ? FOCUS_PATH : app.id === 'word' ? WORD_PATH : SUDOKU_PATH}
           onClick={() => setSelected(null)}
           aria-label={'Open ' + app.title}
         >
@@ -177,14 +187,14 @@ export function WidgetLibrary({
           <span className="app-scope">
             {app.id === 'dinner'
               ? dinnerStatus
-              : app.id === 'sudoku' || app.id === 'word'
-                ? (app.id === 'word' ? word : sudoku)?.installed
+              : app.id === 'sudoku' || app.id === 'word' || app.id === 'focus'
+                ? personalFor(app.id)?.installed
                   ? 'Installed · Personal'
-                  : (app.id === 'word' ? word : sudoku)?.removing
+                  : personalFor(app.id)?.removing
                     ? 'Removal pending · Undo available'
-                    : (app.id === 'word' ? word : sudoku)?.ready
+                    : personalFor(app.id)?.ready
                       ? 'Available · Personal only'
-                      : (app.id === 'word' ? word : sudoku)?.loading
+                      : personalFor(app.id)?.loading
                         ? 'Checking installation…'
                         : 'Installation status unavailable'
                 : 'Installed · Shared family tool'}
@@ -337,29 +347,31 @@ export function WidgetLibrary({
           app={selected}
           installations={installations}
           ready={
-            selected.id === 'sudoku' || selected.id === 'word'
-              ? !!(selected.id === 'word' ? word : sudoku)?.ready
+            selected.id === 'sudoku' || selected.id === 'word' || selected.id === 'focus'
+              ? !!personalFor(selected.id)?.ready
               : ready
           }
           visibility={
-            selected.id === 'sudoku' || selected.id === 'word' ? 'Personal only' : undefined
+            selected.id === 'sudoku' || selected.id === 'word' || selected.id === 'focus'
+              ? 'Personal only'
+              : undefined
           }
           availability={
-            selected.id === 'sudoku' || selected.id === 'word'
-              ? !(selected.id === 'word' ? word : sudoku)?.ready
-                ? (selected.id === 'word' ? word : sudoku)?.loading
+            selected.id === 'sudoku' || selected.id === 'word' || selected.id === 'focus'
+              ? !personalFor(selected.id)?.ready
+                ? personalFor(selected.id)?.loading
                   ? 'Checking status'
                   : 'Status unavailable'
-                : (selected.id === 'word' ? word : sudoku)!.installed
+                : personalFor(selected.id)!.installed
                   ? 'Installed'
-                  : (selected.id === 'word' ? word : sudoku)!.removing
+                  : personalFor(selected.id)!.removing
                     ? 'Removal pending'
                     : 'Available'
               : undefined
           }
           loading={
-            selected.id === 'sudoku' || selected.id === 'word'
-              ? !!(selected.id === 'word' ? word : sudoku)?.loading
+            selected.id === 'sudoku' || selected.id === 'word' || selected.id === 'focus'
+              ? !!personalFor(selected.id)?.loading
               : loading
           }
           action={action(selected)}

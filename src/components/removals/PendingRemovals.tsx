@@ -9,6 +9,7 @@ const domainLabels: Record<string, string> = {
   notes: 'Private note',
   sudoku: 'Sudoku',
   dailyWord: 'Daily Word',
+  focusTimer: 'Focus Timer',
 }
 
 export function PendingRemovals() {

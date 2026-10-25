@@ -52,6 +52,7 @@ export const shoppingApi = createApi({
     'Widgets',
     'Sudoku',
     'DailyWord',
+    'FocusTimer',
     'DailyWordResults',
   ],
   refetchOnFocus: true,

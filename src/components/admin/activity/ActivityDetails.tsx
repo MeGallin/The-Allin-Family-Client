@@ -29,6 +29,7 @@ const labels: Record<string, string> = {
   kind: 'Widget type',
   difficulty: 'Starting level',
   ownerId: 'Widget owner ID',
+  generation: 'Installation generation',
   visibility: 'Visibility',
   mealCount: 'Meal choices',
   version: 'Revision',
