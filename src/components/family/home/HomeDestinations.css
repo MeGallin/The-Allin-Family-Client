@@ -1,78 +1,24 @@
-.home-destinations {
-  display: grid;
-  border-top: 1px solid var(--color-border);
+.home-index-memory {
+  grid-row: 1 / span 2;
 }
-.home-destination {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding-block: var(--space-5);
-  min-width: 0;
-  color: var(--color-text);
-  text-decoration: none;
-}
-.home-destinations > .home-destination {
-  border-top: 1px solid var(--color-border);
-}
-.home-destination__glyph {
-  display: grid;
-  place-items: center;
-  width: var(--space-8);
-  height: var(--space-8);
-  flex: 0 0 var(--space-8);
-  color: var(--color-accent);
-  background: var(--color-surface-raised);
-  border-radius: var(--radius-control);
-  overflow: hidden;
-}
-.home-destination__glyph .family-image {
+.home-index-memory .family-image {
   width: 100%;
   height: 100%;
   border-radius: inherit;
 }
-.home-destination__glyph img {
+.home-index-memory img {
   height: 100%;
   object-fit: cover;
 }
-.home-destination__glyph .family-image__fallback {
+.home-index-memory .family-image__fallback {
   min-height: 0;
   padding: var(--space-2);
 }
-.home-destination__glyph .family-image__fallback span {
+.home-index-memory .family-image__fallback span {
   display: none;
 }
-.home-destination__copy {
-  display: grid;
-  gap: var(--space-1);
-  min-width: 0;
-  flex: 1;
-  overflow-wrap: anywhere;
-}
-.home-destination__copy > small,
-.home-destination__copy > span {
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-}
-.home-destination__copy > strong {
-  font-size: var(--text-md);
-  font-weight: var(--weight-heading);
-  line-height: var(--line-compact);
-}
-.home-destination > .ui-icon {
-  color: var(--color-accent);
-  flex-shrink: 0;
-}
-.home-destination:hover strong {
-  color: var(--color-link);
-}
-@container family-content (min-width: 36rem) {
-  .home-destinations {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-5);
-  }
-  .home-destinations > .home-destination {
-    border-top: 0;
-    border-left: 1px solid var(--color-border);
-    padding-left: var(--space-5);
+@container family-content (min-width: 40rem) {
+  .home-index-memory {
+    grid-row: 1;
   }
 }

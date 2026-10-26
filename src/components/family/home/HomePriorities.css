@@ -10,91 +10,87 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
-.home-priorities {
-  display: grid;
-}
-.home-priority {
+.home-family-index {
   min-width: 0;
-  overflow-wrap: anywhere;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
 }
-.home-priority + .home-priority {
+.home-index-item {
+  min-width: 0;
+}
+.home-family-index > .home-index-item + .home-index-item {
   border-top: 1px solid var(--color-border);
 }
-.home-priority__link {
+.home-index-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--space-2) var(--space-4);
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  padding-block: var(--space-4);
+  gap: var(--space-2) var(--space-3);
+  min-height: 5.25rem;
+  padding: var(--space-3);
   color: var(--color-text);
   text-decoration: none;
+  overflow-wrap: anywhere;
+  border-radius: var(--radius-control);
 }
-.home-priority__label {
-  display: flex;
-  gap: var(--space-2);
-  align-items: center;
-  grid-column: 1 / -1;
-  font-size: var(--text-caption);
-  color: var(--color-text-muted);
+.home-index-row:hover {
+  background: var(--color-surface-raised);
 }
-.home-priority__label > .ui-icon:first-child {
+.home-index-row:focus-visible {
+  outline-offset: -3px;
+}
+.home-index-row__glyph {
+  display: grid;
+  place-items: center;
+  width: var(--control-min-height);
+  height: var(--control-min-height);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-raised);
   color: var(--color-accent);
+  overflow: hidden;
 }
-.home-priority__label > .ui-icon:last-child {
-  margin-left: auto;
-  width: var(--space-4);
-  height: var(--space-4);
+.home-index-row__label,
+.home-index-row__status {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
 }
-.home-priority__question {
+.home-index-row__label > strong {
   font-size: var(--text-sm);
+  font-weight: var(--weight-heading);
   line-height: var(--line-compact);
-  font-weight: var(--weight-heading);
 }
-.home-priority__detail {
-  display: grid;
-  gap: var(--space-1);
-  font-size: var(--text-xs);
-  color: var(--color-link);
-  text-align: right;
-  max-width: 10rem;
-}
-.home-priority__detail small {
-  font-size: var(--text-caption);
+.home-index-row__label > small {
   color: var(--color-text-muted);
+  font-size: var(--text-caption);
 }
-.home-priority__metric {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-}
-.home-priority__metric > strong {
-  font-size: var(--text-lg);
-  font-weight: var(--weight-heading);
-  line-height: 1;
-}
-.home-priority__metric > span {
+.home-index-row__status {
+  grid-column: 2;
+  grid-row: 2;
   color: var(--color-text-muted);
   font-size: var(--text-xs);
 }
-.home-priority__shopping-meta {
-  display: grid;
-  gap: var(--space-1);
-  font-size: var(--text-caption);
-  text-align: right;
-  color: var(--color-text-muted);
+.home-index-row__status > strong {
+  color: var(--color-text);
+  font-weight: var(--weight-heading);
 }
-.home-priority__shopping-meta > span:last-child {
-  color: var(--color-link);
-}
-.home-priority__important {
+.home-index-row__status .home-index-row__important {
   color: var(--color-important-text);
 }
-.home-priority__link:hover .home-priority__question,
-.home-priority__link:hover .home-priority__label {
+.home-index-row__action {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  min-height: var(--control-min-height);
   color: var(--color-link);
+  font-size: var(--text-xs);
 }
-.home-priority--live .home-priority__label {
-  color: var(--color-link);
+.home-index-row__action > .ui-icon {
+  width: var(--space-4);
+  height: var(--space-4);
 }
 .home-data-error {
   padding: var(--space-3);
@@ -107,12 +103,18 @@
 .home-data-error .secondary {
   font-size: var(--text-xs);
 }
-@container family-content (min-width: 36rem) {
-  .home-priorities {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-6);
+@container family-content (min-width: 40rem) {
+  .home-index-row {
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.2fr) auto;
+    gap: var(--space-3);
+    padding-inline: var(--space-4);
   }
-  .home-priority + .home-priority {
-    border-top: 0;
+  .home-index-row__status {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .home-index-row__action {
+    grid-column: 4;
+    grid-row: 1;
   }
 }

@@ -20,9 +20,10 @@ export default function FamilyHomePage() {
       />
       <div className="family-home-grid">
         <WeekPlanner />
-        <HomePriorities />
+        <HomePriorities>
+          <HomeDestinations name={firstName} />
+        </HomePriorities>
       </div>
-      <HomeDestinations name={firstName} />
     </div>
   )
 }

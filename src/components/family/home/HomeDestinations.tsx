@@ -13,22 +13,25 @@ export function HomeDestinations({ name }: { name: string }) {
   const { memories, loading, error, refresh } = useMemories()
   const memory = recentMemories(memories)[0]
   return (
-    <div className="home-destinations">
-      <div>
+    <>
+      <div className="home-index-item">
         <HomeDataError error={error} retry={refresh} />
         <Link
-          className="home-destination"
+          className="home-index-row"
           to={memory ? '/memories#memory-' + memory.id : '/memories'}
         >
-          <span className="home-destination__glyph">
+          <span className="home-index-row__glyph home-index-memory">
             {memory?.photoKey ? (
               <FamilyImage {...memoryPhotoSources(memory, true)} alt="" />
             ) : (
               <Icon icon={Images} />
             )}
           </span>
-          <span className="home-destination__copy">
-            <small>From our memories</small>
+          <span className="home-index-row__label">
+            <strong>From our memories</strong>
+            <small>The family album</small>
+          </span>
+          <span className="home-index-row__status">
             <strong>
               {loading
                 ? 'Loading memories…'
@@ -40,20 +43,24 @@ export function HomeDestinations({ name }: { name: string }) {
               </span>
             )}
           </span>
-          <Icon icon={ArrowUpRight} />
+          <span className="home-index-row__action">
+            View <Icon icon={ArrowUpRight} />
+          </span>
         </Link>
       </div>
-      <Link className="home-destination" to="/notes">
-        <span className="home-destination__glyph">
+      <Link className="home-index-item home-index-row" to="/notes">
+        <span className="home-index-row__glyph">
           <Icon icon={NotebookPen} />
         </span>
-        <span className="home-destination__copy">
-          <small>Only for you</small>
+        <span className="home-index-row__label">
           <strong>{name}’s personal notes</strong>
-          <span>A private space for your thoughts</span>
+          <small>Only for you</small>
         </span>
-        <Icon icon={ArrowUpRight} />
+        <span className="home-index-row__status">A private space for your thoughts</span>
+        <span className="home-index-row__action">
+          Open <Icon icon={ArrowUpRight} />
+        </span>
       </Link>
-    </div>
+    </>
   )
 }
