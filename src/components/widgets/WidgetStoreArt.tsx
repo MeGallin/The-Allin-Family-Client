@@ -1,5 +1,4 @@
 import {
-  ClipboardCheck,
   CalendarDays,
   Grid2X2,
   NotebookPen,
@@ -12,7 +11,6 @@ import type { WidgetStoreId } from '../../features/widgets/widget-catalogue'
 import { Icon } from '../ui/Icon'
 import './WidgetStoreArt.css'
 const icons = {
-  jobs: ClipboardCheck,
   shopping: ShoppingBasket,
   polls: Vote,
   dinner: Utensils,
@@ -26,7 +24,25 @@ const icons = {
 export function WidgetAppIcon({ id }: { id: WidgetStoreId }) {
   return (
     <span className={'app-icon app-icon--' + id} aria-hidden="true">
-      {id === 'dinner' ? (
+      {id === 'jobs' ? (
+        <svg className="icon-jobs" viewBox="0 0 64 64" fill="none" focusable="false">
+          <path d="M12 28 32 11l20 17v24a3 3 0 0 1-3 3H15a3 3 0 0 1-3-3Z" fill="#f6faf2" />
+          <path
+            d="m8 29 24-20 24 20"
+            stroke="currentColor"
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="m21 34 3 3 5-6m-8 14 3 3 5-6m6-7h9m-9 11h9"
+            stroke="currentColor"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ) : id === 'dinner' ? (
         <span className="icon-dinner-wheel" />
       ) : id === 'sudoku' ? (
         <span className="icon-sudoku">

@@ -131,6 +131,15 @@
   height: 2rem;
   stroke-width: 1.7;
 }
+.widget-store .app-icon--jobs {
+  background: linear-gradient(145deg, #bfe9e7, #72bbc4);
+  color: #205664;
+}
+.widget-store .icon-jobs {
+  display: block;
+  width: 78%;
+  height: 78%;
+}
 .widget-store .app-icon--shopping {
   background: linear-gradient(145deg, #c1efd8, #78c7b7);
   color: #154e45;
