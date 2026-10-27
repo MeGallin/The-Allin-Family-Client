@@ -1,50 +1,17 @@
-import {
-  CalendarDays,
-  Grid2X2,
-  NotebookPen,
-  ShoppingBasket,
-  Hourglass,
-  Utensils,
-  Vote,
-} from 'lucide-react'
+import { ShoppingBasket, Utensils, Vote } from 'lucide-react'
 import type { WidgetStoreId } from '../../features/widgets/widget-catalogue'
 import { Icon } from '../ui/Icon'
+import { WidgetGlyph } from './WidgetGlyph'
 import './WidgetStoreArt.css'
-const icons = {
-  shopping: ShoppingBasket,
-  polls: Vote,
-  dinner: Utensils,
-  sudoku: Grid2X2,
-  focus: Hourglass,
-  word: NotebookPen,
-  countdown: CalendarDays,
-}
 
-/** Decorative store artwork, never a second implementation of the working tools. */
-export function WidgetAppIcon({ id }: { id: WidgetStoreId }) {
+/** Shared decorative app tile, never a second implementation of the working tools. */
+export function WidgetAppIcon({ id, compact = false }: { id: WidgetStoreId; compact?: boolean }) {
   return (
-    <span className={'app-icon app-icon--' + id} aria-hidden="true">
-      {id === 'jobs' ? (
-        <svg className="icon-jobs" viewBox="0 0 64 64" fill="none" focusable="false">
-          <path d="M12 28 32 11l20 17v24a3 3 0 0 1-3 3H15a3 3 0 0 1-3-3Z" fill="#f6faf2" />
-          <path
-            d="m8 29 24-20 24 20"
-            stroke="currentColor"
-            strokeWidth="5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="m21 34 3 3 5-6m-8 14 3 3 5-6m6-7h9m-9 11h9"
-            stroke="currentColor"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ) : id === 'dinner' ? (
-        <span className="icon-dinner-wheel" />
-      ) : id === 'sudoku' ? (
+    <span
+      className={'app-icon app-icon--' + id + (compact ? ' app-icon--compact' : '')}
+      aria-hidden="true"
+    >
+      {id === 'sudoku' ? (
         <span className="icon-sudoku">
           {Array.from({ length: 9 }, (_, i) => (
             <i key={i} />
@@ -59,7 +26,7 @@ export function WidgetAppIcon({ id }: { id: WidgetStoreId }) {
       ) : id === 'countdown' ? (
         <span className="icon-date">24</span>
       ) : (
-        <Icon icon={icons[id]} />
+        <WidgetGlyph id={id} />
       )}
     </span>
   )

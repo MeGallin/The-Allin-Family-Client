@@ -1,4 +1,4 @@
-import { ArrowUpRight, ClipboardCheck } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router'
 import { useAppSelector } from '../../../app/store-hooks'
 import { jobsApi } from '../../../services/household-jobs-query'
@@ -9,6 +9,7 @@ import { useNow } from '../../../hooks/useNow'
 import { mealToday, shiftMealDay, formatMealDate } from '../../../features/widgets/meal-calendar'
 import { builtinWidgetPath } from '../../../features/widgets/builtin-widgets'
 import { Icon } from '../../ui/Icon'
+import { WidgetAppIcon } from '../../widgets/WidgetStoreArt'
 import { HomeDataError } from './HomeDataError'
 
 /** Home projects shared jobs only; private jobs and all mutations stay at their source. */
@@ -64,9 +65,7 @@ export function HomeJobsSummary() {
         />
       )}
       <Link to={builtinWidgetPath('jobs')} className="home-index-row">
-        <span className="home-index-row__glyph">
-          <Icon icon={ClipboardCheck} />
-        </span>
+        <WidgetAppIcon id="jobs" compact />
         <span className="home-index-row__label">
           <strong>Household Jobs</strong>
           <small>Shared care for home</small>

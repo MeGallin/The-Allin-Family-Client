@@ -317,7 +317,12 @@ export function WidgetLibrary({
                   <span>
                     <span className="app-name">{app.title}</span>
                     <span className="app-subtitle">
-                      {app.category === 'games' ? 'Games' : 'Tools'} · Proposed
+                      {app.category === 'family'
+                        ? 'Family'
+                        : app.category === 'games'
+                          ? 'Games'
+                          : 'Tools'}{' '}
+                      · Proposed
                     </span>
                   </span>
                 </button>

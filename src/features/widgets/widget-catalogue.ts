@@ -2,7 +2,18 @@ import type { FamilyWidget } from './types'
 import { builtinWidgets } from './builtin-widgets'
 
 export type WidgetStoreId =
-  'jobs' | 'shopping' | 'polls' | 'dinner' | 'sudoku' | 'focus' | 'word' | 'countdown'
+  | 'jobs'
+  | 'shopping'
+  | 'polls'
+  | 'dinner'
+  | 'sudoku'
+  | 'focus'
+  | 'word'
+  | 'countdown'
+  | 'adventure'
+  | 'recommendations'
+  | 'walking'
+  | 'quiz'
 export type WidgetStoreApp = {
   id: WidgetStoreId
   title: string
@@ -92,6 +103,46 @@ export const widgetCatalogue: readonly WidgetStoreApp[] = [
     description:
       'An idea for a future dates and countdown widget. Not available to install or use.',
     previews: ['Keep the good dates close.', 'Something to look forward to.'],
+  },
+  {
+    id: 'adventure',
+    title: 'Family Adventure Jar',
+    subtitle: 'A little inspiration for time together.',
+    category: 'family',
+    availability: 'proposed',
+    description:
+      'An idea for a shared jar of walks, restaurants, day trips, films and weekends away. Find something free, nearby or suited to a rainy day, pick an idea at random and remember what you did together. Not available to install or use.',
+    previews: ['What shall we do together?', 'An idea waiting to be picked.'],
+  },
+  {
+    id: 'recommendations',
+    title: 'Family Recommendations',
+    subtitle: 'Good finds, passed around.',
+    category: 'family',
+    availability: 'proposed',
+    description:
+      'An idea for sharing books, films, series, podcasts and places with a short personal recommendation. Keep a private want-to-try list and remember what you read, watched or visited. Not available to install or use.',
+    previews: ['Found something worth sharing?', 'Keep your next good find close.'],
+  },
+  {
+    id: 'walking',
+    title: 'Walking Together',
+    subtitle: 'Small steps towards a shared goal.',
+    category: 'family',
+    availability: 'proposed',
+    description:
+      'An idea for an optional family walking challenge with manually logged time or distance, a collective monthly target and favourite routes. Individual entries would stay private unless you choose to share them. Not available to install or use.',
+    previews: ['A little further, together.', 'Your walks, shared by choice.'],
+  },
+  {
+    id: 'quiz',
+    title: 'Family Quiz',
+    subtitle: 'A few questions for everyone.',
+    category: 'games',
+    availability: 'proposed',
+    description:
+      'An idea for a short weekly quiz to answer in your own time, with general, themed or family-written rounds. Reveal answers after submitting, keep results private by default and share scores only if you choose. Not available to install or use.',
+    previews: ['Five questions. A little fun.', 'Take a turn setting the round.'],
   },
 ]
 

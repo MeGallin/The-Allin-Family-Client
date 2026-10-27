@@ -1,0 +1,26 @@
+.widget-glyph {
+  width: var(--icon-size);
+  height: var(--icon-size);
+  flex: 0 0 auto;
+}
+
+.icon-dinner-wheel {
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  position: relative;
+  background: conic-gradient(
+    #fff5df 0 60deg,
+    #db784b 60deg 120deg,
+    #f9d263 120deg 180deg,
+    #fff5df 180deg 240deg,
+    #db784b 240deg 300deg,
+    #f9d263 300deg
+  );
+}
+.icon-dinner-wheel::after {
+  content: '';
+  position: absolute;
+  inset: 37%;
+  border-radius: 50%;
+  background: currentColor;
+}

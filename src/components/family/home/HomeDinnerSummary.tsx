@@ -1,5 +1,5 @@
 import { formatMealDate, mealToday, shiftMealDay } from '../../../features/widgets/meal-calendar'
-import { ArrowUpRight, BookOpen, ChevronDown, Utensils } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, Utensils } from 'lucide-react'
 import { Link } from 'react-router'
 import { useWidgets } from '../../../features/widgets/useWidgets'
 import {
@@ -11,6 +11,7 @@ import {
 } from '../../../features/widgets/meal-diary'
 import { useNow } from '../../../hooks/useNow'
 import { Icon } from '../../ui/Icon'
+import { WidgetAppIcon } from '../../widgets/WidgetStoreArt'
 import { MealDiary } from '../../widgets/MealDiary'
 import { HomeDataError } from './HomeDataError'
 import './HomeDinnerSummary.css'
@@ -35,9 +36,7 @@ export function HomeDinnerSummary() {
       <HomeDataError error={error} retry={refresh} />
       <details className="home-meal-index">
         <summary className="home-index-row">
-          <span className="home-index-row__glyph">
-            <Icon icon={BookOpen} />
-          </span>
+          <WidgetAppIcon id="dinner" compact />
           <span className="home-index-row__label">
             <strong>Seven-day meal diary</strong>
             <small>Shared meals, kept in one place</small>

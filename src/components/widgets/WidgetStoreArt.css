@@ -109,7 +109,7 @@
   width: 3.5rem;
   height: 3.5rem;
 }
-.widget-store .app-icon {
+.app-icon {
   width: 4rem;
   height: 4rem;
   position: relative;
@@ -126,82 +126,69 @@
   line-height: 1;
   font-family: 'Inter Variable', sans-serif;
 }
-.widget-store .app-icon .ui-icon {
+.app-icon .ui-icon {
   width: 2rem;
   height: 2rem;
   stroke-width: 1.7;
 }
-.widget-store .app-icon--jobs {
+.app-icon--jobs {
   background: linear-gradient(145deg, #bfe9e7, #72bbc4);
   color: #205664;
 }
-.widget-store .icon-jobs {
+.app-icon .icon-jobs {
   display: block;
   width: 78%;
   height: 78%;
 }
-.widget-store .app-icon--shopping {
+.app-icon--shopping,
+.app-icon--walking {
   background: linear-gradient(145deg, #c1efd8, #78c7b7);
   color: #154e45;
 }
-.widget-store .app-icon--polls {
+.app-icon--polls,
+.app-icon--recommendations {
   background: linear-gradient(145deg, #d7d3ff, #a7a1ef);
   color: #403a8e;
 }
-.widget-store .app-icon--dinner {
+.app-icon--dinner,
+.app-icon--adventure {
   background: linear-gradient(145deg, #ffcfa3, #f0a887);
   color: #713e29;
 }
-.widget-store .app-icon--sudoku {
+.app-icon--sudoku {
   background: linear-gradient(145deg, #f1e5aa, #d7c16f);
   color: #68521a;
 }
-.widget-store .app-icon--focus {
+.app-icon--focus,
+.app-icon--quiz {
   background: linear-gradient(145deg, #b4dbfa, #75afd5);
   color: #204f78;
 }
-.widget-store .app-icon--word {
+.app-icon--word {
   background: linear-gradient(145deg, #ffc4d2, #de8ba2);
   color: #7e3152;
 }
-.widget-store .app-icon--countdown {
+.app-icon--countdown {
   background: linear-gradient(145deg, #c6e4b9, #96c783);
   color: #355f34;
 }
-.widget-store .icon-dinner-wheel {
+.app-icon .icon-dinner-wheel {
   width: 66%;
   height: 66%;
-  border-radius: 50%;
-  border: 3px solid #713e29;
-  position: relative;
-  background: conic-gradient(
-    #fff5df 0 60deg,
-    #db784b 60deg 120deg,
-    #f9d263 120deg 180deg,
-    #fff5df 180deg 240deg,
-    #db784b 240deg 300deg,
-    #f9d263 300deg
-  );
+  border-width: 3px;
 }
-.widget-store .icon-dinner-wheel::after {
-  content: '';
-  position: absolute;
-  inset: 37%;
-  border-radius: 50%;
-  background: #713e29;
-}
-.widget-store .icon-sudoku {
+.app-icon .icon-sudoku {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   width: 62%;
   height: 62%;
   gap: 3px;
 }
-.widget-store .icon-sudoku i {
+.app-icon .icon-sudoku i {
   border: 1.5px solid currentColor;
   border-radius: 1px;
 }
-.widget-store .icon-date {
+.app-icon .icon-date {
   display: grid;
   place-items: center;
   border: 2px solid currentColor;
@@ -212,13 +199,26 @@
   padding-top: 0.35rem;
   position: relative;
 }
-.widget-store .icon-date::before {
+.app-icon .icon-date::before {
   content: '';
   position: absolute;
   top: 0.45rem;
   left: 0;
   right: 0;
   border-top: 2px solid currentColor;
+}
+/* Compact dashboard tiles retain each app's complete Store identity. */
+.app-icon--compact {
+  width: var(--control-min-height);
+  height: var(--control-min-height);
+  font-size: 1.875rem;
+}
+.app-icon--compact .ui-icon {
+  width: 50%;
+  height: 50%;
+}
+.app-icon--compact .icon-dinner-wheel {
+  border-width: 2px;
 }
 .widget-store .icon-covers {
   display: flex;
@@ -352,14 +352,14 @@
   width: 5.5rem;
   height: 5.5rem;
 }
-.widget-store .icon-letters {
+.app-icon .icon-letters {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.14em;
   font-size: 0.3em;
   transform: rotate(-7deg);
 }
-.widget-store .icon-letters i {
+.app-icon .icon-letters i {
   font-style: normal;
   background: #fff2e5b3;
   border-radius: 0.15em;
@@ -510,4 +510,21 @@
 .widget-store .icon-covers {
   width: 100%;
   max-width: 100%;
+}
+
+/* Proposed concepts use the same icon scale as the installed app rows. */
+.widget-store .store-proposals .icon-cover .app-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-panel);
+}
+.widget-store .store-proposals .icon-cover .app-icon .ui-icon {
+  width: 2rem;
+  height: 2rem;
+}
+@media (min-width: 34rem) {
+  .widget-store .store-proposals .icon-cover .app-icon {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
 }

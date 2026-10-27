@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
-import { ArrowUpRight, ChartNoAxesColumn, ShoppingBasket } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { usePolls } from '../../../features/polls/usePolls'
 import { useShopping } from '../../../features/shopping/useShopping'
 import { homePolls } from '../../../features/family/home-view'
@@ -8,6 +8,7 @@ import { pollLink } from '../../../features/polls/poll-links'
 import { useNow } from '../../../hooks/useNow'
 import { PollTimeRemaining } from '../polls/PollTimeRemaining'
 import { Icon } from '../../ui/Icon'
+import { WidgetAppIcon } from '../../widgets/WidgetStoreArt'
 import { HomeDataError } from './HomeDataError'
 import { HomeDinnerSummary } from './HomeDinnerSummary'
 import { builtinWidgetPath } from '../../../features/widgets/builtin-widgets'
@@ -34,9 +35,7 @@ export function HomePriorities({ children }: { children?: ReactNode }) {
         >
           <HomeDataError error={polls.error} retry={polls.refresh} />
           <Link to={poll ? pollLink(poll) : builtinWidgetPath('polls')} className="home-index-row">
-            <span className="home-index-row__glyph">
-              <Icon icon={ChartNoAxesColumn} />
-            </span>
+            <WidgetAppIcon id="polls" compact />
             <span className="home-index-row__label">
               <strong>Family polls</strong>
               <small>Decisions for everyone</small>
@@ -75,9 +74,7 @@ export function HomePriorities({ children }: { children?: ReactNode }) {
         <section aria-label="Shopping summary" className="home-index-item">
           <HomeDataError error={shopping.error} retry={shopping.refresh} />
           <Link to={builtinWidgetPath('shopping', 'show=needed')} className="home-index-row">
-            <span className="home-index-row__glyph">
-              <Icon icon={ShoppingBasket} />
-            </span>
+            <WidgetAppIcon id="shopping" compact />
             <span className="home-index-row__label">
               <strong>Shopping list</strong>
               <small>Shared things to pick up</small>
