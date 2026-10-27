@@ -190,7 +190,8 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
       className={
         'page-stack page-enter' +
         (view === 'library' ? ' widget-store-page' : '') +
-        (openedTitle ? ' opened-widget-tool' : '')
+        (openedTitle ? ' opened-widget-tool' : '') +
+        (builtin?.id === 'jobs' ? ' household-jobs-tool' : '')
       }
     >
       <PageHeader

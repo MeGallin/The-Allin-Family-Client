@@ -20,6 +20,7 @@ import {
 } from '../../features/widgets/builtin-widgets'
 import { LoadingState } from '../ui/LoadingState'
 import './WidgetShelf.css'
+const JobsWidget = lazy(() => import('../household-jobs/HouseholdJobs'))
 const ShoppingWidget = lazy(() => import('../../pages/family/ListsPage'))
 const PollsWidget = lazy(() => import('../../pages/family/PollsPage'))
 export function WidgetShelf({
@@ -114,7 +115,13 @@ export function WidgetShelf({
       {builtin && (
         <section aria-label={builtin.title}>
           <Suspense fallback={<LoadingState label={'Opening ' + builtin.title + '…'} />}>
-            {builtin.id === 'shopping' ? <ShoppingWidget embedded /> : <PollsWidget embedded />}
+            {builtin.id === 'jobs' ? (
+              <JobsWidget />
+            ) : builtin.id === 'shopping' ? (
+              <ShoppingWidget embedded />
+            ) : (
+              <PollsWidget embedded />
+            )}
           </Suspense>
         </section>
       )}

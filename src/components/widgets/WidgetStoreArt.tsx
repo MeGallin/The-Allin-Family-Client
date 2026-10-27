@@ -1,4 +1,5 @@
 import {
+  ClipboardCheck,
   CalendarDays,
   Grid2X2,
   NotebookPen,
@@ -11,6 +12,7 @@ import type { WidgetStoreId } from '../../features/widgets/widget-catalogue'
 import { Icon } from '../ui/Icon'
 import './WidgetStoreArt.css'
 const icons = {
+  jobs: ClipboardCheck,
   shopping: ShoppingBasket,
   polls: Vote,
   dinner: Utensils,

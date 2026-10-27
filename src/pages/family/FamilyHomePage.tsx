@@ -4,6 +4,7 @@ import { PageHeader } from '../../components/ui/PageHeader'
 import { CurrentClock } from '../../components/ui/current-clock/CurrentClock'
 import { WeekPlanner } from '../../components/family/home/WeekPlanner'
 import { HomePriorities } from '../../components/family/home/HomePriorities'
+import { HomeJobsSummary } from '../../components/family/home/HomeJobsSummary'
 import { HomeDestinations } from '../../components/family/home/HomeDestinations'
 import './FamilyHomePage.css'
 
@@ -21,6 +22,7 @@ export default function FamilyHomePage() {
       <div className="family-home-grid">
         <WeekPlanner />
         <HomePriorities>
+          <HomeJobsSummary />
           <HomeDestinations name={firstName} />
         </HomePriorities>
       </div>

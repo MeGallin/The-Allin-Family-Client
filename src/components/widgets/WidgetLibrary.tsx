@@ -142,7 +142,7 @@ export function WidgetLibrary({
     if (app.availability === 'proposed')
       return <span className="pill-action pill-action--proposed">PROPOSED</span>
     const path =
-      app.id === 'shopping' || app.id === 'polls'
+      app.id === 'shopping' || app.id === 'polls' || app.id === 'jobs'
         ? builtinWidgetPath(app.id)
         : firstInstallation
           ? widgetInstallationPath(firstInstallation)

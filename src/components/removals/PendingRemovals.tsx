@@ -7,6 +7,7 @@ import { Icon } from '../ui/Icon'
 import './PendingRemovals.css'
 const domainLabels: Record<string, string> = {
   notes: 'Private note',
+  householdJobs: 'Household job',
   sudoku: 'Sudoku',
   dailyWord: 'Daily Word',
   focusTimer: 'Focus Timer',

@@ -2,6 +2,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import { userReceived } from '../auth/auth-slice'
 export const REMOVAL_DELAY_MS = 20_000
 export type RemovalDomain =
+  | 'householdJobs'
   | 'shopping'
   | 'calendar'
   | 'memories'

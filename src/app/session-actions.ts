@@ -1,3 +1,4 @@
+import { jobsUiReset } from '../features/household-jobs/jobs-ui-slice'
 import { clearSnapshotResponses } from '../services/api-client'
 import { removalsReset } from '../features/removals/removals-slice'
 import type { AppDispatch } from './store'
@@ -18,6 +19,7 @@ import { membersUiReset } from '../features/members/members-ui-slice'
 export function clearPrivateState(dispatch: AppDispatch) {
   clearSnapshotResponses()
   dispatch(removalsReset())
+  dispatch(jobsUiReset())
   abortMemoryWrites()
   dispatch(shoppingApi.util.getRunningQueriesThunk()).forEach((request) => request.abort())
   dispatch(shoppingApi.util.getRunningMutationsThunk()).forEach((request) => request.abort())

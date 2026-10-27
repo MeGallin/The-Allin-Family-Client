@@ -1495,3 +1495,15 @@ content was written; live clock restored analogue24h/default7-day Home range.
 Proof workspace `work/uiux-release-20261025/`; final release handoff
 `reports/cody/2026-10-25-uiux-release.md`. This final README-only follow-up does not
 change the deployed runtime/packages and requires no rebuild or upload.
+
+## Household Jobs — local implementation, 27 October 2026
+
+Household Jobs is available as a built-in Widget Library/Family widgets tool at
+`/my-space?view=family&tool=jobs`, with shared Family and owner-only Mine scopes,
+optional non-deadline target days, weekly/monthly recurrence and retained occurrence
+history. It uses the existing 20-second removal Undo and one persisted family
+order, with pointer/touch and keyboard moves. Migration025 was applied locally
+only. No push/deployment/production migration is included; parent visual and
+independent source acceptance are separate gates. See
+[docs/household-jobs.md](docs/household-jobs.md) for permissions, concurrency,
+privacy, recovery and the verification matrix.

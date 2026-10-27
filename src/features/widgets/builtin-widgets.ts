@@ -1,4 +1,4 @@
-import { ListChecks, Vote } from 'lucide-react'
+import { ListChecks, Vote, ClipboardCheck } from 'lucide-react'
 
 /** These existing family tools are always installed and keep their original data sources. */
 export const builtinWidgets = [
@@ -15,6 +15,14 @@ export const builtinWidgets = [
     description: 'Shared questions, one vote each, and results everyone can see.',
     icon: Vote,
     legacyPath: '/polls',
+  },
+  {
+    id: 'jobs',
+    title: 'Household Jobs',
+    description:
+      'Shared family jobs and your private responsibilities, with flexible target days and simple repeats.',
+    icon: ClipboardCheck,
+    legacyPath: '/my-space?view=family&tool=jobs',
   },
 ] as const
 export type BuiltinWidget = (typeof builtinWidgets)[number]

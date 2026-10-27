@@ -2,7 +2,7 @@ import type { FamilyWidget } from './types'
 import { builtinWidgets } from './builtin-widgets'
 
 export type WidgetStoreId =
-  'shopping' | 'polls' | 'dinner' | 'sudoku' | 'focus' | 'word' | 'countdown'
+  'jobs' | 'shopping' | 'polls' | 'dinner' | 'sudoku' | 'focus' | 'word' | 'countdown'
 export type WidgetStoreApp = {
   id: WidgetStoreId
   title: string
@@ -15,6 +15,16 @@ export type WidgetStoreApp = {
 
 /** Catalogue metadata only; installations and family content remain in their existing sources. */
 export const widgetCatalogue: readonly WidgetStoreApp[] = [
+  {
+    id: 'jobs',
+    title: 'Household Jobs',
+    subtitle: 'A little care, shared.',
+    category: 'family',
+    availability: 'installed',
+    description:
+      'Keep family responsibilities together, or use Mine for jobs only you can see. Claim, assign and complete one-off or repeating jobs. Optional target days are a guide, never a deadline. Everyone shares one family order.',
+    previews: ['What needs a little care?', 'A calm place for everyday jobs.'],
+  },
   {
     id: 'shopping',
     title: builtinWidgets[0].title,

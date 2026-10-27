@@ -1,3 +1,5 @@
+import { jobsApi } from '../../services/household-jobs-query'
+import { executeJobWrite } from '../household-jobs/jobs-actions'
 import { dailyWordApi } from '../../services/daily-word-query'
 import { focusTimerApi } from '../../services/focus-timer-query'
 import { executeFocusTimerWrite } from '../focus-timer/focus-timer-actions'
@@ -26,6 +28,14 @@ type Adapter = {
 const body = ({ item }: PendingRemoval) => ({ id: item.id, version: item.version })
 /** Only domain differences live here; timing, Undo and safety checks live in the listener. */
 export const removalAdapters: Record<RemovalDomain, Adapter> = {
+  householdJobs: {
+    busy: (state) => state.jobsUi.busy,
+    latest: (state, ownerId) => jobsApi.endpoints.getJobs.select(ownerId)(state).data?.jobs,
+    remove: (dispatch, entry) =>
+      dispatch(
+        executeJobWrite({ action: 'remove', body: { ...body(entry), requestKey: entry.token } }),
+      ),
+  },
   focusTimer: {
     busy: (state) => state.focusTimerUi.busy,
     latest: (state, ownerId) => {

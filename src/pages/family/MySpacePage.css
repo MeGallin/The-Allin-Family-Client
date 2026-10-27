@@ -24,3 +24,13 @@
 .opened-widget-tool .sudoku-board__heading h2 {
   font-size: var(--text-lg);
 }
+
+@media (max-width: 22.5rem) {
+  .household-jobs-tool > .page-header {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+  .household-jobs-tool > .page-header > .opened-widget-tool__store {
+    justify-self: start;
+  }
+}

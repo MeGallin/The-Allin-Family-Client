@@ -385,7 +385,7 @@ describe('Week Ahead dashboard', () => {
         <HomePriorities />
       </MemoryRouter>,
     )
-    expect(within(section).getByText('Voting closed')).toBeTruthy()
+    expect(within(section).getByText(/Voting closed/)).toBeTruthy()
     expect(within(section).getByRole('link').getAttribute('href')).toBe(
       '/my-space?show=closed&view=family&tool=polls#poll-2',
     )
@@ -412,7 +412,7 @@ describe('Week Ahead dashboard', () => {
     ]
     show(<HomePriorities />)
     const summary = screen.getByRole('region', { name: 'Shopping summary' })
-    expect(within(summary).getByText('2')).toBeTruthy()
+    expect(within(summary).getByText('2 items to pick up')).toBeTruthy()
     expect(within(summary).getByText('1 important')).toBeTruthy()
     expect(within(summary).getByRole('link').getAttribute('href')).toBe(
       '/my-space?show=needed&view=family&tool=shopping',
