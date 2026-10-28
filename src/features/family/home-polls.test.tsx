@@ -10,6 +10,7 @@ import type { FamilyPollRecord } from '../polls/types'
 import { pollsApi } from '../../services/polls-query'
 import { PollsSync } from '../polls/PollsSync'
 import { HomeOverview } from '../../components/family/HomeOverview'
+import { useHomeOverview } from './useHomeOverview'
 import { FamilyPoll } from '../../components/family/polls/FamilyPoll'
 import { homePolls } from './home-view'
 import { pollTimeLeft } from '../polls/poll-deadline'
@@ -36,6 +37,19 @@ function poll(id: string, delay: number, ownOptionId: string | null = null): Fam
   }
 }
 let store: ReturnType<typeof createAppStore> | undefined
+function ConnectedOverview() {
+  return (
+    <HomeOverview
+      entries={useHomeOverview({
+        dayCount: 7,
+        visiblePlans: 0,
+        upcomingPlans: 0,
+        loading: false,
+        error: false,
+      })}
+    />
+  )
+}
 afterEach(() => {
   if (store) clearPrivateState(store.dispatch)
   store = undefined
@@ -84,7 +98,7 @@ describe('Home live poll summaries', () => {
       <Provider store={store}>
         <MemoryRouter initialEntries={['/profile']}>
           <PollsSync onSessionExpired={vi.fn()} />
-          <HomeOverview />
+          <ConnectedOverview />
           <FamilyPoll />
         </MemoryRouter>
       </Provider>,

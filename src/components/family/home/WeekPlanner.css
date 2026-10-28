@@ -122,8 +122,7 @@
 .week-planner__copy > small,
 .week-planner__copy > span,
 .week-planner__annual small,
-.week-planner__annual span > span,
-.week-planner__count {
+.week-planner__annual span > span {
   color: var(--color-text-muted);
   font-size: var(--text-xs);
 }
@@ -146,7 +145,4 @@
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   margin-bottom: 0;
-}
-.week-planner__count {
-  margin: var(--space-2) 0 0;
 }

@@ -25,6 +25,8 @@ import { prepareTravelView } from '../../../features/travel/travel-view'
 import { travelCalendarIndicator } from './CalendarTravel'
 import { calendarDayPlans } from './calendar-day-plans'
 import { calendarEventPath } from '../../../features/calendar/calendar-selection'
+import { useHomeOverview } from '../../../features/family/useHomeOverview'
+import { HomeOverview } from '../HomeOverview'
 import './WeekPlanner.css'
 import './WeekPlannerLayout.css'
 
@@ -58,6 +60,13 @@ export function WeekPlanner() {
   const upcoming = upcomingEvents(events, now)
   const days = Array.from({ length: dayCount }, (_, index) => addDays(today, index))
   const visiblePlans = calendarDayPlans(events, now, dayCount)
+  const overview = useHomeOverview({
+    dayCount,
+    visiblePlans: visiblePlans.length,
+    upcomingPlans: upcoming.length,
+    loading,
+    error: !!error,
+  })
   const plansByDay = new Map<string, typeof upcoming>()
   for (const event of visiblePlans) {
     const key = dateInputValue(eventDate(event))
@@ -273,14 +282,9 @@ export function WeekPlanner() {
                 .
               </p>
             )}
-            {!error && (
-              <p className="week-planner__count">
-                {visiblePlans.length} {visiblePlans.length === 1 ? 'plan' : 'plans'} in the next{' '}
-                {dayCount} days · {upcoming.length} upcoming in your family calendar
-              </p>
-            )}
           </>
         )}
+        <HomeOverview entries={overview} />
       </Panel>
       <aside className="home-diary__next" aria-labelledby={rangeId + '-next'}>
         <h2 id={rangeId + '-next'}>Next in your diary</h2>

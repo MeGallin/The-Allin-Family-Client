@@ -8,6 +8,26 @@ vi.mock('../../../features/widgets/useWidgets', () => ({
     refresh: vi.fn(),
   }),
 }))
+vi.mock('../../../features/family/useHomeOverview', () => ({
+  useHomeOverview: (calendar: {
+    dayCount: number
+    visiblePlans: number
+    upcomingPlans: number
+    loading: boolean
+    error: boolean
+  }) => [
+    {
+      kind: 'plans',
+      to: '/calendar',
+      label: `Plans · next ${calendar.dayCount} days`,
+      count: calendar.loading || calendar.error ? null : calendar.visiblePlans,
+      detail:
+        calendar.loading || calendar.error
+          ? undefined
+          : `${calendar.upcomingPlans} upcoming in calendar`,
+    },
+  ],
+}))
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
@@ -129,6 +149,13 @@ function poll(id: string, hours: number): FamilyPollRecord {
 function show(element: React.ReactNode) {
   return render(<MemoryRouter>{element}</MemoryRouter>)
 }
+function expectCalendarSummary(plans: number, upcoming: number) {
+  const overview = screen.getByRole('navigation', { name: 'Family at a glance' })
+  const link = within(overview).getByRole('link')
+  expect(within(link).getByText(String(plans), { exact: true })).toBeTruthy()
+  expect(within(link).getByText('Plans · next 7 days')).toBeTruthy()
+  expect(within(link).getByText(`${upcoming} upcoming in calendar`)).toBeTruthy()
+}
 beforeEach(() => {
   state.now = Date.parse('2026-10-22T12:00:00Z')
   state.events = []
@@ -190,9 +217,7 @@ describe('Week Ahead dashboard', () => {
     expect(
       screen.getByRole('button', { name: 'View 1 plan for Sunday 25 October' }).textContent,
     ).toContain('Andie at con')
-    expect(
-      screen.getByText('1 plan in the next 7 days · 0 upcoming in your family calendar'),
-    ).toBeTruthy()
+    expectCalendarSummary(1, 0)
     expect(screen.getByText('A little breathing room.')).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'View 1 plan for Sunday 25 October' }))
     const dialog = screen.getByRole('dialog', { name: 'Plans for Sunday 25 October' })
@@ -307,9 +332,7 @@ describe('Week Ahead dashboard', () => {
         .getByRole('link', { name: 'Friday 25 December, Christmas Day: no plans. Add a plan.' })
         .getAttribute('href'),
     ).toBe('/calendar?compose=event&date=2026-12-25')
-    expect(
-      screen.getByText('0 plans in the next 7 days · 0 upcoming in your family calendar'),
-    ).toBeTruthy()
+    expectCalendarSummary(0, 0)
     expect(screen.queryByText(/Weather for Guildford/)).toBeNull()
     fireEvent.click(
       screen.getByRole('button', { name: /Forecast for Friday 25 December.*high 7°C.*80%/ }),
@@ -335,9 +358,7 @@ describe('Week Ahead dashboard', () => {
     expect(planSummary.textContent).toContain('Andie at con')
     expect(planSummary.textContent).toContain('2 plans · View all')
     expect(planSummary.textContent).not.toContain('Dad')
-    expect(
-      screen.getByText('2 plans in the next 7 days · 2 upcoming in your family calendar'),
-    ).toBeTruthy()
+    expectCalendarSummary(2, 2)
   })
   it('projects annual dates and excludes the eighth day from this week', () => {
     state.events = [
@@ -348,9 +369,7 @@ describe('Week Ahead dashboard', () => {
     expect(
       screen.getByRole('link', { name: 'Saturday 24 October: 1 plan. Add a plan.' }),
     ).toBeTruthy()
-    expect(
-      screen.getByText('1 plan in the next 7 days · 2 upcoming in your family calendar'),
-    ).toBeTruthy()
+    expectCalendarSummary(1, 2)
   })
   it('uses explicit loading/error states, supports retry and avoids misleading empty counts', () => {
     state.loading = true
@@ -373,7 +392,8 @@ describe('Week Ahead dashboard', () => {
     state.polls = [poll('1', 1), poll('2', 4)]
     const view = show(<HomePriorities />)
     const section = screen.getByRole('region', { name: 'Family polls' })
-    expect(within(section).getByText('2 live polls')).toBeTruthy()
+    expect(within(section).getByText('Live polls')).toBeTruthy()
+    expect(within(section).getByText('2', { exact: true })).toBeTruthy()
     expect(within(section).getByRole('link').getAttribute('href')).toBe(
       '/my-space?show=open&view=family&tool=polls#poll-1',
     )
@@ -412,8 +432,10 @@ describe('Week Ahead dashboard', () => {
     ]
     show(<HomePriorities />)
     const summary = screen.getByRole('region', { name: 'Shopping summary' })
-    expect(within(summary).getByText('2 items to pick up')).toBeTruthy()
-    expect(within(summary).getByText('1 important')).toBeTruthy()
+    expect(within(summary).getByText('Items to pick up')).toBeTruthy()
+    expect(within(summary).getByText('2', { exact: true })).toBeTruthy()
+    expect(within(summary).getByText('Important')).toBeTruthy()
+    expect(within(summary).getByText('1', { exact: true })).toBeTruthy()
     expect(within(summary).getByRole('link').getAttribute('href')).toBe(
       '/my-space?show=needed&view=family&tool=shopping',
     )
