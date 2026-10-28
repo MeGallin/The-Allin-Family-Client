@@ -26,12 +26,22 @@ function Fixture([string] $Name) {
         ValidatePhp = { param($file) }
     }
 }
-function Expect-Failure($Options, [string] $Message) {
+function Expect-Failure($Options, [string] $Message, [switch] $ReplacementFailed) {
     $failed = $false
     try { Invoke-FamilyDeployment @Options } catch { $failed = $true }
     Assert $failed $Message
-    Assert (Test-Path -LiteralPath (Join-Path $Options.Destination 'old/.hidden')) 'Old live content was changed on failure.'
+    if ($ReplacementFailed) {
+        Assert (-not (Test-Path -LiteralPath $Options.Destination)) 'Failed promotion restored an old package.'
+    } else {
+        Assert (Test-Path -LiteralPath (Join-Path $Options.Destination 'old/.hidden')) 'Old live content was changed before replacement.'
+    }
+    Assert-CleanLive $Options -MissingDestination:$ReplacementFailed
     $script:passed++
+}
+function Assert-CleanLive($Options, [switch] $MissingDestination) {
+    $entries = @(Get-ChildItem -LiteralPath (Split-Path $Options.Destination -Parent) -Force)
+    if ($MissingDestination) { Assert ($entries.Count -eq 0) 'Failed promotion retained deployment artifacts.' }
+    else { Assert ($entries.Count -eq 1 -and $entries[0].Name -eq 'theallinfamily') 'Temporary deployment artifacts remain.' }
 }
 try {
     $options = Fixture 'success with spaces'
@@ -40,16 +50,15 @@ try {
     Assert (Test-Path -LiteralPath (Join-Path $options.Destination '.htaccess')) 'SPA rules missing.'
     Assert (-not (Test-Path -LiteralPath (Join-Path $options.Destination 'api/.env'))) 'Private environment leaked.'
     Assert (-not (Test-Path -LiteralPath (Join-Path $options.Destination 'old'))) 'Stale live files remain.'
-    $backups = Join-Path (Split-Path $options.Destination -Parent) '.deploy-backups'
-    Assert (@(Get-ChildItem -LiteralPath $backups -Recurse -Force -Filter '.hidden').Count -eq 1) 'Backup missing old hidden file.'
+    Assert-CleanLive $options
     $script:passed++
-    $options = Fixture 'rollback'
+    $options = Fixture 'promotion failure without rollback'
     function Move-Item {
         param([string] $LiteralPath, [string] $Destination, [string] $ErrorAction)
         if ((Split-Path $LiteralPath -Leaf) -like '.theallinfamily-stage-*') { throw 'Simulated final rename failure' }
         Microsoft.PowerShell.Management\Move-Item -LiteralPath $LiteralPath -Destination $Destination -ErrorAction Stop
     }
-    try { Expect-Failure $options 'Final rename failure was accepted.' } finally { Remove-Item Function:Move-Item }
+    try { Expect-Failure $options 'Final rename failure was accepted.' -ReplacementFailed } finally { Remove-Item Function:Move-Item }
     $options = Fixture 'failed-build'
     $options.Build = { throw 'Simulated build failure' }
     Expect-Failure $options 'Failed build was accepted.'
@@ -69,7 +78,16 @@ try {
     $options = Fixture 'concurrent-run'
     $handle = [IO.File]::Open((Join-Path (Split-Path $options.Destination -Parent) '.theallinfamily.deploy.lock'),
         [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
-    try { Expect-Failure $options 'Concurrent deployment was accepted.' } finally { $handle.Dispose() }
+    try {
+        $failed = $false
+        try { Invoke-FamilyDeployment @options } catch { $failed = $true }
+        Assert $failed 'Concurrent deployment was accepted.'
+        Assert (Test-Path -LiteralPath (Join-Path $options.Destination 'old/.hidden')) 'Locked destination changed.'
+        $script:passed++
+    } finally { $handle.Dispose() }
+    # A subsequent successful owner removes even a pre-existing lock on close.
+    Invoke-FamilyDeployment @options
+    Assert-CleanLive $options
     $options = Fixture 'unsafe-target'
     $options.Destination = $options.ClientRoot
     $failed = $false

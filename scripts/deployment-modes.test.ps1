@@ -42,22 +42,34 @@ function Peers($Options) {
         if ($mode -ne $Options.Mode) { Snapshot (Join-Path $parent (Get-FamilyPackageName $mode)) }
     }) -join "`n")
 }
-function Expect-Failure($Options, [string] $Reason) {
+function Expect-Failure($Options, [string] $Reason, [switch] $Locked, [switch] $ReplacementFailed) {
     $before = Snapshot $Options.Destination
     $peersBefore = Peers $Options
     $sourceBefore = (Snapshot $Options.ClientRoot) + (Snapshot $Options.ApiRoot)
     $message = ''
     try { Invoke-FamilyDeployment @Options } catch { $message = $_.Exception.Message }
     Assert ($message -match $Reason) "Wrong failure, expected $Reason; got $message"
-    Assert ((Snapshot $Options.Destination) -eq $before) 'Failed deployment changed its destination.'
+    if ($ReplacementFailed) {
+        Assert ((Snapshot $Options.Destination) -eq 'MISSING') 'Failed promotion restored or retained a package.'
+        Assert ($message -match 'No rollback copy exists') 'Promotion failure omitted the rebuild instruction.'
+    } else {
+        Assert ((Snapshot $Options.Destination) -eq $before) 'Failed deployment changed its destination.'
+    }
     Assert ((Peers $Options) -eq $peersBefore) 'Failed deployment changed another package.'
     Assert (((Snapshot $Options.ClientRoot) + (Snapshot $Options.ApiRoot)) -eq $sourceBefore) 'Packaging changed source data.'
+    if (Test-Path -LiteralPath (Split-Path $Options.Destination -Parent)) { Assert-CleanLive $Options -Locked:$Locked -MissingDestination:$ReplacementFailed }
     $script:passed++
+}
+function Assert-CleanLive($Options, [switch] $Locked, [switch] $MissingDestination) {
+    $names = @(Get-ChildItem -LiteralPath (Split-Path $Options.Destination -Parent) -Force | ForEach-Object { $_.Name })
+    $expected = @('theallinfamily', 'theallinfamily-client', 'theallinfamily-api')
+    if ($MissingDestination) { $expected = @($expected | Where-Object { $_ -ne (Get-FamilyPackageName $Options.Mode) }) }
+    if ($Locked) { $expected += '.theallinfamily.deploy.lock' }
+    Assert ((($names | Sort-Object) -join ',') -eq (($expected | Sort-Object) -join ',')) 'Temporary deployment artifacts remain.'
 }
 try {
     foreach ($mode in @('All', 'Client', 'Api')) {
         $options = Fixture $mode 'success with spaces'
-        $before = Snapshot $options.Destination
         $peersBefore = Peers $options
         $sourceBefore = (Snapshot $options.ClientRoot) + (Snapshot $options.ApiRoot)
         $script:built = 0; $script:linted = 0
@@ -80,16 +92,11 @@ try {
         Assert ($script:linted -eq $expectedLint) 'Wrong PHP lint invocation count.'
         Assert ((Peers $options) -eq $peersBefore) 'Another mode package changed.'
         Assert (((Snapshot $options.ClientRoot) + (Snapshot $options.ApiRoot)) -eq $sourceBefore) 'Source files changed.'
-        $backupRoot = Join-Path (Split-Path $options.Destination -Parent) '.deploy-backups'
-        $backups = @(Get-ChildItem -LiteralPath $backupRoot -Directory -Force)
-        Assert ($backups.Count -eq 1) 'Expected one backup.'
-        Assert ((Snapshot $backups[0].FullName) -eq $before) 'Backup differs from previous package.'
-        Assert ((Get-Content -LiteralPath (Join-Path $backupRoot '.htaccess') -Raw).Trim() -eq 'Require all denied') 'Backup access rules missing.'
+        Assert-CleanLive $options
         $firstPackage = Snapshot $options.Destination
         Invoke-FamilyDeployment @options
-        $backups = @(Get-ChildItem -LiteralPath $backupRoot -Directory -Force)
-        Assert ($backups.Count -eq 2) 'Repeated packaging overwrote a backup.'
-        Assert (@($backups | Where-Object { (Snapshot $_.FullName) -eq $firstPackage }).Count -eq 1) 'Repeated run did not back up the latest package.'
+        Assert ((Snapshot $options.Destination) -eq $firstPackage) 'Repeated packaging changed output.'
+        Assert-CleanLive $options
         $script:passed++
 
         $options = Fixture $mode 'new destination'
@@ -148,33 +155,40 @@ try {
             Set-Content -LiteralPath $Destination -Value 'corrupted copy'
         }
         try { Expect-Failure $options 'Copy verification failed' } finally { Remove-Item Function:Copy-Item }
-        $options = Fixture $mode 'rollback'
+        $options = Fixture $mode 'promotion failure without rollback'
         function Move-Item {
             param($LiteralPath, $Destination, $ErrorAction)
             if ((Split-Path $LiteralPath -Leaf) -like '.*-stage-*') { throw 'Simulated final move failure' }
             Microsoft.PowerShell.Management\Move-Item -LiteralPath $LiteralPath -Destination $Destination -ErrorAction Stop
         }
-        try { Expect-Failure $options 'Simulated final move failure' } finally { Remove-Item Function:Move-Item }
-        $options = Fixture $mode 'backup failure'
-        function Move-Item { throw 'Simulated backup move failure' }
-        try { Expect-Failure $options 'Simulated backup move failure' } finally { Remove-Item Function:Move-Item }
-        $options = Fixture $mode 'backup permissions failure'
+        try { Expect-Failure $options 'Simulated final move failure' -ReplacementFailed } finally { Remove-Item Function:Move-Item }
+        $options = Fixture $mode 'destination removal failure'
+        function Remove-Item {
+            param($LiteralPath, [switch] $Recurse, [switch] $Force, $ErrorAction)
+            if ($LiteralPath -eq $options.Destination) { throw 'Simulated destination removal failure' }
+            Microsoft.PowerShell.Management\Remove-Item -LiteralPath $LiteralPath -Recurse:$Recurse -Force:$Force -ErrorAction Stop
+        }
+        try { Expect-Failure $options 'Simulated destination removal failure' } finally { Microsoft.PowerShell.Management\Remove-Item Function:Remove-Item }
+        $options = Fixture $mode 'work permissions failure'
         function Set-Content {
             param($LiteralPath, $Value, $Encoding)
-            if ($LiteralPath -like '*\.deploy-backups\.htaccess') { throw 'Simulated backup rules write failure' }
+            if ($LiteralPath -like '*\.theallinfamily-work-*\.htaccess') { throw 'Simulated work rules write failure' }
             Microsoft.PowerShell.Management\Set-Content -LiteralPath $LiteralPath -Value $Value -Encoding $Encoding
         }
-        try { Expect-Failure $options 'Simulated backup rules write failure' } finally { Remove-Item Function:Set-Content }
-        $options = Fixture $mode 'linked backup rules'
+        try { Expect-Failure $options 'Simulated work rules write failure' } finally { Remove-Item Function:Set-Content }
+        $options = Fixture $mode 'legacy backups untouched'
         $backupRoot = Join-Path (Split-Path $options.Destination -Parent) '.deploy-backups'
         $null = New-Item -ItemType Directory -Path $backupRoot
-        $link = Join-Path $backupRoot '.htaccess'
-        $null = New-Item -ItemType Junction -Path $link -Target (Join-Path $options.ApiRoot '.local')
-        try { Expect-Failure $options 'junctions' } finally { [IO.Directory]::Delete($link) }
+        Set-Content -LiteralPath (Join-Path $backupRoot 'old.txt') -Value 'existing backup'
+        $legacyBefore = Snapshot $backupRoot
+        Invoke-FamilyDeployment @options
+        Assert ((Snapshot $backupRoot) -eq $legacyBefore) 'Existing backups were changed.'
+        Assert (@(Get-ChildItem -LiteralPath (Split-Path $options.Destination -Parent) -Force).Count -eq 4) 'Unexpected deployment files remain.'
+        $script:passed++
         $options = Fixture $mode 'lock'
         $lockPath = Join-Path (Split-Path $options.Destination -Parent) '.theallinfamily.deploy.lock'
         $handle = [IO.File]::Open($lockPath, [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
-        try { Expect-Failure $options 'being used|another process|sharing violation' } finally { $handle.Dispose() }
+        try { Expect-Failure $options 'being used|another process|sharing violation' -Locked } finally { $handle.Dispose() }
         # A failed attempt must release its lock so another attempt can succeed.
         Invoke-FamilyDeployment @options
         $script:passed++
@@ -193,6 +207,68 @@ try {
         $options.Destination = Join-Path $link ('live/' + (Get-FamilyPackageName $mode))
         try { Expect-Failure $options 'junctions' } finally { [IO.Directory]::Delete($link) }
     }
+    $options = Fixture 'All' 'cleanup failure'
+    Set-Content -LiteralPath (Join-Path $options.ClientRoot 'dist/retained.txt') -Value 'locked new staging payload' -Encoding ASCII
+    $options.ValidatePhp = { param($file) throw 'Simulated PHP failure before promotion' }
+    $destinationBefore = Snapshot $options.Destination
+    $parent = Split-Path $options.Destination -Parent
+    $legacy = Join-Path $parent '.deploy-backups'
+    $null = New-Item -ItemType Directory -Path $legacy
+    Set-Content -LiteralPath (Join-Path $legacy 'existing.txt') -Value 'legacy backup' -Encoding ASCII
+    $legacyBefore = Snapshot $legacy
+    $peersBefore = Peers $options
+    $sourceBefore = (Snapshot $options.ClientRoot) + (Snapshot $options.ApiRoot)
+    $script:cleanupDeleted = 0
+    function Remove-Item {
+        param($LiteralPath, [switch] $Recurse, [switch] $Force, $ErrorAction)
+        # Model partial recursive deletion: some files disappear before a locked
+        # payload fails. Including the root rule here catches the old root-delete bug.
+        foreach ($file in Get-ChildItem -LiteralPath $LiteralPath -Recurse -Force -File | Sort-Object FullName) {
+            if ($file.Name -eq 'retained.txt') { throw 'Simulated cleanup failure' }
+            Microsoft.PowerShell.Management\Remove-Item -LiteralPath $file.FullName -Force -ErrorAction Stop
+            $script:cleanupDeleted++
+        }
+        Microsoft.PowerShell.Management\Remove-Item -LiteralPath $LiteralPath -Recurse:$Recurse -Force:$Force -ErrorAction Stop
+    }
+    $message = ''
+    try { Invoke-FamilyDeployment @options } catch { $message = $_.Exception.Message }
+    finally { Microsoft.PowerShell.Management\Remove-Item Function:Remove-Item }
+    Assert ($message -match 'Simulated PHP failure before promotion') 'Cleanup failure replaced the original validation error.'
+    Assert ((Snapshot $options.Destination) -eq $destinationBefore) 'Failed validation changed the current package.'
+    $parent = Split-Path $options.Destination -Parent
+    Assert (-not (Test-Path -LiteralPath (Join-Path $parent '.theallinfamily.deploy.lock'))) 'Cleanup failure left the lock.'
+    $work = @(Get-ChildItem -LiteralPath $parent -Directory -Force -Filter '.theallinfamily-work-*')
+    Assert ($work.Count -eq 1) 'Cleanup failure did not retain the work directory.'
+    Assert ($script:cleanupDeleted -gt 0) 'Cleanup failed before any partial deletion.'
+    $stage = @(Get-ChildItem -LiteralPath $work[0].FullName -Directory -Force -Filter '.*-stage-*')
+    Assert ($stage.Count -eq 1) 'Partial cleanup lost the new staging directory.'
+    Assert (Test-Path -LiteralPath (Join-Path $stage[0].FullName 'retained.txt')) 'Partial cleanup lost the new staging payload.'
+    $expectedRules = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("Require all denied`r`n"))
+    $actualRules = [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $work[0].FullName '.htaccess')))
+    Assert ($actualRules -eq $expectedRules) 'Partial cleanup lost or changed the work access rule.'
+    Assert ((Snapshot $legacy) -eq $legacyBefore) 'Partial cleanup changed legacy backups.'
+    Assert ((Peers $options) -eq $peersBefore) 'Partial cleanup changed another package.'
+    Assert (((Snapshot $options.ClientRoot) + (Snapshot $options.ApiRoot)) -eq $sourceBefore) 'Partial cleanup changed source files.'
+    Remove-DeployWork $work[0].FullName $parent
+    Assert (-not (Test-Path -LiteralPath $work[0].FullName)) 'Staging cleanup left the work directory.'
+    Assert (@(Get-ChildItem -LiteralPath $parent -Force).Count -eq 4) 'Unexpected deployment artifacts remain.'
+    $script:passed++
+
+    $options = Fixture 'All' 'destination junction refusal'
+    $external = Join-Path $options.ApiRoot '.local'
+    $externalBefore = Snapshot $external
+    $null = New-Item -ItemType Junction -Path (Join-Path $options.Destination 'old/linked') -Target $external
+    $message = ''
+    try { Invoke-FamilyDeployment @options } catch { $message = $_.Exception.Message }
+    Assert ($message -match 'Package replacement failed.*junctions') 'Unsafe destination deletion was accepted.'
+    Assert ((Snapshot $external) -eq $externalBefore) 'Cleanup changed a junction target.'
+    $parent = Split-Path $options.Destination -Parent
+    Assert (Test-Path -LiteralPath (Join-Path $options.Destination 'old/.hidden')) 'Unsafe destination was partially deleted.'
+    Assert (-not (Test-Path -LiteralPath (Join-Path $parent '.theallinfamily.deploy.lock'))) 'Unsafe cleanup left the lock.'
+    [IO.Directory]::Delete((Join-Path $options.Destination 'old/linked'))
+    Assert-CleanLive $options
+    $script:passed++
+
     $options = Fixture 'All' 'cross mode lock'
     $nested = $options.Clone()
     $nested.Mode = 'Client'

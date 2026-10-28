@@ -468,7 +468,11 @@ is not included in a production build.
 
 ### Prepare the Windows upload folder
 
-From this client directory, choose the package you need:
+From this client directory, use `npm run build:deploy` for the approved single-folder
+upload workflow (`live\theallinfamily`). The other commands below are explicit
+partial-package alternatives; they create separate sibling folders and are not
+used for the single-folder workflow. For a scoped release, build the combined
+package and upload only its approved client/API delta.
 
 ```powershell
 npm run build:deploy
@@ -497,26 +501,41 @@ if missing. The other two package folders remain untouched. Each command:
 2. For client/full packages, runs the normal TypeScript/Vite build with root
    hosting (`/`) and same-origin API (`/api`) explicitly selected. Normal
    `npm run build` remains available.
-3. Copies only the selected runtime into a fresh sibling staging folder: client
+3. Copies only the selected runtime into a short-lived work directory under `live`: client
    dist files (including the production `.htaccess`) and/or `api/index.php`,
    `api/.htaccess`, `api/.env.example` and PHP runtime under `api/src`.
    Verifies each copy with SHA-256 and checks every packaged PHP file with `php -l`.
-4. Moves the entire previous destination, including hidden/stale files, into
-   `live\.deploy-backups\<package-folder>-<timestamp>-<id>`, then moves the validated
-   staging folder into its place. A failed final move restores the previous folder.
+4. Validates the existing destination tree, deletes the disposable previous
+   package, then renames the validated new staging folder into place. No deployment
+   backup or temporary rollback copy is created: the repository is the source of truth.
 
 A build/copy/validation error exits nonzero without replacing the live folder.
-Failed staging folders remain outside the upload folder for diagnosis; their
-paths are printed. Backups are retained until manually reviewed/removed and are
-blocked from Apache access with their own `.htaccess`. Only one family packaging
-command can run at a time. No server upload or database changes occur.
+The `.theallinfamily-work-*` directory is blocked from Apache access with its own
+`.htaccess` and is removed on success or recoverable failure. Cleanup keeps that
+deny rule in place until all work payload has been removed, so a partial
+cleanup failure retains protection for any remaining files. The shared lock file
+uses delete-on-close, including error exits, without a release/delete race. Only
+the selected package remains at rest; existing legacy `.deploy-backups` content
+is untouched. Only one family packaging command can run at a time. No server
+upload or database changes occur.
+
+Once replacement begins, a deletion or promotion failure exits nonzero and may
+leave the destination missing or incomplete. No rollback is attempted and no copy
+of the previous package is retained; fix the reported error and rebuild from the
+repository. Pre-existing legacy backup folders are not part of this workflow.
+Filesystem locks/permissions can prevent cleanup of the new staging files: the
+command reports their retained path and exits nonzero. Forced process termination
+or a power loss can also leave new staging files. These exceptional artifacts are
+never silently purged on the next run.
 
 The resulting folder contains only the selected runtime, not a configured
 production installation. Development `.env`, Git metadata, node_modules, tests,
-CLI tools, migrations, database data, photos and sessions are excluded. Any config
-or media manually put in the local destination is replaced on the next run and
-retained only in that run's backup. Keep deployment credentials/private data
-separate from this generated folder.
+the client source `scripts/` directory (including the deployment tooling), other
+CLI tools, migrations, database data, photos and sessions are excluded. The
+deployment scripts remain tracked in Git because the npm deployment commands
+invoke them; `.gitignore` does not control package contents. Any config or media
+manually put in the local destination is deleted when replacement begins. Keep
+deployment credentials/private data separate from this generated folder.
 
 Before the first server upload, complete the API README's hosting setup: provision
 the database, apply migrations through 015 using separate deployment access,
@@ -564,20 +583,21 @@ folders, server or database:
 npm run test:deploy
 ```
 
-The original 12 checks plus 66 mode-specific checks cover all three package modes:
+The synthetic checks cover all three package modes:
 exact file sets/copy hashes, unused build/PHP dependencies, missing destination
-creation, repeated-run hidden-file backups, unchanged sibling packages/source data,
+creation, repeated-run cleanup, unchanged sibling packages/source data,
 stale-file removal and secret/source-map/API-entry exclusion. Failure cases include
-build/output/PHP/copy errors, corrupt copies, backup writes/moves, final-move rollback,
-invalid modes/unsafe destinations, junctions (including backup access rules), lock
+build/output/PHP/copy errors, corrupt copies, temporary access-rule writes,
+destination deletion errors and promotion failures without rollback,
+invalid modes/unsafe destinations, junctions, legacy-backup preservation, lock
 recovery and cross-mode concurrent runs. Synthetic fault injection exercises errors
 without changing a real package or database. This suite does not upload to hosting.
 
-The three real npm commands were also exercised locally: API20/client96/full116
-files matched source hashes exactly, backups matched prior packages, and the other
-two packages stayed byte-for-byte unchanged after each run. Invalid batch mode
-returned exit1. These counts describe the current build and can change as features
-are added. Active server configuration and database migrations remain separate.
+Earlier real-package checks covered all three modes before the temporary cleanup
+change; those historical file counts and retained-backup checks do not validate
+the current cleanup behavior. Synthetic coverage was updated for the no-backup
+revision, but execution is pending. Active server configuration and database
+migrations remain separate.
 
 npm run preview previews a build without the development API proxy. Use npm run
 dev for the integrated local app.

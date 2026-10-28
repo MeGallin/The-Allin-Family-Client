@@ -40,6 +40,41 @@ function Copy-VerifiedFile([string] $Source, [string] $Target) {
     }
 }
 
+function Assert-OrdinaryTree([string] $Path) {
+    Assert-OrdinaryPath $Path
+    $pending = New-Object 'Collections.Generic.Stack[string]'
+    $pending.Push($Path)
+    while ($pending.Count) {
+        foreach ($entry in Get-ChildItem -LiteralPath $pending.Pop() -Force) {
+            Assert-OrdinaryPath $entry.FullName
+            if ($entry.PSIsContainer) { $pending.Push($entry.FullName) }
+        }
+    }
+}
+
+function Remove-DeployWork([string] $Path, [string] $Parent) {
+    $resolved = [IO.Path]::GetFullPath($Path)
+    if ((Split-Path $resolved -Parent) -ne $Parent -or
+        (Split-Path $resolved -Leaf) -notlike '.theallinfamily-work-*') {
+        throw "Refusing unsafe deployment cleanup: $resolved"
+    }
+    if (-not (Test-Path -LiteralPath $resolved)) { return }
+    Assert-OrdinaryTree $resolved
+    # Keep the deny rule until every payload child has been removed. A recursive
+    # removal of the work root could delete the rule before failing on a file.
+    foreach ($entry in Get-ChildItem -LiteralPath $resolved -Force) {
+        if ($entry.Name -ne '.htaccess') {
+            Remove-Item -LiteralPath $entry.FullName -Recurse -Force -ErrorAction Stop
+        }
+    }
+    $rules = Join-Path $resolved '.htaccess'
+    if (Test-Path -LiteralPath $rules) {
+        Remove-Item -LiteralPath $rules -Force -ErrorAction Stop
+    }
+    # Nonrecursive: after removing the rule, only an empty directory may go.
+    [IO.Directory]::Delete($resolved)
+}
+
 function Invoke-FamilyDeployment {
     param(
         [ValidateSet('All', 'Client', 'Api')][string] $Mode = 'All',
@@ -74,15 +109,16 @@ function Invoke-FamilyDeployment {
     if ((Test-Path -LiteralPath $target) -and -not (Test-Path -LiteralPath $target -PathType Container)) {
         throw 'Deployment destination is a file, not a folder.'
     }
-    # The previous directory is renamed as a whole, never traversed or copied.
-    # Checking its ancestors is sufficient and avoids scanning a large legacy site.
     $lock = $null
     $stage = $null
-    $backup = $null
+    $work = $null
+    $deploymentError = $null
     try {
         $lockPath = Join-Path $parent '.theallinfamily.deploy.lock'
         Assert-OrdinaryPath $lockPath
-        $lock = [IO.File]::Open($lockPath, [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
+        # Delete atomically on close, avoiding a close/delete race with the next run.
+        $lock = [IO.FileStream]::new($lockPath, [IO.FileMode]::OpenOrCreate,
+            [IO.FileAccess]::ReadWrite, [IO.FileShare]::None, 4096, [IO.FileOptions]::DeleteOnClose)
         Write-Host "Preparing $Mode package. Existing packages remain untouched until validation passes."
         $runtimeRoots = @()
         if ($includeClient) {
@@ -106,7 +142,12 @@ function Invoke-FamilyDeployment {
             foreach ($entry in Get-ChildItem -LiteralPath $root -Recurse -Force) { Assert-OrdinaryPath $entry.FullName }
         }
         $tag = (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [Guid]::NewGuid().ToString('N').Substring(0, 8)
-        $stage = Join-Path $parent ".$packageName-stage-$tag"
+        # Stage only the new build; the repository is the source of truth.
+        $workPath = Join-Path $parent ".theallinfamily-work-$tag"
+        $null = New-Item -ItemType Directory -Path $workPath
+        $work = $workPath
+        Set-Content -LiteralPath (Join-Path $work '.htaccess') -Value 'Require all denied' -Encoding ASCII
+        $stage = Join-Path $work ".$packageName-stage-$tag"
         $null = New-Item -ItemType Directory -Path $stage
         if ($includeClient) {
             foreach ($file in Get-ChildItem -LiteralPath $dist -Recurse -Force -File) {
@@ -136,39 +177,39 @@ function Invoke-FamilyDeployment {
                 & $ValidatePhp $file.FullName
             }
         }
-        # Keep all previous content outside the upload directory, including hidden files.
-        $backupRoot = Join-Path $parent '.deploy-backups'
-        Assert-OrdinaryPath $backupRoot
-        $null = New-Item -ItemType Directory -Path $backupRoot -Force
-        $backupRules = Join-Path $backupRoot '.htaccess'
-        Assert-OrdinaryPath $backupRules
-        Set-Content -LiteralPath $backupRules -Value 'Require all denied' -Encoding ASCII
-        Assert-OrdinaryPath $target
-        if (Test-Path -LiteralPath $target) {
-            $backup = Join-Path $backupRoot "$packageName-$tag"
-            Move-Item -LiteralPath $target -Destination $backup -ErrorAction Stop
-        }
+        # The destination is disposable. No previous-package copy or rollback.
         try {
+            Assert-OrdinaryPath $target
+            if (Test-Path -LiteralPath $target) {
+                Assert-OrdinaryTree $target
+                Remove-Item -LiteralPath $target -Recurse -Force -ErrorAction Stop
+            }
             Move-Item -LiteralPath $stage -Destination $target -ErrorAction Stop
             $stage = $null
         } catch {
-            if ($backup -and -not (Test-Path -LiteralPath $target)) {
-                Move-Item -LiteralPath $backup -Destination $target -ErrorAction Stop
-                $backup = $null
-            }
-            throw
+            throw "Package replacement failed; the destination may be missing or incomplete. No rollback copy exists. Rebuild from the repository. $($_.Exception.Message)"
         }
         Write-Host "Upload package ready: $target"
-        if ($backup) { Write-Host "Previous files backed up: $backup" }
         Write-Host 'Upload only the CONTENTS of this package to public_html; do not delete or mirror the remote directory.'
         if (-not $includeApi) { Write-Host 'Client-only package: the server api folder must be retained.' }
         if (-not $includeClient) { Write-Host 'API-only package: merge the included api folder into public_html; retain existing client files and server api/.env.' }
         Write-Host 'Server environment, database migrations and private photo/session storage are managed separately; verify hosting setup before uploading.'
         Write-Host 'No database, credentials, local uploads, tests or development tools have been copied.'
     } catch {
-        if ($stage) { Write-Warning "Incomplete staging folder retained for diagnosis: $stage" }
+        $deploymentError = $_
         throw
     } finally {
-        if ($lock) { $lock.Dispose() }
+        try {
+            if ($work) {
+                try { Remove-DeployWork $work $parent }
+                catch {
+                    $message = "Temporary deployment files could not be removed: $work. $($_.Exception.Message)"
+                    if (-not $deploymentError) { throw $message }
+                    Write-Warning $message
+                }
+            }
+        } finally {
+            if ($lock) { $lock.Dispose() }
+        }
     }
 }
