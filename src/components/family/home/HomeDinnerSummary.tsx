@@ -1,5 +1,5 @@
 import { formatMealDate, mealToday, shiftMealDay } from '../../../features/widgets/meal-calendar'
-import { ArrowUpRight, ChevronDown, Utensils } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronDown, Utensils } from 'lucide-react'
 import { Link } from 'react-router'
 import { useWidgets } from '../../../features/widgets/useWidgets'
 import {
@@ -29,33 +29,71 @@ export function HomeDinnerSummary() {
   )
   const upcoming = entries.filter((entry) => entry.publication.forDate >= today)
   const dinners = upcoming.slice(0, 4)
-  const diaryMeals = diaryDays(entries, now).flatMap((day) => day.meals)
+  const days = diaryDays(entries, now)
+  const diaryMeals = days.flatMap((day) => day.meals)
   const eaten = diaryMeals.filter((entry) => entry.publication.eatenAt).length
   return (
-    <div className="home-index-item" aria-label="Published family meals" aria-busy={loading}>
+    <section className="home-meal-card" aria-labelledby="home-meal-title" aria-busy={loading}>
       <HomeDataError error={error} retry={refresh} />
+      <div className="home-meal-card__heading">
+        <WidgetAppIcon id="dinner" compact />
+        <div className="home-index-row__label">
+          <h3 id="home-meal-title">Seven-day meal diary</h3>
+          <small>Shared meals, kept in one place</small>
+        </div>
+        <div className="home-meal-card__summary">
+          {loading || error ? (
+            <strong>{loading ? 'Loading family meals…' : 'Meal summary unavailable'}</strong>
+          ) : (
+            <p className="home-meal-card__totals">
+              <span>
+                <small>Eaten</small>
+                <strong>{eaten}</strong>
+              </span>
+              <span>
+                <small>Published {diaryMeals.length === 1 ? 'choice' : 'choices'}</small>
+                <strong>{diaryMeals.length}</strong>
+              </span>
+            </p>
+          )}
+          {!loading && !error && (
+            <p className="home-meal-card__next">
+              <small>Next meal</small>
+              <strong>{dinners[0]?.publication.meal ?? 'No upcoming published meals'}</strong>
+            </p>
+          )}
+        </div>
+      </div>
+      {!loading && !error && (
+        <ol className="home-meal-week" aria-label="Published meals in the last seven days">
+          {[...days].reverse().map((day) => {
+            const logged = day.meals.some((entry) => entry.publication.eatenAt)
+            const published = day.meals.length > 0
+            const status = logged ? 'Eaten' : published ? 'Published' : 'No meal'
+            return (
+              <li key={day.date} className={published ? 'home-meal-week__published' : undefined}>
+                <time dateTime={day.date}>
+                  {formatMealDate(day.date, { weekday: 'short' })}
+                  <span>{formatMealDate(day.date, { day: 'numeric', month: 'short' })}</span>
+                </time>
+                <span className="home-meal-week__mark" aria-hidden="true">
+                  {logged ? <Icon icon={Check} /> : published ? '•' : '—'}
+                </span>
+                <small className="sr-only">{status}</small>
+              </li>
+            )
+          })}
+        </ol>
+      )}
+      {!loading && !error && (
+        <p className="home-meal-week__legend" aria-hidden="true">
+          Last seven days · ✓ Eaten · • Published · — No meal
+        </p>
+      )}
       <details className="home-meal-index">
-        <summary className="home-index-row">
-          <WidgetAppIcon id="dinner" compact />
-          <span className="home-index-row__label">
-            <strong>Seven-day meal diary</strong>
-            <small>Shared meals, kept in one place</small>
-          </span>
-          <span className="home-index-row__status">
-            <strong>
-              {loading
-                ? 'Loading family meals…'
-                : error
-                  ? 'Meal summary unavailable'
-                  : `${eaten} eaten · ${diaryMeals.length} published ${diaryMeals.length === 1 ? 'choice' : 'choices'}`}
-            </strong>
-            {!loading && !error && (
-              <span>{dinners[0]?.publication.meal ?? 'No upcoming published meals'}</span>
-            )}
-          </span>
-          <span className="home-index-row__action">
-            View <Icon icon={ChevronDown} />
-          </span>
+        <summary>
+          <span>View meals and all seven days</span>
+          <Icon icon={ChevronDown} />
         </summary>
         <div className="home-dinners">
           {dinners.map((entry) => {
@@ -129,6 +167,6 @@ export function HomeDinnerSummary() {
           </Link>
         </div>
       </details>
-    </div>
+    </section>
   )
 }

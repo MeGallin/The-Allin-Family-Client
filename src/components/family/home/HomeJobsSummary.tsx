@@ -75,10 +75,22 @@ export function HomeJobsSummary() {
             <strong>{loading ? 'Loading family jobs…' : 'Jobs summary unavailable'}</strong>
           ) : (
             <>
-              <strong>
-                {open.length} open · {open.filter((j) => j.targetDate === today).length} planned
-                today · {completed} done this week
-              </strong>
+              <span className="home-index-row__metrics">
+                <span>
+                  <small>Open</small>
+                  <strong className="home-index-row__count">{open.length}</strong>
+                </span>
+                <span>
+                  <small>Planned today</small>
+                  <strong className="home-index-row__count">
+                    {open.filter((j) => j.targetDate === today).length}
+                  </strong>
+                </span>
+                <span>
+                  <small>Done this week</small>
+                  <strong className="home-index-row__count">{completed}</strong>
+                </span>
+              </span>
               <span>
                 {next
                   ? 'Next target: ' +

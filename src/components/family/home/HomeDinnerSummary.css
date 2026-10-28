@@ -1,3 +1,133 @@
+.home-meal-card {
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+}
+.home-meal-card__heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  overflow-wrap: anywhere;
+}
+.home-meal-card__heading h3 {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-heading);
+  line-height: var(--line-compact);
+}
+.home-meal-card__summary {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: var(--space-2);
+  min-width: 0;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  line-height: var(--line-compact);
+}
+.home-meal-card__totals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--color-text-muted);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+}
+.home-meal-card__totals > span,
+.home-meal-card__next {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.home-meal-card__summary small {
+  color: var(--color-text-muted);
+  font-size: var(--text-caption);
+  font-weight: normal;
+}
+.home-meal-card__totals strong {
+  color: var(--color-text);
+  font-size: var(--text-md);
+  font-weight: var(--weight-heading);
+  font-variant-numeric: tabular-nums;
+}
+.home-meal-card__next {
+  margin: 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-heading);
+}
+.home-meal-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0 var(--space-3) var(--space-3);
+  list-style: none;
+}
+.home-meal-week > li {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  min-width: 0;
+  gap: var(--space-1);
+  padding: var(--space-2) 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  font-size: var(--text-caption);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.home-meal-week time {
+  display: grid;
+  gap: var(--space-1);
+  font-weight: var(--weight-heading);
+  color: var(--color-text);
+  font-size: var(--text-xs);
+}
+.home-meal-week time > span {
+  color: var(--color-text-muted);
+  font-size: var(--text-caption);
+  font-weight: normal;
+}
+.home-meal-week__mark {
+  display: grid;
+  place-items: center;
+  min-height: var(--space-5);
+  font-size: var(--text-md);
+  font-weight: var(--weight-heading);
+}
+.home-meal-week__legend {
+  margin: 0;
+  padding: 0 var(--space-4) var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--text-caption);
+}
+.home-meal-week > .home-meal-week__published {
+  border-color: var(--color-accent);
+  color: var(--color-link);
+  background: var(--color-accent-soft);
+}
+.home-meal-index > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: var(--control-min-height);
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-link);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-heading);
+  border-top: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+}
 .home-meal-index > summary {
   cursor: pointer;
   list-style: none;
@@ -5,7 +135,7 @@
 .home-meal-index > summary::-webkit-details-marker {
   display: none;
 }
-.home-meal-index[open] > summary .home-index-row__action > .ui-icon {
+.home-meal-index[open] > summary > .ui-icon {
   transform: rotate(180deg);
 }
 .home-meal-index__source {
@@ -76,6 +206,16 @@
   display: none;
 }
 @container family-content (min-width: 36rem) {
+  .home-meal-card__heading {
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .home-meal-card__summary {
+    grid-column: auto;
+  }
+  .home-meal-week {
+    gap: var(--space-2);
+    padding-inline: var(--space-4);
+  }
   .home-dinner__action > span {
     display: block;
     font-size: var(--text-xs);

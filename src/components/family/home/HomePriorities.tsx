@@ -24,83 +24,109 @@ export function HomePriorities({ children }: { children?: ReactNode }) {
   const important = needed.filter((item) => item.important).length
   return (
     <section className="home-activity" aria-labelledby="home-activity-title">
-      <h2 id="home-activity-title">Around the family</h2>
+      <header className="home-activity__heading">
+        <h2 id="home-activity-title">Around the family</h2>
+        <p>The useful bits of home, gathered in one place.</p>
+      </header>
       <div className="home-family-index">
         <HomeDinnerSummary />
-        <section
-          id="family-poll"
-          tabIndex={-1}
-          aria-label="Family polls"
-          className="home-index-item"
-        >
-          <HomeDataError error={polls.error} retry={polls.refresh} />
-          <Link to={poll ? pollLink(poll) : builtinWidgetPath('polls')} className="home-index-row">
-            <WidgetAppIcon id="polls" compact />
-            <span className="home-index-row__label">
-              <strong>Family polls</strong>
-              <small>Decisions for everyone</small>
-            </span>
-            <span className="home-index-row__status">
-              <strong>
-                {polls.loading
-                  ? 'Loading polls…'
-                  : polls.error
-                    ? 'Open polls to check'
-                    : `${open.length} live ${open.length === 1 ? 'poll' : 'polls'}`}
-              </strong>
-              {!polls.loading && !polls.error && (
-                <>
-                  <span>{poll?.title ?? 'No live polls right now'}</span>
-                  {nextClosing ? (
+        <div className="home-destination-grid">
+          <section
+            id="family-poll"
+            tabIndex={-1}
+            aria-label="Family polls"
+            className="home-index-item"
+          >
+            <HomeDataError error={polls.error} retry={polls.refresh} />
+            <Link
+              to={poll ? pollLink(poll) : builtinWidgetPath('polls')}
+              className="home-index-row"
+            >
+              <WidgetAppIcon id="polls" compact />
+              <span className="home-index-row__label">
+                <strong>Family polls</strong>
+                <small>Decisions for everyone</small>
+              </span>
+              <span className="home-index-row__status">
+                {polls.loading || polls.error ? (
+                  <strong>{polls.loading ? 'Loading polls…' : 'Open polls to check'}</strong>
+                ) : (
+                  <span className="home-index-row__metrics">
                     <span>
-                      <PollTimeRemaining value={nextClosing.closesAt} /> ·{' '}
-                      {awaitingVote ? `${awaitingVote} awaiting your vote` : 'You’re all caught up'}
+                      <small>Live {open.length === 1 ? 'poll' : 'polls'}</small>
+                      <strong className="home-index-row__count">{open.length}</strong>
                     </span>
-                  ) : (
-                    <span>
-                      {recentResult
-                        ? 'Voting closed · See the latest result'
-                        : 'Start a conversation in Polls'}
+                  </span>
+                )}
+                {!polls.loading && !polls.error && (
+                  <>
+                    <span className="home-index-row__title">
+                      {poll?.title ?? 'No live polls right now'}
                     </span>
-                  )}
-                </>
-              )}
-            </span>
-            <span className="home-index-row__action">
-              Open <Icon icon={ArrowUpRight} />
-            </span>
-          </Link>
-        </section>
-        <section aria-label="Shopping summary" className="home-index-item">
-          <HomeDataError error={shopping.error} retry={shopping.refresh} />
-          <Link to={builtinWidgetPath('shopping', 'show=needed')} className="home-index-row">
-            <WidgetAppIcon id="shopping" compact />
-            <span className="home-index-row__label">
-              <strong>Shopping list</strong>
-              <small>Shared things to pick up</small>
-            </span>
-            <span className="home-index-row__status">
-              {shopping.loading || shopping.error ? (
-                <strong>{shopping.loading ? 'Loading shopping…' : 'Open the list to check'}</strong>
-              ) : (
-                <>
+                    {nextClosing ? (
+                      <span>
+                        <PollTimeRemaining value={nextClosing.closesAt} /> ·{' '}
+                        {awaitingVote
+                          ? `${awaitingVote} awaiting your vote`
+                          : 'You’re all caught up'}
+                      </span>
+                    ) : (
+                      <span>
+                        {recentResult
+                          ? 'Voting closed · See the latest result'
+                          : 'Start a conversation in Polls'}
+                      </span>
+                    )}
+                  </>
+                )}
+              </span>
+              <span className="home-index-row__action">
+                Open <Icon icon={ArrowUpRight} />
+              </span>
+            </Link>
+          </section>
+          <section aria-label="Shopping summary" className="home-index-item">
+            <HomeDataError error={shopping.error} retry={shopping.refresh} />
+            <Link to={builtinWidgetPath('shopping', 'show=needed')} className="home-index-row">
+              <WidgetAppIcon id="shopping" compact />
+              <span className="home-index-row__label">
+                <strong>Shopping list</strong>
+                <small>Shared things to pick up</small>
+              </span>
+              <span className="home-index-row__status">
+                {shopping.loading || shopping.error ? (
                   <strong>
-                    {needed.length} {needed.length === 1 ? 'item to pick up' : 'items to pick up'}
+                    {shopping.loading ? 'Loading shopping…' : 'Open the list to check'}
                   </strong>
-                  {important ? (
-                    <span className="home-index-row__important">{important} important</span>
-                  ) : (
-                    <span>{needed.length ? 'Ready for the next shop' : 'All caught up'}</span>
-                  )}
-                </>
-              )}
-            </span>
-            <span className="home-index-row__action">
-              Open <Icon icon={ArrowUpRight} />
-            </span>
-          </Link>
-        </section>
-        {children}
+                ) : (
+                  <>
+                    <span className="home-index-row__metrics">
+                      <span>
+                        <small>
+                          {needed.length === 1 ? 'Item to pick up' : 'Items to pick up'}
+                        </small>
+                        <strong className="home-index-row__count">{needed.length}</strong>
+                      </span>
+                      {important > 0 && (
+                        <span>
+                          <small className="home-index-row__important">Important</small>
+                          <strong className="home-index-row__count">{important}</strong>
+                        </span>
+                      )}
+                    </span>
+                    {!important && (
+                      <span>{needed.length ? 'Ready for the next shop' : 'All caught up'}</span>
+                    )}
+                  </>
+                )}
+              </span>
+              <span className="home-index-row__action">
+                Open <Icon icon={ArrowUpRight} />
+              </span>
+            </Link>
+          </section>
+          {children}
+        </div>
       </div>
     </section>
   )

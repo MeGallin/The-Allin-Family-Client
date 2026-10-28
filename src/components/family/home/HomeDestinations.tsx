@@ -32,6 +32,7 @@ export function HomeDestinations({ name }: { name: string }) {
             <small>The family album</small>
           </span>
           <span className="home-index-row__status">
+            <small className="home-index-row__caption">Latest memory</small>
             <strong>
               {loading
                 ? 'Loading memories…'
@@ -54,9 +55,11 @@ export function HomeDestinations({ name }: { name: string }) {
         </span>
         <span className="home-index-row__label">
           <strong>{name}’s personal notes</strong>
-          <small>Only for you</small>
         </span>
-        <span className="home-index-row__status">A private space for your thoughts</span>
+        <span className="home-index-row__status">
+          <small className="home-index-row__caption">Only for you</small>
+          <span>A private space for your thoughts</span>
+        </span>
         <span className="home-index-row__action">
           Open <Icon icon={ArrowUpRight} />
         </span>
