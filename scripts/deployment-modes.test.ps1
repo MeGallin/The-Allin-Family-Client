@@ -25,10 +25,10 @@ function Fixture([string] $Mode, [string] $Name) {
         'api/tools/secret.php', 'api/tests/test.php')) {
         Set-Content -LiteralPath (Join-Path $root $relative) -Value "synthetic $relative" -Encoding ASCII
     }
-    foreach ($otherMode in @('All', 'Client', 'Api')) {
-        $old = Join-Path $root ('live/' + (Get-FamilyPackageName $otherMode) + '/old')
+    foreach ($folder in @('theallinfamily', 'unrelated')) {
+        $old = Join-Path $root ('live/' + $folder + '/old')
         $null = New-Item -ItemType Directory -Path $old -Force
-        Set-Content -LiteralPath (Join-Path $old '.hidden') -Value "previous $otherMode" -Encoding ASCII
+        Set-Content -LiteralPath (Join-Path $old '.hidden') -Value "previous $folder" -Encoding ASCII
     }
     return @{
         Mode = $Mode; ClientRoot = Join-Path $root 'client'; ApiRoot = Join-Path $root 'api'
@@ -38,9 +38,7 @@ function Fixture([string] $Mode, [string] $Name) {
 }
 function Peers($Options) {
     $parent = Split-Path $Options.Destination -Parent
-    return (@(foreach ($mode in @('All', 'Client', 'Api')) {
-        if ($mode -ne $Options.Mode) { Snapshot (Join-Path $parent (Get-FamilyPackageName $mode)) }
-    }) -join "`n")
+    return Snapshot (Join-Path $parent 'unrelated')
 }
 function Expect-Failure($Options, [string] $Reason, [switch] $Locked, [switch] $ReplacementFailed) {
     $before = Snapshot $Options.Destination
@@ -55,14 +53,14 @@ function Expect-Failure($Options, [string] $Reason, [switch] $Locked, [switch] $
     } else {
         Assert ((Snapshot $Options.Destination) -eq $before) 'Failed deployment changed its destination.'
     }
-    Assert ((Peers $Options) -eq $peersBefore) 'Failed deployment changed another package.'
+    Assert ((Peers $Options) -eq $peersBefore) 'Failed deployment changed an unrelated folder.'
     Assert (((Snapshot $Options.ClientRoot) + (Snapshot $Options.ApiRoot)) -eq $sourceBefore) 'Packaging changed source data.'
     if (Test-Path -LiteralPath (Split-Path $Options.Destination -Parent)) { Assert-CleanLive $Options -Locked:$Locked -MissingDestination:$ReplacementFailed }
     $script:passed++
 }
 function Assert-CleanLive($Options, [switch] $Locked, [switch] $MissingDestination) {
     $names = @(Get-ChildItem -LiteralPath (Split-Path $Options.Destination -Parent) -Force | ForEach-Object { $_.Name })
-    $expected = @('theallinfamily', 'theallinfamily-client', 'theallinfamily-api')
+    $expected = @('theallinfamily', 'unrelated')
     if ($MissingDestination) { $expected = @($expected | Where-Object { $_ -ne (Get-FamilyPackageName $Options.Mode) }) }
     if ($Locked) { $expected += '.theallinfamily.deploy.lock' }
     Assert ((($names | Sort-Object) -join ',') -eq (($expected | Sort-Object) -join ',')) 'Temporary deployment artifacts remain.'
@@ -90,7 +88,7 @@ try {
         Assert ($script:built -eq [int]($mode -ne 'Api')) 'Wrong build invocation count.'
         $expectedLint = if ($mode -ne 'Client') { 3 } else { 0 }
         Assert ($script:linted -eq $expectedLint) 'Wrong PHP lint invocation count.'
-        Assert ((Peers $options) -eq $peersBefore) 'Another mode package changed.'
+        Assert ((Peers $options) -eq $peersBefore) 'An unrelated folder changed.'
         Assert (((Snapshot $options.ClientRoot) + (Snapshot $options.ApiRoot)) -eq $sourceBefore) 'Source files changed.'
         Assert-CleanLive $options
         $firstPackage = Snapshot $options.Destination
@@ -183,7 +181,7 @@ try {
         $legacyBefore = Snapshot $backupRoot
         Invoke-FamilyDeployment @options
         Assert ((Snapshot $backupRoot) -eq $legacyBefore) 'Existing backups were changed.'
-        Assert (@(Get-ChildItem -LiteralPath (Split-Path $options.Destination -Parent) -Force).Count -eq 4) 'Unexpected deployment files remain.'
+        Assert (@(Get-ChildItem -LiteralPath (Split-Path $options.Destination -Parent) -Force).Count -eq 3) 'Unexpected deployment files remain.'
         $script:passed++
         $options = Fixture $mode 'lock'
         $lockPath = Join-Path (Split-Path $options.Destination -Parent) '.theallinfamily.deploy.lock'
@@ -251,7 +249,7 @@ try {
     Assert (((Snapshot $options.ClientRoot) + (Snapshot $options.ApiRoot)) -eq $sourceBefore) 'Partial cleanup changed source files.'
     Remove-DeployWork $work[0].FullName $parent
     Assert (-not (Test-Path -LiteralPath $work[0].FullName)) 'Staging cleanup left the work directory.'
-    Assert (@(Get-ChildItem -LiteralPath $parent -Force).Count -eq 4) 'Unexpected deployment artifacts remain.'
+    Assert (@(Get-ChildItem -LiteralPath $parent -Force).Count -eq 3) 'Unexpected deployment artifacts remain.'
     $script:passed++
 
     $options = Fixture 'All' 'destination junction refusal'
@@ -272,7 +270,6 @@ try {
     $options = Fixture 'All' 'cross mode lock'
     $nested = $options.Clone()
     $nested.Mode = 'Client'
-    $nested.Destination = Join-Path (Split-Path $options.Destination -Parent) 'theallinfamily-client'
     $options.Build = { Invoke-FamilyDeployment @nested }
     Expect-Failure $options 'being used|another process|sharing violation'
     Write-Host "PASS: $passed mode-specific deployment checks. No real package, live server or database used."

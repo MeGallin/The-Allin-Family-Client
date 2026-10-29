@@ -1,6 +1,6 @@
 # Family branding
 
-Use `FamilyBrand` for the approved original cyan Allin shield and wordmark.
+Use `FamilyBrand` for the approved Allin shield and wordmark, with the selected appearance accent.
 
 ```tsx
 <FamilyBrand size="medium" />
@@ -19,6 +19,8 @@ Pixel equivalents assume the default 16px root font. The SVG has a fixed 200:220
 
 The shield A replaces the initial A of Allin; visible lettering is `llin Family`. The component exposes the complete accessible name “The Allin Family”. It contains no link; wrap it with a labelled home link where appropriate.
 
-`favicon.svg` is the single vector source imported by the component and referenced by the browser favicon. Its original cyan/off-white colours are intentional brand colours independent of personal UI accents. No background panel is baked into the artwork.
+The component renders the original `favicon.svg` geometry inline so its shield outline, A crossbar and doorway follow `--color-accent`. The A retains its off-white `--color-text-on-dark` fill; the wordmark retains `--color-text`. No background panel is baked into the artwork. The browser favicon remains the original static cyan asset.
+
+Before sign-in, appearance uses the last accent displayed on this browser/origin (Turquoise when absent or invalid). The anonymous `allin-family:accent:v1:browser` localStorage entry contains only an allowlisted palette ID, never an account ID. It does not identify the next person signing in. Authentication restores that person's own per-user preference immediately, including Turquoise for an account without an override. Preferences do not sync across devices; blocked storage retains the colour for the current visit but cannot guarantee restoration after reload.
 
 Use the wordmark at family entry points and the shield alone for compact identity. Do not replace unrelated functional icons with shields. `FamilyFooter` provides the shared compact footer.

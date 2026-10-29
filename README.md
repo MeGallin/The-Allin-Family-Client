@@ -468,11 +468,11 @@ is not included in a production build.
 
 ### Prepare the Windows upload folder
 
-From this client directory, use `npm run build:deploy` for the approved single-folder
-upload workflow (`live\theallinfamily`). The other commands below are explicit
-partial-package alternatives; they create separate sibling folders and are not
-used for the single-folder workflow. For a scoped release, build the combined
-package and upload only its approved client/API delta.
+All three commands below prepare the same local upload folder:
+`C:\xampp\htdocs\WebSitesDesigns\live\theallinfamily`. The mode selects its
+contents, not its destination. Each successful run replaces the previous local
+package completely; it does not merge with or retain the previous mode's files.
+Server upload scope remains a separate authorization.
 
 ```powershell
 npm run build:deploy
@@ -483,8 +483,8 @@ npm run build:deploy:api
 | Command | Folder under `C:\xampp\htdocs\WebSitesDesigns\live` | Contents |
 | --- | --- | --- |
 | `build:deploy` | `theallinfamily` | Built client and `api/` runtime |
-| `build:deploy:client` | `theallinfamily-client` | Built client only, including root `.htaccess` |
-| `build:deploy:api` | `theallinfamily-api` | Only `api/`, ready to merge into the site root |
+| `build:deploy:client` | `theallinfamily` | Built client only, including root `.htaccess` |
+| `build:deploy:api` | `theallinfamily` | Only `api/`, ready to merge into the site root |
 
 The batch entry point `scripts/build-deploy.cmd` calls Windows PowerShell for
 checked file operations. It works from npm or by double-clicking the batch file;
@@ -493,8 +493,10 @@ installed client dependencies. Packages containing the API require PHP CLI,
 resolved from PATH, falling back to `C:\xampp\php\php.exe`. Client-only does not
 require or inspect PHP/API runtime; API-only does not run TypeScript/Vite or read dist.
 
-The selected destination's `live` parent must exist; its final folder is created
-if missing. The other two package folders remain untouched. Each command:
+The canonical destination's `live` parent must exist; its final folder is created
+if missing. API-only replaces any previous client/full package with only `api/`;
+client-only likewise removes any previous local `api/` package content. Unrelated
+sibling folders are untouched. Each command:
 
 1. Validates the destination, rejects source overlap and junctions/symbolic links,
    and uses one shared lock to prevent any packaging commands running concurrently.
@@ -973,7 +975,7 @@ Run `npm run test:all` from this directory for client, feature API and existing 
 
 Your profile → Make it yours offers Turquoise (default), Orange, Gold, Purple, Pink and Green as native radio swatches. The palette uses circular satin samples with names underneath, a separate selection ring/check, three columns on phones and six on wider screens. Pointer hover is subtle, reduced motion is respected, and forced colours expose native controls. Selections apply immediately through the shared accent, action, link, focus, selected-state, priority, chart-created and scrollbar tokens. `styles/accent-tokens.css` owns the curated palette and its supporting shades; navy base surfaces, fixed blue background highlight, semantic success/error colours and the sticky-note paper palettes retain their own tokens. No component copies colour hex values.
 
-`features/appearance/` owns Redux preference state, account-change restoration and root theme application. `services/appearance-storage.ts` reads/writes only an allowlisted palette ID at `allin-family:accent:v1:user:<id>` in localStorage. Returning to Turquoise removes that account's override. Sign-out resets the visible theme while retaining the account's saved choice; another account loads its own choice. Same-account tabs synchronise via storage events. Profile refreshes do not overwrite in-memory choices. Storage failures apply the accent for the visit and explain that it could not be remembered. Choices are specific to this browser/origin and do not sync between devices. No API/database changes, account fields, credentials or private content are stored by this preference.
+`features/appearance/` owns Redux preference state, account-change restoration and root theme application. `services/appearance-storage.ts` reads/writes only an allowlisted palette ID at `allin-family:accent:v1:user:<id>` in localStorage. Returning to Turquoise removes that account's override. Sign-out retains the last visual accent, including the shared shield branding. A separate anonymous `allin-family:accent:v1:browser` entry remembers only that palette ID for sign-in/reload; it contains no account identity and cannot predict who will sign in next. Authentication immediately loads that account's own choice, defaulting to Turquoise without an override. Same-account tabs synchronise via storage events; signed-out tabs follow the anonymous browser accent. Profile refreshes do not overwrite in-memory choices. Storage failures apply the accent for the visit and explain when the account choice could not be remembered. Choices are specific to this browser/origin and do not sync between devices. No API/database changes, account fields, credentials or private content are stored by this preference. The favicon remains static cyan; `components/brand/README.md` documents the accent-aware component.
 
 The picker and its CSS are colocated in `components/profile/AccentPicker.*`. Six labelled options use a shared radio group, selected check mark, 48px minimum controls and two columns on small screens, expanding to three where space permits. Forced-colour mode exposes native radio controls.
 

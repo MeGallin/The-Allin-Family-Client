@@ -1,7 +1,12 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import { DEFAULT_ACCENT, type AccentId } from './accent-options'
+import { type AccentId } from './accent-options'
+import { readBrowserAccent } from '../../services/appearance-storage'
 type Appearance = { ownerId: number | null; accent: AccentId; persisted: boolean }
-const initialState: Appearance = { ownerId: null, accent: DEFAULT_ACCENT, persisted: true }
+const initialState = (): Appearance => ({
+  ownerId: null,
+  accent: readBrowserAccent(),
+  persisted: true,
+})
 const slice = createSlice({
   name: 'appearance',
   initialState,

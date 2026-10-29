@@ -2,7 +2,6 @@ import { createListenerMiddleware } from '@reduxjs/toolkit'
 import type { RootState, AppDispatch } from '../../app/store'
 import { userReceived } from '../auth/auth-slice'
 import { appearanceLoaded } from './appearance-slice'
-import { DEFAULT_ACCENT } from './accent-options'
 import { readAccentPreference } from '../../services/appearance-storage'
 export const appearanceListener = createListenerMiddleware()
 const listen = appearanceListener.startListening.withTypes<RootState, AppDispatch>()
@@ -16,7 +15,9 @@ listen({
     api.dispatch(
       appearanceLoaded({
         ownerId,
-        ...(ownerId ? readAccentPreference(ownerId) : { accent: DEFAULT_ACCENT, persisted: true }),
+        ...(ownerId
+          ? readAccentPreference(ownerId)
+          : { accent: appearance.accent, persisted: true }),
       }),
     )
   },

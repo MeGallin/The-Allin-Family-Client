@@ -2,11 +2,8 @@ Set-StrictMode -Version Latest
 
 function Get-FamilyPackageName {
     param([ValidateSet('All', 'Client', 'Api')][string] $Mode = 'All')
-    switch ($Mode) {
-        'Client' { 'theallinfamily-client' }
-        'Api' { 'theallinfamily-api' }
-        default { 'theallinfamily' }
-    }
+    # Mode selects the payload; every mode replaces the same disposable package.
+    'theallinfamily'
 }
 
 function Assert-OrdinaryPath([string] $Path) {

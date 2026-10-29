@@ -9,6 +9,7 @@ import { useAppearanceTheme } from './useAppearance'
 import { ACCENT_CHOICES } from './accent-options'
 import {
   accentStorageKey,
+  browserAccentStorageKey,
   readAccentPreference,
   saveAccentPreference,
 } from '../../services/appearance-storage'
@@ -19,9 +20,9 @@ afterEach(() => {
   document.documentElement.removeAttribute('data-accent')
 })
 
-function mount() {
+function mount(signedIn = true) {
   const store = createAppStore()
-  store.dispatch(userReceived(testUser))
+  if (signedIn) store.dispatch(userReceived(testUser))
   function Appearance() {
     useAppearanceTheme()
     return <AccentPicker />
@@ -50,7 +51,7 @@ describe('personal accent preferences', () => {
     expect(document.documentElement.dataset.accent).toBe('green')
   })
 
-  it('isolates two owners, resets on sign-out and restores each owner on sign-in', () => {
+  it('isolates owners, retains the last visual accent on sign-out and restores each owner on sign-in', () => {
     const { store } = mount()
     fireEvent.click(screen.getByRole('radio', { name: 'Orange' }))
     const other = { ...testUser, id: 202 }
@@ -62,7 +63,8 @@ describe('personal accent preferences', () => {
     act(() => {
       store.dispatch(userReceived(null))
     })
-    expect(document.documentElement.hasAttribute('data-accent')).toBe(false)
+    expect(document.documentElement.dataset.accent).toBe('purple')
+    expect(store.getState().appearance.ownerId).toBeNull()
     act(() => {
       store.dispatch(userReceived(testUser))
     })
@@ -72,6 +74,25 @@ describe('personal accent preferences', () => {
     })
     expect(document.documentElement.dataset.accent).toBe('purple')
     expect(readAccentPreference(testUser.id).accent).toBe('orange')
+  })
+
+  it('restores only the browser accent before login and the owner preference after login', () => {
+    localStorage.setItem(browserAccentStorageKey, 'pink')
+    saveAccentPreference(testUser.id, 'green')
+    const { store } = mount(false)
+    expect(document.documentElement.dataset.accent).toBe('pink')
+    expect(store.getState().appearance.ownerId).toBeNull()
+    act(() => {
+      store.dispatch(userReceived(testUser))
+    })
+    expect(document.documentElement.dataset.accent).toBe('green')
+    expect(localStorage.getItem(browserAccentStorageKey)).toBe('green')
+  })
+
+  it('uses turquoise for an invalid browser accent', () => {
+    localStorage.setItem(browserAccentStorageKey, 'invalid-css')
+    mount(false)
+    expect(document.documentElement.hasAttribute('data-accent')).toBe(false)
   })
 
   it('syncs same-owner tabs, ignores other owners and handles storage clearing', () => {

@@ -19,6 +19,7 @@
 }
 
 .family-logo__shield {
+  color: var(--color-accent);
   display: block;
   flex-shrink: 0;
   width: var(--family-logo-mark);
