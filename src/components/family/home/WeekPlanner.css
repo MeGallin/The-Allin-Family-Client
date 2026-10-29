@@ -4,54 +4,120 @@
 .week-planner__range {
   margin: 0;
   display: flex;
+  flex: 0 1 auto;
+  min-width: 0;
+  flex-wrap: nowrap;
   align-items: center;
   gap: var(--space-2);
 }
-.week-planner__range label {
-  display: grid;
+.week-planner__stepper {
+  display: flex;
+  align-items: center;
   gap: var(--space-1);
-  font-size: var(--text-xs);
-}
-.week-planner__range label span,
-.week-planner__range-caption {
-  color: var(--color-text-muted);
-  font-size: var(--text-caption);
 }
 .week-planner__range input {
-  width: 4rem;
+  width: var(--space-8);
   min-width: 0;
+  padding-inline: var(--space-1);
+  text-align: center;
+  font-weight: var(--weight-heading);
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.week-planner__day-count {
+  position: relative;
+  display: grid;
+  flex-shrink: 0;
+}
+.week-planner__day-count input {
+  height: var(--control-min-height);
+  padding-block: var(--space-1) var(--space-4);
+  font-size: var(--text-lg);
+  line-height: var(--line-compact);
+}
+.week-planner__day-count-caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--text-caption);
+  font-weight: 400;
+  line-height: 1;
+  text-align: center;
+  pointer-events: none;
+}
+.week-planner__range input::-webkit-inner-spin-button,
+.week-planner__range input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
 }
 .week-planner__range button {
   width: auto;
 }
-.week-planner__range .week-planner__apply,
-.week-planner__range .week-planner__apply:hover:not(:disabled) {
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 0;
-  border: 0;
-  background: transparent;
+.week-planner__range .week-planner__step {
+  width: var(--control-min-height);
+  border-color: var(--color-border);
+  background: var(--color-surface-raised);
+  color: var(--color-link);
 }
-.week-planner__apply-mark {
-  display: grid;
-  place-items: center;
-  width: calc(var(--control-min-height) / 2);
-  height: calc(var(--control-min-height) / 2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
+.week-planner__range .week-planner__apply {
+  width: calc(var(--control-min-height) + var(--space-6));
+  flex: 0 0 calc(var(--control-min-height) + var(--space-6));
+  padding-inline: var(--space-3);
+  font-size: var(--text-xs);
+  box-shadow: none;
 }
-.week-planner__apply-mark .ui-icon {
-  width: 0.875rem;
-  height: 0.875rem;
+.week-planner__range-caption,
+.week-planner__range-proposed {
+  margin: 0;
 }
-.week-planner__apply--pending .week-planner__apply-mark {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: var(--color-text-on-action);
+.week-planner__range-current,
+.week-planner__range-proposed {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+  line-height: var(--line-compact);
 }
 .week-planner__range-caption {
+  display: grid;
+  gap: var(--space-2);
   margin-block: var(--space-3) 0;
+}
+.week-planner__range-current {
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+}
+.week-planner__range-label {
+  color: var(--color-text-muted);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-heading);
+  text-transform: uppercase;
+}
+.week-planner__range-caption strong,
+.week-planner__range-proposed strong {
+  font-weight: var(--weight-heading);
+  font-variant-numeric: tabular-nums;
+}
+.week-planner__range-status {
+  min-width: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-caption);
   line-height: var(--line-compact);
+}
+.week-planner__range-status p {
+  margin: 0;
+}
+.week-planner__range-status .week-planner__range-proposed {
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--color-border);
+  margin-bottom: var(--space-2);
+}
+.week-planner__range-error {
+  color: var(--color-error);
 }
 .week-planner__days {
   display: grid;
@@ -71,7 +137,52 @@
   scroll-snap-align: start;
 }
 .week-planner__scroll .horizontal-scroll__toolbar {
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  flex-wrap: nowrap;
+}
+.week-planner__range {
+  grid-column: 1;
+  grid-row: 1;
+}
+.week-planner__scroll .horizontal-scroll__controls {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+}
+.week-planner__range-status {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+@container (max-width: 36rem) {
+  .home-page .week-planner .week-planner__scroll .horizontal-scroll__toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-2);
+  }
+  .week-planner__range {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .week-planner__stepper {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    flex-shrink: 0;
+  }
+  .week-planner__range .week-planner__apply {
+    padding-inline: var(--space-2);
+  }
+  .week-planner__scroll .horizontal-scroll__controls {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+  }
+  .week-planner__range-status {
+    grid-column: 1;
+    grid-row: 2;
+  }
 }
 .weather-warnings-status {
   margin: var(--space-3) 0;

@@ -3,10 +3,22 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Icon } from './Icon'
 import './HorizontalScroll.css'
 
-type Props = { children: ReactNode; label: string; className?: string; toolbar?: ReactNode }
+type Props = {
+  children: ReactNode
+  label: string
+  className?: string
+  toolbar?: ReactNode
+  toolbarStatus?: ReactNode
+}
 
 /** Native touch/trackpad scrolling with optional controls, independent of its content. */
-export function HorizontalScroll({ children, label, className = '', toolbar }: Props) {
+export function HorizontalScroll({
+  children,
+  label,
+  className = '',
+  toolbar,
+  toolbarStatus,
+}: Props) {
   const id = useId()
   const viewport = useRef<HTMLDivElement>(null)
   const content = useRef<HTMLDivElement>(null)
@@ -38,9 +50,10 @@ export function HorizontalScroll({ children, label, className = '', toolbar }: P
   const overflowing = edges.previous || edges.next
   return (
     <div className={'horizontal-scroll ' + className}>
-      {(toolbar || overflowing) && (
+      {(toolbar || toolbarStatus || overflowing) && (
         <div className="horizontal-scroll__toolbar">
           {toolbar}
+          {toolbarStatus}
           {overflowing && (
             <div
               className="horizontal-scroll__controls"

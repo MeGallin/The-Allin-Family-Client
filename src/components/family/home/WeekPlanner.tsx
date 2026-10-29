@@ -1,7 +1,7 @@
 import { addDays, format, startOfDay } from 'date-fns'
 import { Link, useSearchParams } from 'react-router'
-import { useEffect, useId, useState, useTransition } from 'react'
-import { ArrowUpRight, CalendarDays, Cake, Check } from 'lucide-react'
+import { useEffect, useId, useRef, useState, useTransition } from 'react'
+import { ArrowUpRight, CalendarDays, Cake, Minus, Plus } from 'lucide-react'
 import { useCalendar } from '../../../features/calendar/useCalendar'
 import { useNow } from '../../../hooks/useNow'
 import { dateInputValue, eventDate, upcomingEvents } from '../../../lib/dates'
@@ -39,13 +39,17 @@ export function WeekPlanner() {
       ? requestedDays
       : 7
   const [rangeDraft, setRangeDraft] = useState(() => String(dayCount))
-  const [lastApplied, setLastApplied] = useState<number | null>(null)
   const [applying, startApplying] = useTransition()
+  const applyInFlight = useRef(false)
   useEffect(() => setRangeDraft(String(dayCount)), [dayCount])
+  useEffect(() => {
+    if (!applying) applyInFlight.current = false
+  }, [applying, dayCount])
   const proposedDays = Number(rangeDraft)
   const validRange =
     rangeDraft !== '' && Number.isInteger(proposedDays) && proposedDays >= 4 && proposedDays <= 360
   const rangeChanged = validRange && proposedDays !== dayCount
+  const showRangeStatus = !validRange || applying
   const { events, loading, error, refresh } = useCalendar()
   const now = useNow()
   const context = useWeekContext()
@@ -57,6 +61,16 @@ export function WeekPlanner() {
   const weather = context.data?.weather
   const today = startOfDay(now)
   const rangeEnd = addDays(today, dayCount - 1)
+  const formatRange = (end: Date) =>
+    `${format(today, today.getFullYear() === end.getFullYear() ? 'd MMM' : 'd MMM yyyy')} – ${format(end, 'd MMM yyyy')}`
+  const stepRange = (step: number) => {
+    if (applying || applyInFlight.current) return
+    setRangeDraft((current) => {
+      const value = Number(current)
+      const base = current !== '' && Number.isInteger(value) ? value : dayCount
+      return String(Math.min(360, Math.max(4, base + step)))
+    })
+  }
   const upcoming = upcomingEvents(events, now)
   const days = Array.from({ length: dayCount }, (_, index) => addDays(today, index))
   const visiblePlans = calendarDayPlans(events, now, dayCount)
@@ -87,24 +101,16 @@ export function WeekPlanner() {
         }
         className="week-planner"
       >
-        <p className="week-planner__range-caption" role="status">
-          {applying ? (
-            'Applying day range…'
-          ) : !validRange ? (
-            'Enter a whole number from 4 to 360.'
-          ) : rangeChanged ? (
-            `${proposedDays} days selected · Apply to update`
-          ) : (
-            <>
-              {format(
-                today,
-                today.getFullYear() === rangeEnd.getFullYear() ? 'd MMM' : 'd MMM yyyy',
-              )}{' '}
-              – {format(rangeEnd, 'd MMM yyyy')}
-              {lastApplied === dayCount ? ' · Range applied' : ''}
-            </>
-          )}
-        </p>
+        <div className="week-planner__range-caption" role="status">
+          <p className="week-planner__range-current">
+            <span className="week-planner__range-label">
+              {rangeChanged ? 'Preview range' : 'Calendar window'}
+            </span>
+            <strong>
+              {formatRange(rangeChanged ? addDays(today, proposedDays - 1) : rangeEnd)}
+            </strong>
+          </p>
+        </div>
         <HomeDataError error={error} retry={refresh} />
         {loading ? (
           <LoadingState label="Loading family plans…" />
@@ -116,10 +122,11 @@ export function WeekPlanner() {
               toolbar={
                 <form
                   className="week-planner__range"
+                  aria-busy={applying}
                   onSubmit={(event) => {
                     event.preventDefault()
-                    if (!rangeChanged || applying) return
-                    setLastApplied(proposedDays)
+                    if (!rangeChanged || applying || applyInFlight.current) return
+                    applyInFlight.current = true
                     startApplying(() =>
                       setSearch(
                         (current) => {
@@ -132,43 +139,79 @@ export function WeekPlanner() {
                     )
                   }}
                 >
-                  <label htmlFor={rangeId}>
-                    Days<span className="sr-only"> to show (4–360)</span>
-                  </label>
-                  <input
-                    id={rangeId}
-                    name="days"
-                    type="number"
-                    min="4"
-                    max="360"
-                    step="1"
-                    required
-                    value={rangeDraft}
-                    aria-describedby={rangeId + '-hint'}
-                    aria-invalid={!validRange}
-                    onChange={(event) => {
-                      setRangeDraft(event.target.value)
-                      setLastApplied(null)
-                    }}
-                  />
+                  <div className="week-planner__stepper">
+                    <label htmlFor={rangeId} className="sr-only">
+                      day view — number of days in calendar range (4 to 360)
+                    </label>
+                    <button
+                      type="button"
+                      className="icon-button secondary week-planner__step"
+                      aria-label="Show one fewer day"
+                      disabled={applying || (validRange && proposedDays <= 4)}
+                      onClick={() => stepRange(-1)}
+                    >
+                      <Icon icon={Minus} />
+                    </button>
+                    <div className="week-planner__day-count">
+                      <input
+                        id={rangeId}
+                        name="days"
+                        type="number"
+                        inputMode="numeric"
+                        min="4"
+                        max="360"
+                        step="1"
+                        required
+                        value={rangeDraft}
+                        disabled={applying}
+                        aria-describedby={
+                          rangeId + '-hint' + (showRangeStatus ? ' ' + rangeId + '-status' : '')
+                        }
+                        aria-invalid={!validRange}
+                        onChange={(event) => {
+                          setRangeDraft(event.target.value)
+                        }}
+                      />
+                      <span className="week-planner__day-count-caption" aria-hidden="true">
+                        day view
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="icon-button secondary week-planner__step"
+                      aria-label="Show one more day"
+                      disabled={applying || (validRange && proposedDays >= 360)}
+                      onClick={() => stepRange(1)}
+                    >
+                      <Icon icon={Plus} />
+                    </button>
+                  </div>
                   <button
                     type="submit"
-                    className={
-                      'icon-button week-planner__apply ' +
-                      (rangeChanged ? 'week-planner__apply--pending' : 'secondary')
-                    }
+                    className={'week-planner__apply' + (rangeChanged ? '' : ' secondary')}
                     aria-label={rangeChanged ? `Apply ${proposedDays} days` : 'Apply days'}
                     disabled={!rangeChanged || applying}
                     title="Apply day range"
                   >
-                    <span className="week-planner__apply-mark" aria-hidden="true">
-                      <Icon icon={Check} />
-                    </span>
+                    Apply
                   </button>
                   <span id={rangeId + '-hint'} className="sr-only">
                     Apply a whole number from 4 to 360 to update the displayed calendar.
                   </span>
                 </form>
+              }
+              toolbarStatus={
+                showRangeStatus && (
+                  <div
+                    id={rangeId + '-status'}
+                    className="week-planner__range-status"
+                    role="status"
+                  >
+                    <p className={!validRange ? 'week-planner__range-error' : undefined}>
+                      {!validRange ? 'Enter a whole number from 4 to 360.' : 'Applying…'}
+                    </p>
+                  </div>
+                )
               }
             >
               <ol className="week-planner__days" aria-label={`Next ${dayCount} days`}>
