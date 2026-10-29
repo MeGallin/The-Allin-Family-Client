@@ -74,9 +74,6 @@
     border-right: 1px solid var(--color-border);
     background: var(--color-surface-muted);
   }
-  .family-layout__sidebar > .family-brand {
-    padding-inline: var(--space-1);
-  }
   .family-layout__admin {
     display: flex;
     gap: var(--space-3);

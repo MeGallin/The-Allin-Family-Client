@@ -37,9 +37,6 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
         Skip to content
       </a>
       <aside className="family-layout__sidebar">
-        <Link to="/" className="family-brand" aria-label="The Allin Family home">
-          <FamilyBrand size="small" />
-        </Link>
         <FamilyNavigation familyName={user.familyName} />
         {user.role === 'admin' && (
           <NavLink to="/admin" className="family-layout__admin">
