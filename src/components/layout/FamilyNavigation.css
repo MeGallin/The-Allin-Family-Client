@@ -57,7 +57,26 @@
   line-height: 1.25;
 }
 @media (min-width: 64rem) {
+  .family-navigation:not(.family-navigation--mobile) .family-navigation__link > span {
+    overflow: hidden;
+    overflow-wrap: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .family-navigation--compact .family-navigation__link {
+    justify-content: center;
+    gap: 0;
+  }
+  .family-navigation--compact .family-navigation__link > span {
+    width: 0;
+    visibility: hidden;
+  }
   .family-navigation--mobile {
     display: none;
+  }
+}
+@media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+  .family-navigation:not(.family-navigation--compact) .family-navigation__link > span {
+    transition: visibility 0s linear var(--motion-medium);
   }
 }

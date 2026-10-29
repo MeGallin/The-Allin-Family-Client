@@ -5,14 +5,19 @@ import './FamilyNavigation.css'
 
 export function FamilyNavigation({
   mobile = false,
+  compact = false,
   familyName,
 }: {
   mobile?: boolean
+  compact?: boolean
   familyName: string
 }) {
   return (
     <nav
-      className={mobile ? 'family-navigation family-navigation--mobile' : 'family-navigation'}
+      className={
+        'family-navigation' +
+        (mobile ? ' family-navigation--mobile' : compact ? ' family-navigation--compact' : '')
+      }
       aria-label={mobile ? 'Mobile navigation' : 'Family navigation'}
     >
       {familyNavigation
@@ -25,6 +30,7 @@ export function FamilyNavigation({
               to={to}
               end={end}
               aria-label={personalLabel}
+              title={!mobile ? personalLabel : undefined}
               className={({ isActive }) =>
                 'family-navigation__link' + (isActive ? ' is-active' : '')
               }

@@ -1,6 +1,6 @@
-import { Suspense, useLayoutEffect } from 'react'
+import { Suspense, useLayoutEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
-import { ShieldCheck } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react'
 import type { FamilyUser } from '../../types/auth'
 import { Icon } from '../ui/Icon'
 import { AccountMenu } from './AccountMenu'
@@ -21,6 +21,7 @@ type Props = {
 }
 
 export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, error }: Props) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
   const location = useLocation()
   const tool =
     location.pathname === '/my-space'
@@ -32,18 +33,38 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
   }, [location.pathname, tool])
 
   return (
-    <div className="family-layout">
+    <div
+      className={'family-layout' + (sidebarCollapsed ? ' family-layout--sidebar-collapsed' : '')}
+    >
       <a className="skip-link" href="#family-content">
         Skip to content
       </a>
       <aside className="family-layout__sidebar">
-        <FamilyNavigation familyName={user.familyName} />
-        {user.role === 'admin' && (
-          <NavLink to="/admin" className="family-layout__admin">
-            <Icon icon={ShieldCheck} />
-            Administration
-          </NavLink>
-        )}
+        <button
+          type="button"
+          className="icon-button family-layout__sidebar-toggle"
+          aria-label={sidebarCollapsed ? 'Expand navigation' : 'Collapse navigation'}
+          title={sidebarCollapsed ? 'Expand navigation' : 'Collapse navigation'}
+          aria-expanded={!sidebarCollapsed}
+          aria-controls="family-sidebar-content"
+          onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
+        >
+          <Icon icon={sidebarCollapsed ? ChevronRight : ChevronLeft} />
+        </button>
+        <div id="family-sidebar-content" className="family-layout__sidebar-content">
+          <FamilyNavigation compact={sidebarCollapsed} familyName={user.familyName} />
+          {user.role === 'admin' && (
+            <NavLink
+              to="/admin"
+              className="family-layout__admin"
+              aria-label="Administration"
+              title={sidebarCollapsed ? 'Administration' : undefined}
+            >
+              <Icon icon={ShieldCheck} />
+              <span>Administration</span>
+            </NavLink>
+          )}
+        </div>
       </aside>
       <div className="family-layout__workspace">
         <header className="family-layout__header">
