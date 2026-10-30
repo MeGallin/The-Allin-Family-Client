@@ -8,8 +8,39 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  flex-wrap: wrap;
+  min-height: var(--control-min-height);
   justify-content: flex-end;
+}
+.current-clock__display {
+  display: contents;
+}
+.current-clock__display--digital {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  min-height: var(--control-min-height);
+  padding-inline-start: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-muted);
+}
+.current-clock__format {
+  flex: 0 0 auto;
+  width: auto;
+  min-height: calc(var(--control-min-height) - 2px);
+  padding: var(--space-1);
+  border: 0;
+  border-inline-start: 1px solid var(--color-border);
+  border-radius: 0 var(--radius-control) var(--radius-control) 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: inherit;
+  font-size: var(--text-caption);
+}
+.current-clock__format option {
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 .current-clock__time {
   display: inline-flex;
@@ -21,25 +52,26 @@
   white-space: nowrap;
   letter-spacing: -0.035em;
 }
-.current-clock__seconds {
-  font-weight: 350;
-}
 .current-clock__period {
+  display: inline-grid;
   font-size: var(--text-caption);
   font-weight: 450;
   letter-spacing: 0.02em;
+}
+.current-clock__period > span {
+  grid-area: 1 / 1;
+}
+.current-clock__period-reserve {
+  visibility: hidden;
 }
 .current-clock__controls {
   display: flex;
   gap: var(--space-1);
 }
-.current-clock__controls--digital {
-  gap: var(--space-2);
-}
 .current-clock__control.secondary {
   display: grid;
   place-items: center;
-  width: calc(var(--control-min-height) / 2);
+  width: var(--control-min-height);
   min-height: var(--control-min-height);
   padding: var(--space-2);
   border-color: transparent;
@@ -56,45 +88,38 @@
 }
 .current-clock__control--mode.secondary,
 .current-clock__control--mode.secondary:hover,
-.current-clock__control--mode.secondary[aria-pressed='true'],
-.current-clock__control--format.secondary,
-.current-clock__control--format.secondary:hover,
-.current-clock__control--format.secondary[aria-pressed='true'] {
+.current-clock__control--mode.secondary[aria-pressed='true'] {
   place-items: start;
   padding: 0;
   border: 0;
   background: transparent;
 }
-.current-clock__mode-mark,
-.current-clock__format-mark {
+.current-clock__mode-mark {
   display: grid;
   place-items: center;
-  width: calc(var(--control-min-height) / 2);
-  height: calc(var(--control-min-height) / 2);
-  padding: 0.25rem;
+  width: var(--control-min-height);
+  height: var(--control-min-height);
+  padding: var(--space-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
 }
-.current-clock__format-mark {
-  padding-inline: 0;
-  font-size: 0.625rem;
-  line-height: 1;
-  text-align: center;
-}
 .current-clock__control--mode:hover .current-clock__mode-mark,
-.current-clock__control--mode[aria-pressed='true'] .current-clock__mode-mark,
-.current-clock__control--format:hover .current-clock__format-mark,
-.current-clock__control--format[aria-pressed='true'] .current-clock__format-mark {
+.current-clock__control--mode[aria-pressed='true'] .current-clock__mode-mark {
   background: var(--color-accent-soft);
 }
 .current-clock__mode-mark .ui-icon {
-  width: 0.875rem;
-  height: 0.875rem;
+  width: var(--text-2xl);
+  height: var(--text-2xl);
 }
 .current-clock__face {
-  flex: 0 0 3rem;
-  width: 3rem;
-  height: 3rem;
+  box-sizing: border-box;
+  flex: 0 0 calc(var(--control-min-height) + var(--space-2));
+  width: calc(var(--control-min-height) + var(--space-2));
+  height: calc(var(--control-min-height) + var(--space-2));
+  padding: calc(var(--space-1) - 1px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-muted);
   overflow: visible;
 }
 .current-clock__rim {
@@ -129,7 +154,7 @@
   stroke-width: 0.95;
 }
 .current-clock__mark--cardinal {
-  stroke: var(--color-text);
+  stroke: var(--color-accent);
   stroke-width: 1.35;
 }
 .current-clock__hand {

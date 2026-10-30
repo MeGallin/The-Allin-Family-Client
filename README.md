@@ -103,17 +103,21 @@ and require no new build/upload.
 
 `components/ui/current-clock/CurrentClock` is a reusable display-only component in
 Home's existing PageHeader action slot. It shows the viewer device's local
-hours/minutes/seconds, with digital/analogue and 12-hour AM/PM/24-hour toggle buttons.
+hours/minutes in Digital mode, with the existing Clock3 digital/analogue mode button
+and a compact native `24h`/`12h` select attached inside the digital display.
 Digital is the default; analogue shows only its three-hand face, retaining exact
 current time as visually hidden accessible text. No extra date, card wrapper or
 calendar tile/body change is introduced.
-The 12/24-hour toggle is shown only in digital mode; switching to analogue hides
+The `Time format` select is shown only in digital mode; switching to analogue hides
 it without changing the saved hour-format preference, which returns with digital.
 The analogue face retains its48px footprint with a layered Nimbus bezel/dial,
 fine minute ticks, stronger hour/cardinal markers, tapered hands and centre cap.
 It uses no SVG gradient IDs, dependency or sweeping animation.
-Controls retain 48px hit targets with quiet Nimbus styling; numeric seconds use
-lighter weight. The timer has aria-live=off and the decorative analogue face is
+The mode button has a48px visual footprint and28px icon using Nimbus tokens.
+Digital reserves the intrinsic AM/PM width in both formats; its accessible time
+label matches displayed hours/minutes and optional AM/PM. Machine-readable
+`dateTime` retains seconds, as does the analogue accessible label and second hand.
+The timer has aria-live=off and the decorative analogue face is
 hidden from assistive technology. Hands take static one-second snapshots, with no
 sweeping/transition animation, including reduced motion.
 
@@ -125,6 +129,10 @@ guarded browser-local storage (`allin-family:clock:v1:user:<id>`), with owner-ke
 state and cross-tab own-key updates. Blocked/malformed storage falls back safely;
 failed writes leave controls usable with a visit-only notice. No API/database,
 account content, timezone override, external dependency or Focus Timer change.
+The30October presentation changes and existing test-contract updates have not been
+test-run or built in this scope. The following verification/release records describe
+the earlier25October implementation, before these local refinements.
+
 Focused clock/Home tests passed17/17; the final presentation refinements passed
 six focused clock cases. TypeScript/Vite build passed and
 independent Reviewee review found no outstanding findings. Parent Gary/Dad browser

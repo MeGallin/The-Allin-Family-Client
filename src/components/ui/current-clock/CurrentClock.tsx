@@ -24,7 +24,7 @@ function OwnerClock({ ownerId }: { ownerId: number }) {
   const pad = (value: number) => String(value).padStart(2, '0')
   const hour = preference.hour12 ? hours % 12 || 12 : hours
   const period = preference.hour12 ? (hours < 12 ? 'AM' : 'PM') : ''
-  const time = `${pad(hour)}:${pad(minutes)}:${pad(seconds)}${period ? ` ${period}` : ''}`
+  const time = `${pad(hour)}:${pad(minutes)}${preference.analogue ? `:${pad(seconds)}` : ''}${period ? ` ${period}` : ''}`
   useEffect(() => {
     function sync(event: StorageEvent) {
       try {
@@ -96,27 +96,46 @@ function OwnerClock({ ownerId }: { ownerId: number }) {
             <circle cx="24" cy="24" r=".8" className="current-clock__pin" />
           </svg>
         )}
-        <time
-          className={preference.analogue ? 'sr-only' : 'current-clock__time'}
-          dateTime={`${pad(hours)}:${pad(minutes)}:${pad(seconds)}`}
-          role="timer"
-          aria-live="off"
-          aria-label={`Your local time, ${time}`}
-        >
-          <span>
-            {pad(hour)}:{pad(minutes)}
-            <span className="current-clock__seconds">:{pad(seconds)}</span>
-          </span>
-          {period && <span className="current-clock__period">{period}</span>}
-        </time>
         <div
           className={
-            'current-clock__controls' +
-            (preference.analogue ? '' : ' current-clock__controls--digital')
+            preference.analogue
+              ? 'current-clock__display'
+              : 'current-clock__display current-clock__display--digital'
           }
-          role="group"
-          aria-label="Clock display"
         >
+          <time
+            className={preference.analogue ? 'sr-only' : 'current-clock__time'}
+            dateTime={`${pad(hours)}:${pad(minutes)}:${pad(seconds)}`}
+            role="timer"
+            aria-live="off"
+            aria-label={`Your local time, ${time}`}
+          >
+            <span>
+              {pad(hour)}:{pad(minutes)}
+            </span>
+            <span className="current-clock__period" aria-hidden={!period || undefined}>
+              <span className="current-clock__period-reserve" aria-hidden="true">
+                AM
+              </span>
+              <span className="current-clock__period-reserve" aria-hidden="true">
+                PM
+              </span>
+              <span>{period}</span>
+            </span>
+          </time>
+          {!preference.analogue && (
+            <select
+              className="current-clock__format"
+              aria-label="Time format"
+              value={preference.hour12 ? '12' : '24'}
+              onChange={(event) => choose({ ...preference, hour12: event.target.value === '12' })}
+            >
+              <option value="24">24h</option>
+              <option value="12">12h</option>
+            </select>
+          )}
+        </div>
+        <div className="current-clock__controls" role="group" aria-label="Clock display">
           <button
             type="button"
             className="current-clock__control current-clock__control--mode secondary"
@@ -129,20 +148,6 @@ function OwnerClock({ ownerId }: { ownerId: number }) {
               <Icon icon={Clock3} />
             </span>
           </button>
-          {!preference.analogue && (
-            <button
-              type="button"
-              className="current-clock__control current-clock__control--format secondary"
-              aria-label="12-hour time"
-              aria-pressed={preference.hour12}
-              title={preference.hour12 ? 'Use 24-hour time' : 'Use 12-hour time'}
-              onClick={() => choose({ ...preference, hour12: !preference.hour12 })}
-            >
-              <span className="current-clock__format-mark" aria-hidden="true">
-                {preference.hour12 ? '12h' : '24h'}
-              </span>
-            </button>
-          )}
         </div>
       </div>
       {unsaved && (
