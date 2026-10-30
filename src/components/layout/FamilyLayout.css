@@ -11,6 +11,7 @@
   flex-direction: column;
 }
 .family-layout__header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -30,6 +31,32 @@
   text-decoration: none;
   font-size: var(--text-sm);
   overflow-wrap: anywhere;
+}
+.family-layout__mascot-slot {
+  --mascot-width: min(
+    calc(var(--control-min-height) * 2),
+    max(
+      0px,
+      calc(
+        var(--family-header-mascot-end, 100%) - var(--family-header-mascot-start, 0px) -
+          var(--space-3) * 2
+      )
+    )
+  );
+  position: absolute;
+  bottom: -1px;
+  left: clamp(
+    calc(var(--family-header-mascot-start, 0px) + var(--space-3) + var(--mascot-width) / 2),
+    50%,
+    calc(var(--family-header-mascot-end, 100%) - var(--space-3) - var(--mascot-width) / 2)
+  );
+  width: var(--mascot-width);
+  /* The integrated perch ends at about 94% of the original canvas height. */
+  transform: translate(-50%, 6%);
+  pointer-events: none;
+}
+.family-layout__mascot-slot .family-layout__mascot {
+  width: 100%;
 }
 .family-layout__content {
   flex: 1;

@@ -1,0 +1,8 @@
+.cockatiel-mascot {
+  display: block;
+  width: calc(var(--space-9) * 2);
+  max-width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}

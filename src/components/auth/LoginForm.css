@@ -1,10 +1,23 @@
+.login-scene {
+  padding-top: var(--space-8);
+}
 .login-card {
+  position: relative;
   display: grid;
   width: 100%;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-panel);
   background: var(--color-surface);
   box-shadow: var(--shadow-raised);
+}
+.login-card .login-mascot {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  z-index: 1;
+  width: clamp(10rem, 20vw, 12rem);
+  /* The PNG's perch sits near 88% of its height; align it with the card edge. */
+  transform: translate(-50%, 12%);
 }
 .login-heading {
   container: login-identity / inline-size;

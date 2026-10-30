@@ -1,4 +1,4 @@
-import { Suspense, useLayoutEffect, useState } from 'react'
+import { Suspense, useLayoutEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react'
 import type { FamilyUser } from '../../types/auth'
@@ -9,6 +9,7 @@ import { LoadingState } from '../ui/LoadingState'
 import { PendingRemovals } from '../removals/PendingRemovals'
 import { FamilyBrand } from '../brand/FamilyBrand'
 import { FamilyFooter } from '../brand/FamilyFooter'
+import { CockatielMascot } from '../mascot/CockatielMascot'
 import { activeBuiltinWidget } from '../../features/widgets/builtin-widgets'
 import './FamilyLayout.css'
 
@@ -21,6 +22,7 @@ type Props = {
 }
 
 export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, error }: Props) {
+  const headerRef = useRef<HTMLElement>(null)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
   const location = useLocation()
   const tool =
@@ -31,6 +33,32 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
     document.getElementById('family-content')?.focus({ preventScroll: true })
     window.scrollTo({ top: 0, behavior: 'instant' })
   }, [location.pathname, tool])
+
+  useLayoutEffect(() => {
+    const header = headerRef.current
+    const brand = header?.querySelector('.family-brand')
+    const account = header?.querySelector('.account-menu')
+    if (!header || !brand || !account) return
+
+    // Keep the bird centered where possible, inside the controls' actual free gap.
+    const measureSides = () => {
+      const headerBounds = header.getBoundingClientRect()
+      header.style.setProperty(
+        '--family-header-mascot-start',
+        `${brand.getBoundingClientRect().right - headerBounds.left}px`,
+      )
+      header.style.setProperty(
+        '--family-header-mascot-end',
+        `${account.getBoundingClientRect().left - headerBounds.left}px`,
+      )
+    }
+    const observer = new ResizeObserver(measureSides)
+    observer.observe(brand)
+    observer.observe(account)
+    observer.observe(header)
+    measureSides()
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <div
@@ -67,10 +95,13 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
         </div>
       </aside>
       <div className="family-layout__workspace">
-        <header className="family-layout__header">
+        <header ref={headerRef} className="family-layout__header">
           <Link to="/" className="family-brand" aria-label="The Allin Family home">
             <FamilyBrand />
           </Link>
+          <div className="family-layout__mascot-slot">
+            <CockatielMascot className="family-layout__mascot" />
+          </div>
           <AccountMenu
             user={user}
             onChangePassword={onChangePassword}
