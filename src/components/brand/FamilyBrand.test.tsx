@@ -14,11 +14,15 @@ describe('family branding', () => {
       '-40 21 200 165',
     )
     expect(brand.querySelectorAll('.family-logo__letters path')).toHaveLength(4)
-    expect(brand.querySelector('.family-logo__letters circle')?.getAttribute('fill')).toBe(
-      'var(--color-text-on-dark)',
-    )
-    expect(brand.querySelector('.family-logo__letters circle')?.getAttribute('r')).toBe('12')
-    expect(brand.textContent).toBe('Family')
+    const dot = brand.querySelector('.family-logo__letters rect')
+    expect(dot?.getAttribute('fill')).toBe('var(--color-text-on-dark)')
+    expect(dot?.getAttribute('x')).toBe('52.9')
+    expect(dot?.getAttribute('y')).toBe('88')
+    expect(dot?.getAttribute('width')).toBe('14')
+    expect(dot?.getAttribute('height')).toBe('14')
+    expect(brand.querySelector('.family-logo__the')?.textContent).toBe('The')
+    expect(brand.querySelector('.family-logo__family')?.textContent).toBe('Family')
+    expect(brand.textContent).toBe('TheFamily')
   })
 
   it('gives the standalone mark via the retained shield variant the complete accessible family name', () => {

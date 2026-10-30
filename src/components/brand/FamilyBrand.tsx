@@ -31,6 +31,7 @@ export function FamilyBrand({ variant = 'wordmark', size = 'medium' }: Props) {
       </svg>
       {variant === 'wordmark' && (
         <span className="family-logo__name" aria-hidden="true">
+          <span className="family-logo__the">The</span>
           <svg
             className="family-logo__letters"
             viewBox="-40 21 200 165"
@@ -51,8 +52,14 @@ export function FamilyBrand({ variant = 'wordmark', size = 'medium' }: Props) {
                 transform="translate(6 0)"
               />
             </g>
-            {/* Reposition the dot with the lean, without skewing its circular shape. */}
-            <circle cx="59.9" cy="88" r="12" fill="var(--color-text-on-dark)" />
+            {/* Keep a compact square dot centred just above the i stem. */}
+            <rect
+              x="52.9"
+              y="88"
+              width="14"
+              height="14"
+              fill="var(--color-text-on-dark)"
+            />
           </svg>
           <span className="family-logo__family">Family</span>
         </span>
