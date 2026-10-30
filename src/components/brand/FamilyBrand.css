@@ -18,7 +18,7 @@
   --family-logo-mark: var(--brand-shield-large);
 }
 
-.family-logo__shield {
+.family-logo__mark {
   color: var(--color-accent);
   display: block;
   flex-shrink: 0;
@@ -28,14 +28,27 @@
 }
 
 .family-logo__name {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
   font-size: var(--family-logo-type);
   line-height: 1.1;
   letter-spacing: -0.055em;
   font-weight: 600;
-  transform: translateY(-0.04em);
+}
+
+.family-logo__letters {
+  display: block;
+  flex-shrink: 0;
+  width: calc(var(--family-logo-mark) * 4 / 3);
+  margin-inline-start: calc(var(--family-logo-mark) * -47 / 150);
+  height: auto;
+  aspect-ratio: 200 / 165;
+  color: var(--color-accent);
 }
 
 .family-logo__family {
   font-weight: 400;
   letter-spacing: -0.045em;
+  transform: translateY(-0.04em);
 }

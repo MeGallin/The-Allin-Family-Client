@@ -8,15 +8,24 @@ describe('family branding', () => {
     render(<FamilyBrand size={size} />)
     const brand = screen.getByRole('img', { name: 'The Allin Family' })
     expect(brand.classList.contains(`family-logo--${size}`)).toBe(true)
-    expect(brand.querySelector('svg')?.getAttribute('viewBox')).toBe('0 0 200 220')
-    expect(brand.querySelectorAll('[stroke="currentColor"]')).toHaveLength(3)
-    expect(brand.textContent).toBe('llin Family')
+    expect(brand.querySelector('svg')?.getAttribute('viewBox')).toBe('25 21 150 165')
+    expect(brand.querySelectorAll('[stroke]')).toHaveLength(0)
+    expect(brand.querySelector('.family-logo__letters')?.getAttribute('viewBox')).toBe(
+      '-40 21 200 165',
+    )
+    expect(brand.querySelectorAll('.family-logo__letters path')).toHaveLength(4)
+    expect(brand.querySelector('.family-logo__letters circle')?.getAttribute('fill')).toBe(
+      'var(--color-text-on-dark)',
+    )
+    expect(brand.querySelector('.family-logo__letters circle')?.getAttribute('r')).toBe('12')
+    expect(brand.textContent).toBe('Family')
   })
 
-  it('gives the shield-only variant the complete accessible family name', () => {
+  it('gives the standalone mark via the retained shield variant the complete accessible family name', () => {
     render(<FamilyBrand variant="shield" />)
     const brand = screen.getByRole('img', { name: 'The Allin Family' })
     expect(brand.textContent).toBe('')
+    expect(brand.querySelector('.family-logo__letters')).toBeNull()
     expect(brand.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true')
   })
 
