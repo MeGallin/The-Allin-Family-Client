@@ -4,6 +4,7 @@ import { PageHeader } from '../../components/ui/PageHeader'
 import { CurrentClock } from '../../components/ui/current-clock/CurrentClock'
 import { WeekPlanner } from '../../components/family/home/WeekPlanner'
 import { HomePriorities } from '../../components/family/home/HomePriorities'
+import { HomeRecap } from '../../components/family/home/HomeRecap'
 import { HomeJobsSummary } from '../../components/family/home/HomeJobsSummary'
 import { HomeDestinations } from '../../components/family/home/HomeDestinations'
 import './FamilyHomePage.css'
@@ -19,6 +20,7 @@ export default function FamilyHomePage() {
         description={'Hello, ' + firstName + '. Make room for what matters.'}
         action={<CurrentClock ownerId={user.id} />}
       />
+      <HomeRecap key={user.id} ownerId={user.id} />
       <div className="family-home-grid">
         <WeekPlanner />
         <HomePriorities>

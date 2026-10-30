@@ -1537,3 +1537,26 @@ only. No push/deployment/production migration is included; parent visual and
 independent source acceptance are separate gates. See
 [docs/household-jobs.md](docs/household-jobs.md) for permissions, concurrency,
 privacy, recovery and the verification matrix.
+
+## Since your last visit — local implementation, 30 October 2026
+
+Home now has a compact Nimbus disclosure tag directly below PageHeader and before Days Ahead.
+It shows the latest other-person calendar/shopping change per item, with nickname,
+relative time and source link. Clicking the tag animates an anchored overlay open
+or closed without moving Days Ahead; its compact inset keeps the empty panel clear
+of the section heading, and long content scrolls within the panel; only Mark reviewed clears the displayed snapshot. First use has no backlog;
+the quiet “You’re all caught up” tag also opens an empty detail state. New updates
+have an accented count; reduced-motion settings disable the transition.
+Loading/failure/offline and retry remain explicit.
+
+This feature requires API migration 026 and the matching runtime. It reuses the
+existing shared cache, FriendlyTime, content-surface and Nimbus tokens; private
+notes and other widget activity never enter the feed. Scoped source formatting
+checks and the TypeScript/Vite build passed after the final CSS change. Parent
+accepted the empty overlay at desktop1368×790 (Days Ahead top335.94 before/after,
+panel267.39–299.59) and actual mobile IAB355×767 (panel298.37–330.57, visible
+heading335.55–358.95, no horizontal overflow). Escape closes and returns focus to
+the trigger; no browser console errors. Populated rows/long lists, other themes/zoom
+and multi-account/concurrency remain unverified. No tests or release actions. See
+[Home recap](docs/home-recap.md) for contracts, migration order and the review matrix.
+No commit, push, package or deployment is included.

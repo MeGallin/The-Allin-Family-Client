@@ -36,6 +36,7 @@ export const shoppingApi = createApi({
   reducerPath: 'shoppingApi',
   baseQuery: fakeBaseQuery<ShoppingError>(),
   tagTypes: [
+    'HomeRecap',
     'Shopping',
     'Profiles',
     'Calendar',
