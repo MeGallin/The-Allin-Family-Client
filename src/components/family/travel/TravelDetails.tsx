@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { TrainFront } from 'lucide-react'
 import { Link } from 'react-router'
 import type { CalendarTravelProps } from '../home/CalendarTravel'
@@ -14,6 +15,7 @@ export default function TravelDetails({
   liveUpdatedAt,
   plannedUpdatedAt,
 }: CalendarTravelProps) {
+  const journeyNoteId = useId()
   const lineCount = new Set(notices.map((notice) => notice.lineId)).size
   return (
     <section className="travel-details" aria-label="Transport for London disruptions">
@@ -36,7 +38,7 @@ export default function TravelDetails({
         summaryClassName="travel-notice__summary"
         items={notices.map((notice) => ({
           id: notice.id + (notice.planned ? '-planned' : '-live'),
-          title: <TravelNoticeSummary notice={notice} />,
+          title: <TravelNoticeSummary notice={notice} journeyNoteId={journeyNoteId} />,
           content: <TravelNoticeDetails notice={notice} />,
         }))}
       />
@@ -61,6 +63,13 @@ export default function TravelDetails({
           dates are not covered.
         </p>
         <Link to="/profile">Change your TfL lines</Link>
+        {notices.length > 0 && (
+          <p id={journeyNoteId}>
+            * LastLink estimates whether you can reach a TfL station by your chosen time. Its route
+            check does not use the specific notice; use the TfL information above for service
+            updates.
+          </p>
+        )}
       </footer>
     </section>
   )

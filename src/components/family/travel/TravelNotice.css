@@ -23,10 +23,17 @@
 }
 .travel-notice__identity {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  min-width: 0;
+  grid-column: 1;
+}
+.travel-notice__line {
+  display: inline-flex;
   align-items: center;
   gap: var(--space-3);
   min-width: 0;
-  grid-column: 1;
 }
 .travel-notice__identity .travel-line-icon {
   flex-shrink: 0;
@@ -170,6 +177,17 @@
 .travel-notice__step .travel-notice__caveat {
   font-size: var(--text-caption);
   line-height: 1.6;
+}
+.travel-notice__journey {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-min-height);
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+}
+.travel-notice__journey .ui-icon {
+  width: var(--space-4);
+  height: var(--space-4);
 }
 @container family-content (min-width: 32rem) {
   .travel-notice__summary.accordion__summary {

@@ -1,16 +1,36 @@
-import { Clock3, Info, Route, TriangleAlert } from 'lucide-react'
+import { ArrowUpRight, Clock3, Info, Route, TriangleAlert } from 'lucide-react'
 import type { TravelNotice } from '../../../features/travel/types'
 import { formatUkDate, formatUkTime } from '../../../lib/uk-time'
 import { Icon } from '../../ui/Icon'
 import { TravelLineIcon, TravelLineLabel } from './TravelLineLabel'
 import './TravelNotice.css'
 
-export function TravelNoticeSummary({ notice }: { notice: TravelNotice }) {
+export function TravelNoticeSummary({
+  notice,
+  journeyNoteId,
+}: {
+  notice: TravelNotice
+  journeyNoteId?: string
+}) {
   return (
     <>
       <span className="travel-notice__identity">
-        <TravelLineIcon lineId={notice.lineId} />
-        <TravelLineLabel lineId={notice.lineId} name={notice.line} />
+        <span className="travel-notice__line">
+          <TravelLineIcon lineId={notice.lineId} />
+          <TravelLineLabel lineId={notice.lineId} name={notice.line} />
+        </span>
+        <a
+          className="travel-notice__journey"
+          href="https://lastlink.livenotice.co.uk/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-describedby={journeyNoteId}
+          onClick={(event) => event.stopPropagation()}
+        >
+          Plan a journey*
+          <Icon icon={ArrowUpRight} />
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
       </span>
       <span className="travel-notice__status">
         <span className="travel-notice__kind">
