@@ -61,6 +61,6 @@
   align-self: flex-end;
   margin-block-end: calc(var(--family-logo-mark) * 26 / 150);
   margin-inline-start: calc(var(--space-1) * -1 - var(--family-logo-mark) * 10 / 150);
-  font-weight: 400;
+  font-weight: 800;
   letter-spacing: -0.045em;
 }
