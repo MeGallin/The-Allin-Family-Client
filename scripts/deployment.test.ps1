@@ -10,7 +10,7 @@ function Assert($Condition, [string] $Message) {
 }
 function Fixture([string] $Name) {
     $root = Join-Path $scratch $Name
-    foreach ($relative in @('client/dist/assets', 'api/src', 'live/theallinfamily/old')) {
+    foreach ($relative in @('client/dist/assets', 'client/src', 'api/src', 'live/theallinfamily/old')) {
         $null = New-Item -ItemType Directory -Path (Join-Path $root $relative) -Force
     }
     foreach ($relative in @('client/dist/index.html', 'client/dist/.htaccess', 'client/dist/assets/app.js',
@@ -18,6 +18,7 @@ function Fixture([string] $Name) {
         'api/.env', 'live/theallinfamily/old/.hidden')) {
         Set-Content -LiteralPath (Join-Path $root $relative) -Value $relative -Encoding ASCII
     }
+    Set-Content -LiteralPath (Join-Path $root 'client/src/app-version.json') -Value '{"version":"0.20"}' -Encoding ASCII
     return @{
         ClientRoot = Join-Path $root 'client'
         ApiRoot = Join-Path $root 'api'

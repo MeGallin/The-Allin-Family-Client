@@ -26,3 +26,10 @@ The A develops the selected Option 09 calligraphic direction from `work/ui-desig
 Before sign-in, appearance uses the last accent displayed on this browser/origin (Turquoise when absent or invalid). The anonymous `allin-family:accent:v1:browser` localStorage entry contains only an allowlisted palette ID, never an account ID. It does not identify the next person signing in. Authentication restores that person's own per-user preference immediately, including Turquoise for an account without an override. Preferences do not sync across devices; blocked storage retains the colour for the current visit but cannot guarantee restoration after reload.
 
 Use the wordmark at family entry points and the standalone mark for compact identity. Do not replace unrelated functional icons with the family mark. `FamilyFooter` provides the shared compact footer.
+
+The footer retains its quiet Nimbus typography, divider and spacing, and adds a
+safe new-tab “Hosted by Trilogy Web Solutions” credit to the canonical clients
+page. Its shared minimum link height and wrapping layout support narrow screens.
+It also shows the latest known app release label from the bundled/API metadata;
+see the main README for the explicit release-version procedure. Offline reads
+retain the bundled/last known label without interrupting the page.

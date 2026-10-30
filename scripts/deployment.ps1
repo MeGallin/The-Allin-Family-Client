@@ -100,6 +100,14 @@ function Invoke-FamilyDeployment {
         }
     }
     Assert-OrdinaryPath $target
+    # Every mode uses one release source, even when no client build is needed.
+    $releasePath = Join-Path $client 'src/app-version.json'
+    Assert-OrdinaryPath $releasePath
+    $releaseHash = Get-DeployHash $releasePath
+    $release = Get-Content -LiteralPath $releasePath -Raw | ConvertFrom-Json
+    if ($release.version -isnot [string] -or $release.version -cnotmatch '^(0|[1-9]\d*)\.\d{1,2}$') {
+        throw 'Invalid app release version in client/src/app-version.json.'
+    }
     if ($includeClient) { Assert-OrdinaryPath $client }
     if ($includeApi) { Assert-OrdinaryPath $api }
     if (-not (Test-Path -LiteralPath $parent -PathType Container)) { throw "Live parent folder does not exist: $parent" }
@@ -164,6 +172,7 @@ function Invoke-FamilyDeployment {
             foreach ($relative in @('index.php', '.htaccess', '.env.example')) {
                 Copy-VerifiedFile (Join-Path $api $relative) (Join-Path $stage "api/$relative")
             }
+            Copy-VerifiedFile $releasePath (Join-Path $stage 'api/release.json')
             foreach ($file in Get-ChildItem -LiteralPath (Join-Path $api 'src') -Recurse -Force -File) {
                 $relativeRuntime = $file.FullName.Substring((Join-Path $api 'src').Length + 1).Replace('\', '/')
                 $wordAsset = $relativeRuntime -cin @('daily-word-data/answers.txt', 'daily-word-data/guesses.txt', 'daily-word-data/COPYRIGHT.txt', 'daily-word-data/provenance.json')
@@ -174,6 +183,10 @@ function Invoke-FamilyDeployment {
                 & $ValidatePhp $file.FullName
             }
         }
+        if ((Get-DeployHash $releasePath) -ne $releaseHash) {
+            throw 'App release changed during packaging. Retry with the approved release source.'
+        }
+        Write-Host "App release: $($release.version)"
         # The destination is disposable. No previous-package copy or rollback.
         try {
             Assert-OrdinaryPath $target

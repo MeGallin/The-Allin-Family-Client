@@ -16,7 +16,7 @@ function Snapshot([string] $Root) {
 function Fixture([string] $Mode, [string] $Name) {
     $root = Join-Path $scratch "$Mode-$Name"
     $packageName = Get-FamilyPackageName $Mode
-    foreach ($relative in @('client/dist/assets', 'api/src/nested', 'api/.local', 'api/migrations', 'api/tools', 'api/tests')) {
+    foreach ($relative in @('client/dist/assets', 'client/src', 'api/src/nested', 'api/.local', 'api/migrations', 'api/tools', 'api/tests')) {
         $null = New-Item -ItemType Directory -Path (Join-Path $root $relative) -Force
     }
     foreach ($relative in @('client/dist/index.html', 'client/dist/.htaccess', 'client/dist/assets/app.js',
@@ -25,6 +25,7 @@ function Fixture([string] $Mode, [string] $Name) {
         'api/tools/secret.php', 'api/tests/test.php')) {
         Set-Content -LiteralPath (Join-Path $root $relative) -Value "synthetic $relative" -Encoding ASCII
     }
+    Set-Content -LiteralPath (Join-Path $root 'client/src/app-version.json') -Value '{"version":"0.20"}' -Encoding ASCII
     foreach ($folder in @('theallinfamily', 'unrelated')) {
         $old = Join-Path $root ('live/' + $folder + '/old')
         $null = New-Item -ItemType Directory -Path $old -Force
@@ -76,13 +77,19 @@ try {
         Invoke-FamilyDeployment @options
         $expected = @()
         if ($mode -ne 'Api') { $expected += @('.htaccess', 'index.html', 'assets/app.js') }
-        if ($mode -ne 'Client') { $expected += @('api/index.php', 'api/.htaccess', 'api/.env.example', 'api/src/bootstrap.php', 'api/src/nested/runtime.php') }
+        if ($mode -ne 'Client') { $expected += @('api/index.php', 'api/.htaccess', 'api/.env.example', 'api/release.json', 'api/src/bootstrap.php', 'api/src/nested/runtime.php') }
         $actual = @(Get-ChildItem -LiteralPath $options.Destination -Recurse -Force -File | ForEach-Object {
             $_.FullName.Substring($options.Destination.Length + 1).Replace('\', '/')
         })
         Assert ((($actual | Sort-Object) -join ',') -eq (($expected | Sort-Object) -join ',')) "Wrong $mode package contents."
         foreach ($relative in $expected) {
-            $source = if ($relative.StartsWith('api/')) { Join-Path $options.ApiRoot $relative.Substring(4) } else { Join-Path $options.ClientRoot "dist/$relative" }
+            $source = if ($relative -eq 'api/release.json') {
+                Join-Path $options.ClientRoot 'src/app-version.json'
+            } elseif ($relative.StartsWith('api/')) {
+                Join-Path $options.ApiRoot $relative.Substring(4)
+            } else {
+                Join-Path $options.ClientRoot "dist/$relative"
+            }
             Assert ((Get-DeployHash $source) -eq (Get-DeployHash (Join-Path $options.Destination $relative))) 'Copied bytes differ.'
         }
         Assert ($script:built -eq [int]($mode -ne 'Api')) 'Wrong build invocation count.'

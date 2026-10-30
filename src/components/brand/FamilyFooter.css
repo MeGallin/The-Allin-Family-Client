@@ -1,5 +1,6 @@
 .family-footer {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
   border-top: 1px solid var(--color-border);
@@ -11,4 +12,20 @@
 .family-footer p {
   margin: 0;
   max-width: 36ch;
+}
+
+.family-footer__copy {
+  min-width: 0;
+}
+
+.family-footer__copy a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-min-height);
+  color: inherit;
+}
+
+.family-footer__version {
+  margin-inline-start: auto;
+  white-space: nowrap;
 }

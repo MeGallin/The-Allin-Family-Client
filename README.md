@@ -476,6 +476,48 @@ is not included in a production build.
 
 ### Prepare the Windows upload folder
 
+#### App release version (client, API or both)
+
+The single canonical release label is `src/app-version.json`, initially `0.1`.
+Labels increase by exactly 0.05: `0.1` → `0.15` → `0.20` → `0.25`.
+They are decimal strings, not semantic versions; trailing zeroes are retained.
+The npm package version is separate tooling metadata.
+
+Before the first release of this feature, retain `0.1` and release both the client
+and API so the footer and public version endpoint are installed. For each later
+production release, explicitly set the next target **once before committing and
+packaging**, from this client checkout:
+
+```powershell
+npm run release:version -- 0.15
+```
+
+The command accepts the current label again (no write) or exactly the next +0.05
+label; use `0.20` for the following release. Retrying the same command and rebuilding
+any package never advances it again. Ordinary dev/build commands never increment.
+Version changes are release work and require the usual explicit authorization.
+Do not bump for a failed build/upload retry or an ordinary development build.
+
+These are separate repositories: every release, including API-only, must include
+the canonical client metadata change in an approved client-repository commit as
+well as any API/runtime commit. Keep both sibling checkouts at the approved release
+revisions when packaging. Client-only releases need no API metadata commit/upload;
+API-only releases need no client build/upload. The client imports the source label;
+API/full packaging copies that same JSON to generated `api/release.json` without
+changing the API source checkout. Upload `api/release.json`
+with the approved API runtime (after dependencies, before `api/index.php`); preserve
+the production environment and private data as usual.
+
+The shared footer shows the newer of its bundled label and public `GET /api/version`.
+It checks on mount, window focus and every five minutes, using a bounded read with
+no cache. Thus a new API-only release advances an already-installed footer, and a
+client-only release still displays its newer bundled label against an older API.
+Offline/unavailable/older APIs retain the bundled or last successfully read label.
+This is the latest known app release label, not a claim that client/API bytes are
+identical versions. It does not detect FileZilla completion. Reverting a release
+needs a separately approved plan; the footer intentionally never goes backwards
+during a mounted visit. Manually confirm the label after the authorized upload.
+
 All three commands below prepare the same local upload folder:
 `C:\xampp\htdocs\WebSitesDesigns\live\theallinfamily`. The mode selects its
 contents, not its destination. Each successful run replaces the previous local
@@ -499,7 +541,8 @@ checked file operations. It works from npm or by double-clicking the batch file;
 double-clicking prepares the full package. Client builds require Node/npm and
 installed client dependencies. Packages containing the API require PHP CLI,
 resolved from PATH, falling back to `C:\xampp\php\php.exe`. Client-only does not
-require or inspect PHP/API runtime; API-only does not run TypeScript/Vite or read dist.
+require PHP or inspect API runtime; API-only reads the canonical client metadata
+but does not run TypeScript/Vite or read dist.
 
 The canonical destination's `live` parent must exist; its final folder is created
 if missing. API-only replaces any previous client/full package with only `api/`;
@@ -513,7 +556,7 @@ sibling folders are untouched. Each command:
    `npm run build` remains available.
 3. Copies only the selected runtime into a short-lived work directory under `live`: client
    dist files (including the production `.htaccess`) and/or `api/index.php`,
-   `api/.htaccess`, `api/.env.example` and PHP runtime under `api/src`.
+   `api/.htaccess`, `api/.env.example`, `api/release.json` and PHP runtime under `api/src`.
    Verifies each copy with SHA-256 and checks every packaged PHP file with `php -l`.
 4. Validates the existing destination tree, deletes the disposable previous
    package, then renames the validated new staging folder into place. No deployment
