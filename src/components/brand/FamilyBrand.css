@@ -7,7 +7,7 @@
   color: var(--color-text);
   font-family: var(--font-display);
   --family-logo-mark: var(--brand-shield-medium);
-  --family-logo-type: calc(var(--family-logo-mark) / 4);
+  --family-logo-type: calc(var(--family-logo-mark) / 5);
 }
 
 .family-logo--small {
@@ -40,11 +40,13 @@
 
 .family-logo__the {
   position: absolute;
-  inset-block-start: var(--space-1);
-  inset-inline-start: calc(var(--family-logo-mark) * -1);
+  inset-block-start: calc(var(--family-logo-mark) * 0.72);
+  inset-inline-start: calc(var(--family-logo-mark) * -0.9234);
   line-height: 1;
-  font-weight: 400;
+  font-weight: 800;
   letter-spacing: -0.045em;
+  transform: rotate(-66deg);
+  transform-origin: left bottom;
 }
 
 .family-logo__letters {
@@ -58,9 +60,12 @@
 }
 
 .family-logo__family {
-  align-self: flex-end;
-  margin-block-end: calc(var(--family-logo-mark) * 26 / 150);
-  margin-inline-start: calc(var(--space-1) * -1 - var(--family-logo-mark) * 10 / 150);
+  align-self: flex-start;
+  margin-block-start: calc(var(--family-logo-mark) * 0.1);
+  margin-inline-start: calc(var(--space-1) * -1 - var(--family-logo-mark) * 0.25);
+  line-height: 1;
   font-weight: 800;
-  letter-spacing: -0.045em;
+  letter-spacing: 0.03em;
+  transform: rotate(71.6deg);
+  transform-origin: left bottom;
 }
