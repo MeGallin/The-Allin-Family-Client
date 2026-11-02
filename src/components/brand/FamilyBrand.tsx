@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import './FamilyBrand.css'
 
 type Props = {
@@ -7,6 +8,8 @@ type Props = {
 
 /** The calligraphic A is the first letter of Allin, not a separate leading icon. */
 export function FamilyBrand({ variant = 'wordmark', size = 'medium' }: Props) {
+  const crossbarMaskId = `family-brand-crossbar-${useId()}`
+
   return (
     <span
       className={`family-logo family-logo--${variant} family-logo--${size}`}
@@ -20,13 +23,27 @@ export function FamilyBrand({ variant = 'wordmark', size = 'medium' }: Props) {
         aria-hidden="true"
         focusable="false"
       >
+        <defs>
+          <mask
+            id={crossbarMaskId}
+            maskUnits="userSpaceOnUse"
+            x="25"
+            y="21"
+            width="150"
+            height="165"
+            style={{ maskType: 'luminance' }}
+          >
+            <rect x="25" y="21" width="150" height="165" fill="white" />
+            <path
+              d="M72 114c18-7 39-9 57-4l7 16c-21-6-43-3-69 8l5-20Z"
+              fill="black"
+            />
+          </mask>
+        </defs>
         <path
           d="M36 159C58 130 75 77 91 42c6-14 17-13 23 2 12 28 17 56 29 86 5 13 12 23 23 29h-36c-11-18-16-48-29-78-11 31-23 59-29 78H36Z"
           fill="var(--color-accent)"
-        />
-        <path
-          fill="var(--color-text-on-dark)"
-          d="M72 114c18-7 39-9 57-4l7 16c-21-6-43-3-69 8l5-20Z"
+          mask={`url(#${crossbarMaskId})`}
         />
       </svg>
       {variant === 'wordmark' && (
