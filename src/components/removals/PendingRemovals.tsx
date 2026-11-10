@@ -6,6 +6,7 @@ import { REMOVAL_DELAY_MS } from '../../features/removals/removals-slice'
 import { Icon } from '../ui/Icon'
 import './PendingRemovals.css'
 const domainLabels: Record<string, string> = {
+  whereItems: 'Where Is It?',
   notes: 'Private note',
   householdJobs: 'Household job',
   sudoku: 'Sudoku',

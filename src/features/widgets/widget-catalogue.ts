@@ -2,6 +2,7 @@ import type { FamilyWidget } from './types'
 import { builtinWidgets } from './builtin-widgets'
 
 export type WidgetStoreId =
+  | 'where'
   | 'jobs'
   | 'shopping'
   | 'polls'
@@ -93,6 +94,16 @@ export const widgetCatalogue: readonly WidgetStoreApp[] = [
     description:
       'One shared five-letter word each London day, six valid guesses and private saved progress. Share a finished result with family only when you choose. Removing and reinstalling keeps today’s attempts.',
     previews: ['A little word play.', 'Something to puzzle over.'],
+  },
+  {
+    id: 'where',
+    title: 'Where Is It?',
+    subtitle: 'Find the things you’ve put away.',
+    category: 'family',
+    availability: 'available',
+    description:
+      'A simple reference for belongings and their locations. Search names, locations and notes, with an optional photo. Family collections let everyone add and update items; Personal collections stay yours.',
+    previews: ['Where did we put it?', 'The right place, remembered.'],
   },
   {
     id: 'countdown',

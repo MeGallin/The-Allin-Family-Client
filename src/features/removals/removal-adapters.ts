@@ -1,3 +1,5 @@
+import { whereApi } from '../../services/where-is-it-query'
+import { executeWhereWrite, whereBusy } from '../where-is-it/where-actions'
 import { jobsApi } from '../../services/household-jobs-query'
 import { executeJobWrite } from '../household-jobs/jobs-actions'
 import { dailyWordApi } from '../../services/daily-word-query'
@@ -28,6 +30,24 @@ type Adapter = {
 const body = ({ item }: PendingRemoval) => ({ id: item.id, version: item.version })
 /** Only domain differences live here; timing, Undo and safety checks live in the listener. */
 export const removalAdapters: Record<RemovalDomain, Adapter> = {
+  whereItems: {
+    busy: whereBusy,
+    latest: (state, ownerId) => whereApi.endpoints.getWhereItems.select(ownerId)(state).data?.items,
+    remove: (dispatch, entry) =>
+      dispatch(async (_, getState) => {
+        const item = whereApi.endpoints.getWhereItems
+          .select(entry.ownerId)(getState())
+          .data?.items.find((item) => item.id === entry.item.id)
+        return item
+          ? dispatch(
+              executeWhereWrite({
+                action: 'remove',
+                body: { ...body(entry), widgetId: item.widgetId, requestKey: entry.token },
+              }),
+            )
+          : false
+      }),
+  },
   householdJobs: {
     busy: (state) => state.jobsUi.busy,
     latest: (state, ownerId) => jobsApi.endpoints.getJobs.select(ownerId)(state).data?.jobs,
@@ -101,7 +121,9 @@ export const removalAdapters: Record<RemovalDomain, Adapter> = {
     latest: (state, ownerId) =>
       widgetsApi.endpoints.getWidgets.select(ownerId)(state).data?.widgets,
     remove: (dispatch, entry) =>
-      dispatch(executeWidgetWrite({ action: 'remove', body: body(entry) })),
+      dispatch(
+        executeWidgetWrite({ action: 'remove', body: { ...body(entry), requestKey: entry.token } }),
+      ),
   },
   widgetMeals: {
     busy: (state) => state.widgetsUi.busy,

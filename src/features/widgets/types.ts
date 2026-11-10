@@ -33,7 +33,7 @@ export type DinnerPublication = {
 }
 export type FamilyWidget = {
   id: string
-  kind: 'dinner-spinner'
+  kind: 'dinner-spinner' | 'where-is-it'
   title: string
   visibility: 'private' | 'family'
   owner: { id: number; name: string }
@@ -41,6 +41,8 @@ export type FamilyWidget = {
   hidden: boolean
   createdAt: string
   updatedAt: string
+  itemCount?: number
+  latestItemUpdatedAt?: string | null
   meals: WidgetMeal[]
   spins: DinnerSpin[]
   publications: DinnerPublication[]

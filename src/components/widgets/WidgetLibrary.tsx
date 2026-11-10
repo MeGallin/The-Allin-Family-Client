@@ -44,6 +44,7 @@ function StoreSection({
 }
 export function WidgetLibrary({
   onAdd,
+  onAddWhere,
   installations,
   loading,
   error,
@@ -52,6 +53,7 @@ export function WidgetLibrary({
   focus,
 }: {
   onAdd: () => void
+  onAddWhere: () => void
   installations: FamilyWidget[]
   loading: boolean
   error: boolean
@@ -82,14 +84,16 @@ export function WidgetLibrary({
   const [resultStatus, setResultStatus] = useState('')
   const [selected, setSelected] = useState<WidgetStoreApp | null>(null)
   const ready = !loading && !error
-  const firstInstallation = installations.find((widget) => !widget.hidden) ?? installations[0]
-  const personal = installations.filter((widget) => widget.visibility === 'private').length
-  const family = installations.filter((widget) => widget.visibility === 'family').length
+  const dinnerInstallations = installations.filter((widget) => widget.kind === 'dinner-spinner')
+  const firstInstallation =
+    dinnerInstallations.find((widget) => !widget.hidden) ?? dinnerInstallations[0]
+  const personal = dinnerInstallations.filter((widget) => widget.visibility === 'private').length
+  const family = dinnerInstallations.filter((widget) => widget.visibility === 'family').length
   const dinnerStatus = !ready
     ? loading
       ? 'Checking installations…'
       : 'Installation status unavailable'
-    : installations.length
+    : dinnerInstallations.length
       ? `Installed · ${personal} personal, ${family} family`
       : 'Available · Personal or family'
   const filtered = widgetCatalogue.filter(
@@ -113,6 +117,32 @@ export function WidgetLibrary({
   }
   const personalFor = (id: string) => (id === 'focus' ? focus : id === 'word' ? word : sudoku)
   function action(app: WidgetStoreApp) {
+    if (app.id === 'where') {
+      const available = installations.filter((widget) => widget.kind === 'where-is-it')
+      return available.length ? (
+        <Link
+          className="pill-action"
+          to={widgetInstallationPath(available[0])}
+          onClick={() => setSelected(null)}
+          aria-label="Open Where Is It?"
+        >
+          OPEN
+        </Link>
+      ) : (
+        <button
+          type="button"
+          className="pill-action"
+          disabled={!ready}
+          aria-label="Install Where Is It?"
+          onClick={() => {
+            setSelected(null)
+            onAddWhere()
+          }}
+        >
+          INSTALL
+        </button>
+      )
+    }
     if (app.id === 'sudoku' || app.id === 'word' || app.id === 'focus') {
       const personal = personalFor(app.id)
       return personal?.installed ? (
@@ -191,19 +221,23 @@ export function WidgetLibrary({
           <span className="app-name">{app.title}</span>
           <span className="app-subtitle">{app.subtitle}</span>
           <span className="app-scope">
-            {app.id === 'dinner'
-              ? dinnerStatus
-              : app.id === 'sudoku' || app.id === 'word' || app.id === 'focus'
-                ? personalFor(app.id)?.installed
-                  ? 'Installed · Personal'
-                  : personalFor(app.id)?.removing
-                    ? 'Removal pending · Undo available'
-                    : personalFor(app.id)?.ready
-                      ? 'Available · Personal only'
-                      : personalFor(app.id)?.loading
-                        ? 'Checking installation…'
-                        : 'Installation status unavailable'
-                : 'Installed · Shared family tool'}
+            {app.id === 'where'
+              ? installations.some((widget) => widget.kind === 'where-is-it')
+                ? 'Installed · Personal or family'
+                : 'Available · Personal or family'
+              : app.id === 'dinner'
+                ? dinnerStatus
+                : app.id === 'sudoku' || app.id === 'word' || app.id === 'focus'
+                  ? personalFor(app.id)?.installed
+                    ? 'Installed · Personal'
+                    : personalFor(app.id)?.removing
+                      ? 'Removal pending · Undo available'
+                      : personalFor(app.id)?.ready
+                        ? 'Available · Personal only'
+                        : personalFor(app.id)?.loading
+                          ? 'Checking installation…'
+                          : 'Installation status unavailable'
+                  : 'Installed · Shared family tool'}
           </span>
         </button>
         {action(app)}
@@ -263,7 +297,7 @@ export function WidgetLibrary({
                 <WidgetAppIcon id="dinner" />
                 <span>
                   <b>Dinner Spinner</b>
-                  {ready && installations.length
+                  {ready && dinnerInstallations.length
                     ? 'Installed · Open your choices'
                     : 'Personal or family'}
                 </span>
@@ -359,7 +393,10 @@ export function WidgetLibrary({
       {selected && (
         <WidgetStoreDetails
           app={selected}
-          installations={installations}
+          installations={installations.filter(
+            (widget) =>
+              widget.kind === (selected.id === 'where' ? 'where-is-it' : 'dinner-spinner'),
+          )}
           ready={
             selected.id === 'sudoku' || selected.id === 'word' || selected.id === 'focus'
               ? !!personalFor(selected.id)?.ready
@@ -390,7 +427,14 @@ export function WidgetLibrary({
           }
           action={action(selected)}
           onClose={() => setSelected(null)}
-          onInstall={install}
+          onInstall={
+            selected.id === 'where'
+              ? () => {
+                  setSelected(null)
+                  onAddWhere()
+                }
+              : install
+          }
         />
       )}
     </div>

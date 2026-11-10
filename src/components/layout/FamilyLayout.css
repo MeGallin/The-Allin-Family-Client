@@ -86,6 +86,7 @@
 }
 @media (min-width: 64rem) {
   .family-layout {
+    --dashboard-width: 100%;
     display: grid;
     grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
     transition: grid-template-columns var(--motion-medium) var(--motion-ease);

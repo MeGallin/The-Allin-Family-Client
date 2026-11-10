@@ -28,6 +28,7 @@ function mount(overrides: Partial<Parameters<typeof WidgetLibrary>[0]> = {}) {
         element: (
           <WidgetLibrary
             onAdd={onAdd}
+            onAddWhere={vi.fn()}
             installations={[]}
             loading={false}
             error={false}
@@ -76,7 +77,7 @@ describe('Widget Store catalogue and real action boundaries', () => {
     expect(screen.getByRole('link', { name: 'Open Polls' }).getAttribute('href')).toBe(
       '/my-space?view=family&tool=polls',
     )
-    expect(screen.getByText('Available · Personal or family')).not.toBeNull()
+    expect(screen.getAllByText('Available · Personal or family')).toHaveLength(2)
     expect(
       (screen.getByRole('button', { name: 'Install Sudoku' }) as HTMLButtonElement).disabled,
     ).toBe(false)

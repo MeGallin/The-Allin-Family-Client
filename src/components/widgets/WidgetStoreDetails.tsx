@@ -58,7 +58,7 @@ export function WidgetStoreDetails({
             {visibility ??
               (app.availability === 'proposed'
                 ? 'Proposed'
-                : app.id === 'dinner'
+                : app.id === 'dinner' || app.id === 'where'
                   ? 'Personal or family'
                   : 'Shared family')}
           </strong>
@@ -69,7 +69,7 @@ export function WidgetStoreDetails({
             {availability ??
               (app.availability === 'proposed'
                 ? 'Proposed'
-                : app.id === 'dinner'
+                : app.id === 'dinner' || app.id === 'where'
                   ? ready
                     ? installations.length
                       ? 'Installed'
@@ -100,8 +100,10 @@ export function WidgetStoreDetails({
               <p>
                 {index === 0
                   ? app.subtitle
-                  : app.id === 'dinner'
-                    ? 'Private ideas. Shared dinner choices.'
+                  : app.id === 'dinner' || app.id === 'where'
+                    ? app.id === 'where'
+                      ? 'Names and locations, easy to find.'
+                      : 'Private ideas. Shared dinner choices.'
                     : app.availability === 'installed'
                       ? 'One shared family tool.'
                       : app.availability === 'proposed'
@@ -117,7 +119,7 @@ export function WidgetStoreDetails({
         <p>{app.description}</p>
         <p>Preview artwork is illustrative and does not show family content.</p>
       </div>
-      {app.id === 'dinner' && (
+      {(app.id === 'dinner' || app.id === 'where') && (
         <>
           {installations.length > 0 && (
             <section className="store-installations">
@@ -138,7 +140,7 @@ export function WidgetStoreDetails({
             </section>
           )}
           <button type="button" className="secondary" onClick={onInstall} disabled={!ready}>
-            {installations.length ? 'Install another Dinner Spinner' : 'Install Dinner Spinner'}
+            {installations.length ? 'Install another ' + app.title : 'Install ' + app.title}
           </button>
         </>
       )}

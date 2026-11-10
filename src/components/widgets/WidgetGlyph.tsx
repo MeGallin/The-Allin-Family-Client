@@ -1,4 +1,5 @@
 import {
+  MapPin,
   BookHeart,
   CircleHelp,
   Compass,
@@ -12,6 +13,7 @@ import { Icon } from '../ui/Icon'
 import './WidgetGlyph.css'
 
 const icons = {
+  where: MapPin,
   shopping: ShoppingBasket,
   polls: Vote,
   focus: Hourglass,

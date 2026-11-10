@@ -31,6 +31,9 @@ const SudokuInstall = lazy(() =>
     default: module.SudokuInstall,
   })),
 )
+const WhereInstallationForm = lazy(
+  () => import('../../components/where-is-it/WhereInstallationForm'),
+)
 const WidgetComposer = lazy(() => import('../../components/widgets/WidgetComposer'))
 const tabs = [
   { id: 'library', label: 'Widget Library', icon: Library },
@@ -55,6 +58,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
   const sudoku = useSudoku()
   const word = useDailyWord()
   const focus = useFocusTimer()
+  const [installWhere, setInstallWhere] = useState(false)
   const [installFocus, setInstallFocus] = useState(false)
   const [installWord, setInstallWord] = useState(false)
   const [installSudoku, setInstallSudoku] = useState(false)
@@ -90,7 +94,12 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     personalTitle ??
     (wordResultsSelected
       ? 'Daily Word results'
-      : (builtin?.title ?? (openedSetup ? 'Dinner Spinner' : null)))
+      : (builtin?.title ??
+        (openedSetup
+          ? openedSetup.kind === 'where-is-it'
+            ? 'Where Is It?'
+            : 'Dinner Spinner'
+          : null)))
   useEffect(() => {
     if (
       failure?.status === 401 ||
@@ -262,6 +271,10 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
         {view === 'library' ? (
           <WidgetLibrary
             onAdd={() => change({ compose: 'spinner' })}
+            onAddWhere={() => {
+              clearError()
+              setInstallWhere(true)
+            }}
             installations={widgets.filter((widget) => !removals[widget.id])}
             loading={loading}
             error={!!error}
@@ -422,6 +435,22 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
           </>
         )}
       </Tabs>
+      {(installWhere || editing?.kind === 'where-is-it') && (
+        <Suspense fallback={<LoadingState label="Opening collection settings…" />}>
+          <WhereInstallationForm
+            key={editing?.id ?? 'new-where'}
+            widget={editing?.kind === 'where-is-it' ? editing : undefined}
+            onClose={() => {
+              setInstallWhere(false)
+              change({})
+            }}
+            onSaved={() => {
+              setInstallWhere(false)
+              change({ view: 'library' })
+            }}
+          />
+        </Suspense>
+      )}
       {installFocus && (
         <Suspense fallback={<LoadingState label="Opening Focus Timer installation…" />}>
           <FocusTimerInstall
@@ -471,7 +500,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
         !focusSelected &&
         !wordSelected &&
         !wordResultsSelected &&
-        (search.get('compose') === 'spinner' || editing) && (
+        (search.get('compose') === 'spinner' || editing?.kind === 'dinner-spinner') && (
           <Suspense fallback={<LoadingState label="Opening widget settings…" />}>
             <WidgetComposer
               key={editing?.id ?? 'new'}

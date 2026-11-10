@@ -1,6 +1,7 @@
 import type { ActivityEntry } from './types'
 
 export const widgetKinds: Record<string, string> = {
+  'where-is-it': 'Where Is It?',
   'dinner-spinner': 'Dinner Spinner',
   sudoku: 'personal Sudoku',
   'daily-word': 'personal Daily Word',

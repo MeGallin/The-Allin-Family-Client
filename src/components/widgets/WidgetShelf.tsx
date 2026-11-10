@@ -20,6 +20,7 @@ import {
 } from '../../features/widgets/builtin-widgets'
 import { LoadingState } from '../ui/LoadingState'
 import './WidgetShelf.css'
+const WhereIsItWorkspace = lazy(() => import('../where-is-it/WhereIsItWorkspace'))
 const JobsWidget = lazy(() => import('../household-jobs/HouseholdJobs'))
 const ShoppingWidget = lazy(() => import('../../pages/family/ListsPage'))
 const PollsWidget = lazy(() => import('../../pages/family/PollsPage'))
@@ -100,7 +101,9 @@ export function WidgetShelf({
                     <strong>{widget.title}</strong>
                     <small>
                       {widget.owner.id === ownerId
-                        ? 'Your wheel'
+                        ? widget.kind === 'where-is-it'
+                          ? 'Your collection'
+                          : 'Your wheel'
                         : 'Shared by ' + widget.owner.name}{' '}
                       · {widget.visibility === 'private' ? 'Personal' : 'Family'}
                     </small>
@@ -138,7 +141,17 @@ export function WidgetShelf({
           )}
         </ContentSurface>
       )}
-      {selected && (
+      {selected?.kind === 'where-is-it' && (
+        <Suspense fallback={<LoadingState label="Opening Where Is It?…" />}>
+          <WhereIsItWorkspace
+            key={selected.id}
+            widget={selected}
+            onEdit={() => onEdit(selected)}
+            onRemove={() => onRemove(selected)}
+          />
+        </Suspense>
+      )}
+      {selected?.kind === 'dinner-spinner' && (
         <>
           <div className="widget-shelf__layout">
             <div className="widget-shelf__main">

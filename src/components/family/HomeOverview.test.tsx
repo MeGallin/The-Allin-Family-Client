@@ -298,3 +298,74 @@ it('distinguishes missing snapshots, loaded empty collections and offline saved 
   })
   expect(fetch).not.toHaveBeenCalled()
 })
+
+it('shows a muted empty Where hint, uses actual item recency and links to its collection without private data requests', async () => {
+  store = createAppStore()
+  store.dispatch(userReceived(testUser))
+  const collection = (id: string, extra: Partial<FamilyWidget> = {}) =>
+    widget(id, {
+      kind: 'where-is-it',
+      publications: [],
+      itemCount: 0,
+      latestItemUpdatedAt: null,
+      ...extra,
+    })
+  const publish = async (widgets: FamilyWidget[]) =>
+    store!.dispatch(
+      widgetsApi.util.upsertQueryData('getWidgets', testUser.id, { ownerId: testUser.id, widgets }),
+    )
+  await publish([collection('empty')])
+  const view = renderHook(() => useHomeOverview(calendar), {
+    wrapper: ({ children }) => <Provider store={store!}>{children}</Provider>,
+  })
+  const summary = () => view.result.current.find((entry) => entry.kind === 'where')
+  expect(summary()).toMatchObject({
+    count: 0,
+    detail: 'No items saved yet',
+    to: '/my-space?view=family&widget=empty',
+  })
+  await act(async () => {
+    await publish([
+      collection('empty', { updatedAt: new Date(now).toISOString() }),
+      collection('older', { itemCount: 2, latestItemUpdatedAt: '2026-10-26T10:00:00.000Z' }),
+      collection('recent', { itemCount: 3, latestItemUpdatedAt: '2026-10-27T10:00:00.000Z' }),
+      collection('private', {
+        visibility: 'private',
+        itemCount: 99,
+        latestItemUpdatedAt: new Date(now).toISOString(),
+      }),
+      collection('hidden', {
+        hidden: true,
+        itemCount: 99,
+        latestItemUpdatedAt: new Date(now).toISOString(),
+      }),
+    ])
+  })
+  await waitFor(() =>
+    expect(summary()).toMatchObject({
+      count: 5,
+      detail: 'Last updated yesterday',
+      to: '/my-space?view=family&widget=recent',
+    }),
+  )
+  // Installation settings' newer timestamp never becomes the item recency hint.
+  await act(async () => {
+    await publish([
+      collection('recent', { itemCount: 1, latestItemUpdatedAt: new Date(now).toISOString() }),
+    ])
+  })
+  await waitFor(() => expect(summary()?.detail).toBe('Last updated just now'))
+  expect(fetch).not.toHaveBeenCalled()
+  view.unmount()
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+  const offline = renderHook(() => useHomeOverview(calendar), {
+    wrapper: ({ children }) => <Provider store={store!}>{children}</Provider>,
+  })
+  expect(offline.result.current.find((entry) => entry.kind === 'where')).toMatchObject({
+    count: 1,
+    detail: undefined,
+    status: 'Offline · saved summary',
+  })
+  act(() => store!.dispatch(userReceived({ ...testUser, id: testUser.id + 1 })))
+  expect(offline.result.current.find((entry) => entry.kind === 'where')).toBeUndefined()
+})

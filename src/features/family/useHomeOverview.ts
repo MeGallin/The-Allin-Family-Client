@@ -1,3 +1,4 @@
+import { relativeDate } from '../../lib/friendly-dates'
 import { homePolls } from './home-view'
 import { memoriesApi } from '../../services/memories-query'
 import { pollsApi } from '../../services/polls-query'
@@ -13,7 +14,7 @@ import { useNow } from '../../hooks/useNow'
 import { builtinWidgetPath } from '../widgets/builtin-widgets'
 
 export type HomeOverviewEntry = {
-  kind: 'plans' | 'polls' | 'shopping' | 'meals' | 'jobs' | 'memories'
+  kind: 'where' | 'plans' | 'polls' | 'shopping' | 'meals' | 'jobs' | 'memories'
   to: string
   label: string
   count: number | null
@@ -55,7 +56,12 @@ export function useHomeOverview(calendar: CalendarOverview): HomeOverviewEntry[]
   const sharedWidgets = (widgetData?.widgets ?? []).filter(
     (widget) => widget.visibility === 'family' && !widget.hidden && !removals[widget.id],
   )
-  const sharedMeals = familyMeals(sharedWidgets)
+  const whereCollections = sharedWidgets
+    .filter((widget) => widget.kind === 'where-is-it')
+    .sort((a, b) => (b.latestItemUpdatedAt ?? '').localeCompare(a.latestItemUpdatedAt ?? ''))
+  const whereCount = whereCollections.reduce((count, widget) => count + (widget.itemCount ?? 0), 0)
+  const dinnerWidgets = sharedWidgets.filter((widget) => widget.kind === 'dinner-spinner')
+  const sharedMeals = familyMeals(dinnerWidgets)
   const diary = diaryDays(sharedMeals, now).flatMap((day) => day.meals)
   const eaten = diary.filter((entry) => entry.publication.eatenAt).length
   const upcomingMeals = sharedMeals.filter((entry) => entry.publication.forDate >= today)
@@ -63,12 +69,32 @@ export function useHomeOverview(calendar: CalendarOverview): HomeOverviewEntry[]
   const sourceMeal = upcomingMeals[0] ?? diary[0]
   const mealDestination = sourceMeal
     ? mealLink(sourceMeal)
-    : sharedWidgets[0]
-      ? '/my-space?view=family&widget=' + encodeURIComponent(sharedWidgets[0].id)
+    : dinnerWidgets[0]
+      ? '/my-space?view=family&widget=' + encodeURIComponent(dinnerWidgets[0].id)
       : '/my-space?view=library'
   const openJobs = (jobData?.jobs ?? []).filter((job) => job.scope === 'family' && !job.done)
   const calendarReady = !calendar.loading && !calendar.error
+  const whereSummary: HomeOverviewEntry[] = whereCollections.length
+    ? [
+        {
+          kind: 'where',
+          label: 'Where Is It?',
+          count: whereCount,
+          detail:
+            !online || widgets.error
+              ? undefined
+              : whereCount === 0
+                ? 'No items saved yet'
+                : whereCollections[0].latestItemUpdatedAt
+                  ? 'Last updated ' + relativeDate(whereCollections[0].latestItemUpdatedAt, now)
+                  : undefined,
+          to: '/my-space?view=family&widget=' + encodeURIComponent(whereCollections[0].id),
+          status: summaryStatus(!!widgetData, !!widgets.error, online),
+        },
+      ]
+    : []
   return [
+    ...whereSummary,
     {
       kind: 'plans',
       to: '/calendar',

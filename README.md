@@ -1607,3 +1607,7 @@ the trigger; no browser console errors. Populated rows/long lists, other themes/
 and multi-account/concurrency remain unverified. No tests or release actions. See
 [Home recap](docs/home-recap.md) for contracts, migration order and the review matrix.
 No commit, push, package or deployment is included.
+
+## Where Is It? — local implementation, 10 November 2026
+
+The approved mobile-first Quick Index is available in Widget Store with separate Family/Personal collections using the existing installation model. Family members manage shared items; installation management remains owner-only. Search/filter, details, optional authenticated photos, version conflict protection, exact uncertain-save retries and shared 20-second Undo are included. Home reuses its summary for family item counts. See [docs/where-is-it.md](docs/where-is-it.md) for the interaction, privacy, recovery and local-check contract. Requires API migration027; no production/release operation is included.
