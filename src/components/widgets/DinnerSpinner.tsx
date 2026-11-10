@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Check, ChevronRight, LockKeyhole, RotateCw, Send } from 'lucide-react'
 import type { DinnerSpin, FamilyWidget } from '../../features/widgets/types'
 import { Icon } from '../ui/Icon'
+import { WidgetHelp } from '../ui/WidgetHelp'
 import { FriendlyTime } from '../ui/FriendlyTime'
 import { DinnerWheel } from './DinnerWheel'
 import { LoadingState } from '../ui/LoadingState'
@@ -99,6 +100,54 @@ export function DinnerSpinner({
   }
   return (
     <section className="dinner-spinner" aria-label={widget.title}>
+      <WidgetHelp>
+        <p>Try meal ideas privately, then share a chosen meal when you are ready.</p>
+        <ol>
+          <li>
+            <strong>Check the meal choices.</strong> View meals shows what is on this wheel. Only
+            its owner can change its meals and Personal/Family visibility in Widget settings. At
+            least two meals are needed to spin.
+          </li>
+          <li>
+            <strong>Spin for an idea.</strong> Choose Spin for dinner, then Spin again if you want
+            another try. Every meal has an equal chance on each independent spin, so the same meal
+            can appear again. Trials are saved privately to you, even on a Family wheel. You can
+            spin as often as you like; spinning does not change the family choice.
+          </li>
+          <li>
+            <strong>Publish a choice deliberately.</strong> On a Family wheel, choose Publish this
+            pick. Select Breakfast, Lunch, Dinner or Other and the Meal date, review the choice,
+            then confirm Publish to family. The family sees the meal, your nickname and publication
+            time. Personal wheels cannot publish. If the meal list changed, spin from the current
+            choices.
+          </li>
+          <li>
+            <strong>Respond to the published meal.</strong> Open the family suggestion and choose
+            Happy with that or Suggest another; Clear my response removes your reply. Replies are
+            optional. No reply is not a vote, and the published choice stands until it is changed.
+            Suggest another does not spin or replace the meal automatically.
+          </li>
+          <li>
+            <strong>Replace a suggestion when needed.</strong> Publish a new trial for the same date
+            and meal slot, review the existing choice and confirm the replacement. Old replies stay
+            with the previous suggestion; the replacement starts with no replies. Use Published meal
+            to select among available choices and Previous suggestions to review replacements.
+          </li>
+          <li>
+            <strong>Keep the diary accurate.</strong> After a meal on its date or later, choose Mark
+            as eaten. This records it in the seven-day meal diary and locks its replies. Correct
+            eaten record reverses that record so it can be corrected or replaced. Open a diary meal
+            to see its suggestion and responses; an empty day means no meal was recorded, not that
+            nobody ate.
+          </li>
+        </ol>
+        <p>
+          Spins, publications and replies save when you use their controls. Watch for errors and
+          confirmed results. A failed spin keeps your last confirmed pick; retry to recover the
+          saved result. Removing the installation uses confirmation and the shared 20-second Undo
+          countdown; it is separate from trying another spin.
+        </p>
+      </WidgetHelp>
       <div className="dinner-spinner__stage">
         <DinnerWheel meals={widget.meals} rotation={rotation} />
         <div className="dinner-spinner__intro">

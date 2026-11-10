@@ -183,6 +183,24 @@
   margin: 0;
   font-size: var(--text-xs);
 }
+.sudoku-help {
+  min-width: 0;
+}
+.sudoku-help ol,
+.sudoku-help ul {
+  padding-inline-start: var(--space-5);
+}
+.sudoku-help li + li {
+  margin-top: var(--space-3);
+}
+.sudoku-help__steps > li > p {
+  margin-block: var(--space-2);
+}
+.sudoku-help__example {
+  padding: var(--space-3);
+  border-inline-start: 3px solid var(--color-accent);
+  background: var(--color-surface-muted);
+}
 @media (max-width: 26rem) {
   .sudoku-board {
     padding: var(--space-3);

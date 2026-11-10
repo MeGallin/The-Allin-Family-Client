@@ -7,7 +7,7 @@ import { useDraftGuard } from '../../features/drafts/DraftProtection'
 import { useNow } from '../../hooks/useNow'
 import { ContentSurface } from '../ui/ContentSurface'
 import { LoadingState } from '../ui/LoadingState'
-import { Modal } from '../ui/Modal'
+import { WidgetHelp } from '../ui/WidgetHelp'
 import { RemovalConfirmation } from '../removals/RemovalConfirmation'
 import { RemovalNotice } from '../removals/RemovalNotice'
 import './DailyWord.css'
@@ -18,6 +18,65 @@ const descriptions = {
 }
 const symbols = { correct: '✓', present: '↔', absent: '·' }
 const rows = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM']
+function DailyWordHelp() {
+  return (
+    <WidgetHelp title="How to play">
+      <p>
+        Find today’s five-letter word in up to six accepted guesses. Everyone gets the same word for
+        each London day, with a fresh word after midnight.
+      </p>
+      <ol>
+        <li>
+          <strong>Enter a real five-letter word.</strong> Type in the guess field or use the letter
+          buttons. Backspace edits your current word. Choose Enter to submit it; simply typing does
+          not save a guess. Unrecognised words and words already tried do not use an attempt.
+        </li>
+        <li>
+          <strong>Read each letter’s feedback.</strong> ✓ means correct letter, correct position. ↔
+          means the letter is in the answer but in another position. · means that copy is not in the
+          remaining answer. Symbols and accessible labels accompany the colours.
+        </li>
+        <li>
+          <strong>Count repeated letters carefully.</strong> A letter receives credit only as many
+          times as it occurs in the answer, with correct positions matched first. For example, if
+          you guess two Es but the answer has only one, one E can get ✓ or ↔ and the other gets ·.
+          That dot does not mean there are no Es at all. This is a rule example, not a clue to
+          today’s answer.
+        </li>
+        <li>
+          <strong>Use the feedback in your next guess.</strong> Keep known correct positions, try
+          present letters elsewhere, and try useful new letters in the other spaces. Keyboard marks
+          summarise the best feedback seen for a letter; use the individual guess tiles to reason
+          about position and repeated-letter counts.
+        </li>
+        <li>
+          <strong>Finish at your own pace.</strong> Find the word or use all six accepted guesses.
+          Each accepted guess saves immediately; there is no separate Save button, hint, restart or
+          Undo for saved guesses. Your last seven days shows private playing/finished/solved
+          history. Removing and reinstalling does not reset today’s attempts.
+        </li>
+        <li>
+          <strong>Share only if you choose.</strong> After finishing, Share finished result
+          publishes the date, outcome and attempt count to Family results. Your answer words,
+          guesses and board stay private. Withdraw shared result makes that result private again.
+          Removing the installation does not withdraw a shared result for you.
+        </li>
+      </ol>
+      <p>
+        Wait for saved feedback after Enter. If a response is uncertain, use Retry same request to
+        resolve that guess rather than submitting a different one. Refresh checks saved state, not
+        unfinished typing. If a new day or another window changes the board, review the notice
+        before loading it and discarding your typed draft. Reconnect before submitting while
+        offline. Installation removal asks for confirmation and offers 20 seconds of Undo; saved
+        attempts and history are retained.
+      </p>
+      <p className="note">
+        British-English dictionary: ESDB / SCOWL 2026.02.25, Copyright 2000–2026 Kevin Atkinson. A
+        curated common-word answer list and broader accepted-guess list are stored on the server.
+      </p>
+    </WidgetHelp>
+  )
+}
 export default function DailyWordWorkspace({ onInstall }: { onInstall: () => void }) {
   const word = useDailyWord()
   const [retained, setRetained] = useState<WordSnapshot | null>(
@@ -32,6 +91,7 @@ export default function DailyWordWorkspace({ onInstall }: { onInstall: () => voi
     return (
       <ContentSurface>
         <h2>Your personal Daily Word</h2>
+        <DailyWordHelp />
         <p>
           Five letters. Six valid guesses. The same daily word for the family, with private
           progress.
@@ -70,8 +130,7 @@ function DailyWordBoard({
     [draft, setDraft] = useState(''),
     [message, setMessage] = useState('')
   const [announcement, setAnnouncement] = useState('')
-  const [help, setHelp] = useState(false),
-    [remove, setRemove] = useState(false)
+  const [remove, setRemove] = useState(false)
   const [unresolved, setUnresolved] = useState(false)
   const request = useRef<{ action: WordWrite['action']; body: object } | null>(null)
   const input = useRef<HTMLInputElement>(null),
@@ -215,10 +274,8 @@ function DailyWordBoard({
           <h2>Daily Word</h2>
           <p>Five letters. Six chances. One word together.</p>
         </div>
-        <button type="button" className="secondary" onClick={() => setHelp(true)}>
-          How to play
-        </button>
       </header>
+      <DailyWordHelp />
       <RemovalNotice removal={removal} />
       {(changedDay || conflict) && (
         <div role="status" className="dw-notice">
@@ -493,36 +550,6 @@ function DailyWordBoard({
           </div>
         </aside>
       </div>
-      {help && (
-        <Modal title="How to play Daily Word" onClose={() => setHelp(false)}>
-          <p>
-            Find today’s five-letter word in up to six accepted guesses. The family gets the same
-            word each London day.
-          </p>
-          <p>
-            ✓ means the letter is in the correct place. ↔ means it appears elsewhere. · means that
-            copy of the letter is absent. Repeated letters count only as often as they appear in the
-            answer.
-          </p>
-          <p>
-            Type into the guess field or use the letter buttons. Enter saves one guess; Backspace
-            edits only your current word. No hints, restart or undo for saved guesses.
-          </p>
-          <p>
-            Unrecognised words and words you already tried do not use an attempt. Removing and
-            reinstalling keeps today’s attempts.
-          </p>
-          <p>
-            Your board and seven-day history are private. Finished results are shared only when you
-            choose, and can be withdrawn.
-          </p>
-          <p className="note">
-            British-English dictionary: ESDB / SCOWL 2026.02.25, Copyright 2000–2026 Kevin Atkinson.
-            A curated common-word answer list and broader accepted-guess list are stored on the
-            server.
-          </p>
-        </Modal>
-      )}
       {remove && (
         <RemovalConfirmation
           item={{ id: 'daily-word', title: 'Daily Word', version: board.installationVersion }}

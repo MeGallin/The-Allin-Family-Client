@@ -406,18 +406,198 @@ function Board({ initial, game }: { initial: NonogramGame; game: Controller }) {
           Hint
         </button>
       </div>
-      <details>
+      <details className="nonogram-help">
         <summary>How to play</summary>
         <p>
-          Numbers show filled runs in order. “2 1” means two filled squares, at least one empty
-          square, then one filled square. A clue of 0 means the whole line is empty. Crosses are
-          optional notes; complete the filled picture without crossing every empty square.
+          Reveal a hidden picture by working out which squares to fill and which to leave empty.
+          Start with a 5×5 puzzle and take one row or column at a time. You do not need to guess.
         </p>
         <p>
-          Tap once to apply your mode; tap the same mark to clear it. Keyboard: arrows move, Space
-          applies the mode, X marks empty and Delete clears. Check never changes marks; Hint reveals
-          one square and records assistance, even after Undo.
+          These five-square examples teach the rules; they are not the answer to your current
+          puzzle. <strong>■ = filled, × = definitely empty, ? = not yet known.</strong> On your
+          board, an unknown square is blank.
         </p>
+        <ol className="nonogram-help__steps">
+          <li>
+            <strong>Read the clues beside each line.</strong>
+            <p>
+              Numbers on the left describe that row, reading left to right. Numbers above the grid
+              describe that column, reading top to bottom. Each number means a block of that many
+              filled squares touching each other, with no gaps inside it.
+            </p>
+            <div className="nonogram-help__example">
+              <span className="nonogram-help__cells" aria-hidden="true">
+                <span>■</span>
+                <span>■</span>
+                <span>■</span>
+                <span>■</span>
+                <span>■</span>
+              </span>
+              <span>Clue 5: fill all five squares.</span>
+            </div>
+          </li>
+          <li>
+            <strong>Keep blocks in order, with a gap between them.</strong>
+            <p>
+              A clue of “2 1” means a block of two, then a block of one, in that order. Leave at
+              least one empty square between blocks. There can be more empty squares between them,
+              or before the first block or after the last. The clues do not tell you those gap
+              sizes.
+            </p>
+            <div className="nonogram-help__example">
+              <span className="nonogram-help__cells" aria-hidden="true">
+                <span>■</span>
+                <span>■</span>
+                <span>×</span>
+                <span>■</span>
+                <span>■</span>
+              </span>
+              <span>
+                Clue 2 2: two filled, one empty, two filled. This is the only fit in five squares.
+              </span>
+            </div>
+            <div className="nonogram-help__example">
+              <span className="nonogram-help__cells" aria-hidden="true">
+                <span>×</span>
+                <span>■</span>
+                <span>■</span>
+                <span>×</span>
+                <span>■</span>
+              </span>
+              <span>Clue 2 1: one possible fit is empty, two filled, empty, one filled.</span>
+            </div>
+            <div className="nonogram-help__example">
+              <span className="nonogram-help__cells" aria-hidden="true">
+                <span>×</span>
+                <span>×</span>
+                <span>×</span>
+                <span>×</span>
+                <span>×</span>
+              </span>
+              <span>Clue 0: all five squares are empty.</span>
+            </div>
+          </li>
+          <li>
+            <strong>Begin with squares you can prove.</strong>
+            <p>
+              Look for a line whose blocks and required gaps fill the whole line, like “5” or “2 2”
+              above. You can place every square in those examples. With “0”, mark the whole line
+              empty.
+            </p>
+            <p>
+              If a block can move, look for an overlap. A clue of “3” in five squares can put its
+              three filled squares in these three positions:
+            </p>
+            <div className="nonogram-help__example">
+              <span className="nonogram-help__cells" aria-hidden="true">
+                <span>■</span>
+                <span>■</span>
+                <span>■</span>
+                <span>?</span>
+                <span>?</span>
+              </span>
+              <span>Block starts at square 1.</span>
+            </div>
+            <div className="nonogram-help__example">
+              <span className="nonogram-help__cells" aria-hidden="true">
+                <span>?</span>
+                <span>■</span>
+                <span>■</span>
+                <span>■</span>
+                <span>?</span>
+              </span>
+              <span>Block starts at square 2.</span>
+            </div>
+            <div className="nonogram-help__example">
+              <span className="nonogram-help__cells" aria-hidden="true">
+                <span>?</span>
+                <span>?</span>
+                <span>■</span>
+                <span>■</span>
+                <span>■</span>
+              </span>
+              <span>Block starts at square 3.</span>
+            </div>
+            <p>
+              Square 3, the middle square, is filled in every possible position. Fill only that
+              square for now. The other four squares are still unknown: do not cross them out.
+            </p>
+            <div className="nonogram-help__example">
+              <span className="nonogram-help__cells" aria-hidden="true">
+                <span>?</span>
+                <span>?</span>
+                <span>■</span>
+                <span>?</span>
+                <span>?</span>
+              </span>
+              <span>Your safe first move: unknown, unknown, filled, unknown, unknown.</span>
+            </div>
+          </li>
+          <li>
+            <strong>Use each discovery in the crossing line.</strong>
+            <p>
+              A filled square belongs to both its row and its column. After working on a row, check
+              the columns it crosses: your new marks may rule out possible block positions. Then
+              check the rows again. Only fill a square if every remaining position fills it; only
+              mark it empty if every remaining position leaves it empty.
+            </p>
+            <p>
+              When you know exactly where a block starts and ends, mark the square just before and
+              just after it empty, if those squares are inside the grid. This keeps it apart from
+              other blocks. If you cannot prove a move, leave the square unknown and try another
+              line.
+            </p>
+          </li>
+          <li>
+            <strong>Put your deductions on the board.</strong>
+            <p>
+              Choose <strong>Fill ■</strong>, then tap a square to fill it. Choose{' '}
+              <strong>Mark empty ×</strong>, then tap a square you know is empty. Tapping the same
+              mark again clears it back to unknown. Choose <strong>Clear</strong> to remove either
+              kind of mark. You can also click squares with a mouse.
+            </p>
+            <p>
+              Keep alternating between rows and columns until the picture is complete. Completion
+              appears when all the correct squares, and no extra squares, are filled. You do not
+              have to cross every empty square; crosses are notes to help you reason.
+            </p>
+          </li>
+        </ol>
+        <p>
+          <strong>Helpful controls and saving</strong>
+        </p>
+        <ul>
+          <li>
+            <strong>Undo</strong> reverses a board edit; <strong>Redo</strong> restores an undone
+            edit.
+          </li>
+          <li>
+            <strong>Check progress</strong> tells you whether your current marks contain mistakes.
+            It does not change any squares or fill in unknown ones. <strong>Hint</strong> reveals or
+            corrects one square. Using it records that you had help, even if you Undo the hint.
+          </li>
+          <li>
+            <strong>Keyboard:</strong> Tab into the board, then use arrow keys to move. Home and End
+            go to the first and last square of the row. Space applies your selected mode; X toggles
+            an empty mark; Delete or Backspace clears the square.
+          </li>
+          <li>
+            <strong>Enlarge board</strong> gives you larger squares and clues; scroll sideways
+            within the board when needed. <strong>Fit board</strong> returns to the compact view.
+          </li>
+          <li>
+            Your marks save automatically. Wait for <strong>Saved</strong> before refreshing or
+            closing the page. If saving fails or needs a retry, follow the message on the board;
+            unsaved marks may be lost if you refresh or close anyway.
+          </li>
+          <li>
+            <strong>Next puzzle size</strong> chooses the size for your next board. Confirming{' '}
+            <strong>New puzzle</strong> replaces the current board; confirming{' '}
+            <strong>Reset puzzle</strong> clears this same puzzle to start again without hints
+            recorded. Both replace your current marks. There are six pictures, three of each size.
+            Once you have played all pictures of a size, New puzzle offers a labelled replay.
+          </li>
+        </ul>
       </details>
       <div className="nonogram-next">
         <label htmlFor="nonogram-next-size">Next puzzle size</label>

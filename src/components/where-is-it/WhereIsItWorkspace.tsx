@@ -5,6 +5,7 @@ import { useWidgets } from '../../features/widgets/useWidgets'
 import { useWhereItems } from '../../features/where-is-it/useWhereItems'
 import { wherePhoto, type WhereItem } from '../../features/where-is-it/types'
 import { ContentSurface } from '../ui/ContentSurface'
+import { WidgetHelp } from '../ui/WidgetHelp'
 import { Icon } from '../ui/Icon'
 import { Modal } from '../ui/Modal'
 import { FriendlyTime } from '../ui/FriendlyTime'
@@ -62,6 +63,49 @@ export default function WhereIsItWorkspace({
           </button>
         </div>
       </div>
+      <WidgetHelp>
+        <p>Keep an index of where things belong, so you can find them again.</p>
+        <ol>
+          <li>
+            <strong>Check the collection’s visibility.</strong> Ownership &amp; settings shows its
+            owner and whether it is Family or Personal. Family members can find, add, edit and
+            remove shared items. Personal items and photos are visible only to the owner. Only the
+            owner can change collection settings or remove the installation.
+          </li>
+          <li>
+            <strong>Add an item and its location.</strong> Choose Add item (or Add your first item).
+            Enter a recognisable name and a specific location, such as a cupboard and shelf. Both
+            are required. Add an optional note and one JPG, PNG or WebP photo, then save the form.
+            The photo control shows its size limits; unsupported photos do not mean the item has
+            been saved.
+          </li>
+          <li>
+            <strong>Find something later.</strong> Search matches names, locations and notes.
+            Combine it with the Location filter to narrow the results, which are listed by name.
+            Choose All locations or Clear filters when a search hides the item you want. Filters
+            only affect this view; they do not change anyone’s saved collection.
+          </li>
+          <li>
+            <strong>Open an item for the full details.</strong> Select its row to see the complete
+            location, photo, note and update time. If it has moved, choose Edit / move item, change
+            the location and save. You can update its name, note or photo in the same form. Moving
+            means changing the saved location, not transferring it to another collection.
+          </li>
+          <li>
+            <strong>Remove an entry carefully.</strong> Open the item, choose Remove item and
+            confirm. Undo cancels during the 20-second countdown and keeps its saved photo. Removing
+            the whole collection is a separate owner action under Ownership &amp; settings. Removed
+            records are retained under the site’s removal policy.
+          </li>
+        </ol>
+        <p>
+          Add/edit forms save only when submitted; unfinished typing is not saved by Refresh items.
+          If a save is uncertain, keep the form open and retry that same save before changing it. If
+          the item changed elsewhere, review the warning before discarding your draft. Reconnect
+          before making changes while offline. Changing a Personal collection to Family shares its
+          existing items and photos, so review its contents first.
+        </p>
+      </WidgetHelp>
       <RemovalNotice removal={installationRemoval} />
       {api.error && (
         <p className="error" role="alert">

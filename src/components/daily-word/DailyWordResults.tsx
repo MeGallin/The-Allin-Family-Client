@@ -8,6 +8,7 @@ import { shoppingError } from '../../services/shopping-query'
 import { useLiveQueryOptions } from '../../hooks/useLiveQueryOptions'
 import { WORD_PATH } from '../../features/daily-word/types'
 import { ContentSurface } from '../ui/ContentSurface'
+import { WidgetHelp } from '../ui/WidgetHelp'
 import { LoadingState } from '../ui/LoadingState'
 import './DailyWord.css'
 export default function DailyWordResults() {
@@ -61,6 +62,27 @@ export default function DailyWordResults() {
           Play today
         </Link>
       </div>
+      <WidgetHelp>
+        <ol>
+          <li>
+            <strong>Read the shared finishes.</strong> This list covers the last seven London days
+            and only includes results people chose to share. Solved shows the attempt count;
+            Finished means all six guesses were used. An absent result does not prove someone did
+            not play. Nobody’s answer words, guesses or private history appear here.
+          </li>
+          <li>
+            <strong>Play or share your own result.</strong> Choose Play today to open your personal
+            board. After finishing, Share finished result publishes your date, outcome and attempt
+            count. Sharing is optional and happens separately from submitting guesses.
+          </li>
+          <li>
+            <strong>Manage your own sharing.</strong> Withdraw my result removes your shared result
+            without deleting your private progress. If you removed Daily Word, reinstall to manage
+            it; removal alone does not withdraw results. Refresh results checks the saved list. Wait
+            for withdrawal confirmation and use Retry withdrawal if its response is uncertain.
+          </li>
+        </ol>
+      </WidgetHelp>
       <p>
         Finished results from the last seven London days. Everyone’s words and guesses stay private.
       </p>

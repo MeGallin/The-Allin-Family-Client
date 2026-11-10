@@ -7,6 +7,7 @@ import type { HouseholdJob, JobScope, JobWrite } from '../../features/household-
 import { useOnline } from '../../hooks/useOnline'
 import { useRemovals } from '../../features/removals/useRemovals'
 import { ContentSurface } from '../ui/ContentSurface'
+import { WidgetHelp } from '../ui/WidgetHelp'
 import { Modal } from '../ui/Modal'
 import { Icon } from '../ui/Icon'
 import { RemovalConfirmation } from '../removals/RemovalConfirmation'
@@ -186,6 +187,53 @@ export default function HouseholdJobs() {
           ))}
         </div>
       </div>
+      <WidgetHelp>
+        <p>Plan small jobs, share the work and keep a record of what was done.</p>
+        <ol>
+          <li>
+            <strong>Choose Family or Mine first.</strong> Family jobs are shared with signed-in
+            family members. Mine contains your private jobs, not just family jobs assigned to you. A
+            job’s privacy is fixed when it is created; switching tabs does not move it.
+          </li>
+          <li>
+            <strong>Add a clear job.</strong> Choose Add job, enter a title, and optionally add an
+            area, notes and target day. Leave the day blank for a Flexible job. Target days are
+            planning guides, not deadlines. Choose Does not repeat, Weekly or Monthly and, for a
+            Family job, an assignee or Anyone can claim. Choose Save job to publish it.
+          </li>
+          <li>
+            <strong>Pick up shared work.</strong> Choose Claim on an unassigned Family job to take
+            responsibility. The creator or an administrator can use Edit / assign in job details to
+            change its assignment or other fields. Your private jobs stay with you.
+          </li>
+          <li>
+            <strong>Put open jobs in a useful order.</strong> Drag a grip and release to save the
+            move, or focus the grip and use Up/Down arrow keys. Escape cancels a drag. Job details
+            also offers Move up / Move down. Family order changes for everyone; Mine order is
+            private. Dates do not override your chosen order.
+          </li>
+          <li>
+            <strong>Record completion.</strong> The creator, administrator or current assignee can
+            choose Done. A one-off job moves to Completed &amp; removed jobs. A repeating job keeps
+            its history and advances its target day to the next week or month; Flexible repeats stay
+            Flexible. It does not complete itself because a date passed.
+          </li>
+          <li>
+            <strong>Review or correct the record.</strong> Open a job’s title for its notes,
+            assignment and Activity &amp; occurrences. When available, Reopen last completion
+            reverses the latest completion and restores that occurrence’s target day. Completed
+            &amp; removed jobs retains earlier records. The creator or administrator can Remove job
+            after confirmation; Undo cancels during the 20-second countdown, and removal stops
+            future repeats while keeping history.
+          </li>
+        </ol>
+        <p>
+          Save job submits a form; Claim, Done and completed moves save when selected. Wait for
+          confirmation. If order was not confirmed, use Refresh jobs before moving again. Your draft
+          is kept when a record changes elsewhere so you can review it before saving. Summary
+          figures follow the selected scope; Done this week excludes reopened completions.
+        </p>
+      </WidgetHelp>
       <div className="jobs-metrics" aria-label="Job summary">
         <div>
           <strong>{data ? open.length : '—'}</strong>

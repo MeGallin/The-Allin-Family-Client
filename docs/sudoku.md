@@ -62,6 +62,16 @@ No source prose or vendor UI is copied.
 
 ## UI and accessibility
 
+The native **How to play** disclosure teaches the row/column/3×3-box rules in six
+numbered beginner steps: fixed clues, missing digits, crossing constraints, a
+labelled illustrative single-missing-digit example, manual pencil candidates,
+only-place deductions, iterative solving, entry and conflict interpretation.
+It explains that duplicate highlights do not identify the wrong entry and an
+unhighlighted partial board is not proof of correctness. Its controls reference
+covers actual keyboard shortcuts, explicit saving, local Undo/Redo, pause without
+a timer, and confirmed new/restart/load-latest actions. The guide is static UI;
+opening it does not change the game, save progress or supply a hint.
+
 One grid Tab stop, arrow navigation, row Home/End and Ctrl/Cmd+Home/End. Digits,
 Delete/Backspace/0, P, Ctrl/Cmd+Z / Shift+Z / Y and Ctrl/Cmd+S act inside the grid.
 Fixed clues are bold and immutable. Mobile keypad uses normal shared touch targets;

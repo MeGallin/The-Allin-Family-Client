@@ -6,6 +6,7 @@ import { ShoppingActivity } from '../../components/family/shopping/ShoppingActiv
 import { ShoppingList } from '../../components/family/shopping/ShoppingList'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { Panel } from '../../components/ui/Panel'
+import { WidgetHelp } from '../../components/ui/WidgetHelp'
 import { RefreshButton } from '../../components/ui/RefreshButton'
 import { Icon } from '../../components/ui/Icon'
 import './ListsPage.css'
@@ -72,6 +73,44 @@ export default function ListsPage({ embedded = false }: { embedded?: boolean }) 
               <RefreshButton label="Refresh list" disabled={pending || loading} onClick={refresh} />
             }
           >
+            <WidgetHelp>
+              <p>Keep one shopping list together. Changes are shared with the signed-in family.</p>
+              <ol>
+                <li>
+                  <strong>Add what you need.</strong> Type a name in Add something, optionally mark
+                  it Important, then choose Add item. Wait for the saved feedback before adding
+                  another item. The item’s attribution shows who added or updated it.
+                </li>
+                <li>
+                  <strong>Tick items as you shop.</strong> Select an item’s checkbox when it is
+                  picked up. Select it again to put it back on the to-get list. Each change saves
+                  immediately; ticking does not delete the item.
+                </li>
+                <li>
+                  <strong>Find the right view.</strong> Search by item name or the person who
+                  added/edited it. Use Show to see Still to get, Picked up, Important or other
+                  groups, and choose a sort order. Reset view restores the default filters. These
+                  controls change what you see, not the shared items.
+                </li>
+                <li>
+                  <strong>Edit or inspect an item.</strong> Open its three-dot options. Edit item
+                  changes the name or importance; choose Save changes to keep the edit. Item details
+                  and List history explain recorded changes. Family members can update shared items,
+                  including ones added by someone else.
+                </li>
+                <li>
+                  <strong>Remove only what you no longer need.</strong> Choose Remove from the
+                  item’s options. Use Undo within the 20-second countdown to cancel removal; after
+                  it finishes, the item leaves the active list. Checking an item is the better
+                  choice when you only want to mark it picked up.
+                </li>
+              </ol>
+              <p>
+                There is no separate Save button for adding, checking or removing. Watch the
+                saving/error feedback. If an edit changed elsewhere, review the conflict before
+                saving. Refresh list loads saved changes; it does not save unfinished typing.
+              </p>
+            </WidgetHelp>
             <p className="lists-page__count">
               {loading
                 ? 'Connecting to the shared list…'

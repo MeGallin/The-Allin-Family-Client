@@ -214,6 +214,130 @@ export function SudokuBoard({
         across the board. Type 1–9; Delete clears; P toggles pencil marks. Undo/Redo lasts until
         refresh.
       </p>
+      <details className="sudoku-help">
+        <summary>How to play</summary>
+        <p>
+          Sudoku is a logic puzzle, with no arithmetic. Start with Easy and work out one certain
+          number at a time. The digits are symbols to place, not numbers to add up.
+        </p>
+        <ol className="sudoku-help__steps">
+          <li>
+            <strong>Learn the three rules.</strong>
+            <p>
+              Fill the 9×9 grid with digits 1–9. Every horizontal row, every vertical column and
+              every 3×3 box must contain each digit exactly once, with no repeats. The thicker
+              borders separate the nine boxes. Every square belongs to one row, one column and one
+              box, so its number must fit all three.
+            </p>
+          </li>
+          <li>
+            <strong>Start from the fixed clues.</strong>
+            <p>
+              The bold numbers were supplied with the puzzle and cannot be changed. Look for a row,
+              column or box with lots of numbers already filled in. List which digits from 1–9 are
+              missing; those are the only digits its empty squares could contain.
+            </p>
+          </li>
+          <li>
+            <strong>Check the crossing row, column and box.</strong>
+            <p>
+              Pick an empty square. Rule out every digit already used in its row, its column or its
+              box. The digits left are its candidates: possible answers, not yet proven ones. If
+              only one candidate remains, you can enter it as a full-size number.
+            </p>
+            <p className="sudoku-help__example">
+              <strong>Worked example:</strong> imagine a row reads “1 2 3 · 5 6 7 8 9”, where the
+              dot is its only empty square. The missing digit is 4. Check that the square’s column
+              and 3×3 box also allow 4, then enter it. If either already contains 4, an earlier
+              entry needs checking. This example is illustrative, not your current puzzle’s answer.
+            </p>
+          </li>
+          <li>
+            <strong>Use pencil marks when several digits could fit.</strong>
+            <p>
+              Select an empty square, turn <strong>Pencil</strong> on, then choose each candidate
+              using the number buttons or keyboard. Small numbers are reminders, not answers. Choose
+              a digit again to remove that note. Update your notes yourself as you place numbers
+              nearby; the game does not automatically remove ruled-out notes.
+            </p>
+            <p>
+              When you know the answer, turn Pencil off and enter the digit. This replaces the
+              square’s notes with a full-size number. Using pencil input on a square you already
+              filled replaces that entry with notes, so use it on empty squares while working out
+              possibilities.
+            </p>
+          </li>
+          <li>
+            <strong>Look for the only place a digit can go.</strong>
+            <p>
+              Choose a missing digit in one row, column or box. Check each empty square against its
+              crossing groups. If all but one square are ruled out, that last square must contain
+              the digit, even if you had written several candidates there. For example, if a box
+              needs a 7 and every empty square except one has a 7 in its row or column, put 7 in the
+              remaining square.
+            </p>
+            <p>
+              After each placement, check its row, column and box again: it may leave just one
+              candidate elsewhere. Alternate between these two deductions. If you cannot prove a
+              move, try another area and revisit your notes rather than guessing.
+            </p>
+          </li>
+          <li>
+            <strong>Enter your deductions and review conflicts.</strong>
+            <p>
+              With Pencil off, tap or click an empty square, then choose a number below the grid or
+              type 1–9. You can select one of your entries to replace it, or use{' '}
+              <strong>Clear</strong> to remove it and its notes. The bold clues stay fixed.
+            </p>
+            <p>
+              Conflict highlights mean a digit is repeated in a row, column or box. Both repeated
+              cells are highlighted; this does not identify which entry to change. No highlight only
+              means there is no repeated digit so far, not that every entry is correct. Check your
+              reasoning and use Clear or Undo if needed.
+            </p>
+            <p>
+              Finish by filling every square so all three rules hold. The game recognises a full
+              board with no conflicts; use <strong>Save progress</strong> to record your finish.
+            </p>
+          </li>
+        </ol>
+        <h3>Controls and saving</h3>
+        <ul>
+          <li>
+            <strong>Keyboard:</strong> while the grid has focus, arrow keys move one square;
+            Home/End go to the first/last square in the row; Ctrl/Cmd+Home/End go to the first/last
+            square of the board. Type 1–9 to enter digits, P to toggle Pencil, and Delete, Backspace
+            or 0 to clear the selected editable square.
+          </li>
+          <li>
+            <strong>Undo and Redo:</strong> use the buttons, Ctrl/Cmd+Z to undo, or Ctrl/Cmd+Shift+Z
+            / Ctrl/Cmd+Y to redo while in the grid. History holds up to 100 local changes and resets
+            on refresh; it is not saved with the puzzle.
+          </li>
+          <li>
+            <strong>Save progress:</strong> saving is manual, not automatic. Save your entries,
+            pencil marks and paused state before leaving or refreshing. Ctrl/Cmd+S saves while the
+            grid has focus. Wait for the saved status; an incomplete board or one with conflicts can
+            still be saved. If offline, keep the page open and reconnect before saving. Your
+            progress is private to your account.
+          </li>
+          <li>
+            <strong>Pause / Resume:</strong> hide and reveal the board. There is no timer or score.
+          </li>
+          <li>
+            <strong>New puzzle / Restart puzzle:</strong> New puzzle lets you choose a level and
+            replaces the current puzzle and its progress after confirmation. Restart clears your
+            entries and notes but keeps the same clues, also after confirmation. Easy has 42
+            starting clues, Medium 36 and Hard 30; these describe clue counts rather than a
+            guaranteed solving difficulty.
+          </li>
+          <li>
+            <strong>Refresh saved game:</strong> checks for the latest saved version. If another
+            window has changed the game, your local edits are kept until you choose and confirm
+            loading the latest version, which discards those edits and Undo history.
+          </li>
+        </ul>
+      </details>
       <div className="sudoku-board__toolbar" role="group" aria-label="Game controls">
         <button
           type="button"

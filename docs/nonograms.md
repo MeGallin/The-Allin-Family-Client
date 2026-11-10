@@ -20,6 +20,14 @@ assistance monotonically through Undo, and is optional. Reset explicitly starts
 that puzzle unassisted again. Next-size selection prepares a future board; only
 confirmed New changes the active puzzle. Reset/New always confirm replacement.
 
+The existing native How to play disclosure teaches beginners in five numbered
+steps: clue directions and contiguous runs, ordered blocks and gaps, five-cell
+worked examples (including the three-in-five overlap), row/column iteration and
+actual board input/completion rules. Static illustrative diagrams have adjacent
+text equivalents; they do not reveal the active picture or write game state.
+Optional controls, keyboard operation, assistance recording, waiting for Saved,
+and the finite collection/reset/new distinctions follow the core lesson.
+
 Nimbus surfaces/tokens and a shared original coloured-grid motif appear in the
 Store, personal Continue tile and workspace. 10×10 fit mode has compact targets
 on narrow phones. Enlarge preserves Clue Rail and offers contained scrolling with

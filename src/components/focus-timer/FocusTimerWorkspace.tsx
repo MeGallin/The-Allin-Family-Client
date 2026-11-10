@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { CircleHelp, Play, Pause, LockKeyhole, Coffee } from 'lucide-react'
+import { Play, Pause, LockKeyhole, Coffee } from 'lucide-react'
 import { useFocusTimer } from '../../features/focus-timer/useFocusTimer'
 import {
   focusPhases,
@@ -9,6 +9,7 @@ import {
 } from '../../features/focus-timer/types'
 import { useDraftGuard } from '../../features/drafts/DraftProtection'
 import { ContentSurface } from '../ui/ContentSurface'
+import { WidgetHelp } from '../ui/WidgetHelp'
 import { LoadingState } from '../ui/LoadingState'
 import { Modal } from '../ui/Modal'
 import { Icon } from '../ui/Icon'
@@ -49,7 +50,6 @@ function FocusDesk({
     [label, setLabel] = useState('')
   const [message, setMessage] = useState(''),
     [unresolved, setUnresolved] = useState(false),
-    [help, setHelp] = useState(false),
     [confirm, setConfirm] = useState<'finish' | 'reset' | 'remove' | null>(null)
   const [ackVersion, setAckVersion] = useState<number | null>(null)
   const request = useRef<FocusWrite | null>(null),
@@ -191,15 +191,65 @@ function FocusDesk({
           <h2>Focus Timer</h2>
           <p>A little time for one thing.</p>
         </div>
-        <button
-          type="button"
-          className="secondary"
-          aria-label="How the timer works"
-          onClick={() => setHelp(true)}
-        >
-          <Icon icon={CircleHelp} />
-        </button>
       </header>
+      <WidgetHelp>
+        <p>
+          Set aside time for one thing, then choose when to take a break. Your sessions and labels
+          are private to you. If it is not installed yet, choose Install personal Focus Timer first.
+        </p>
+        <ol>
+          <li>
+            <strong>Set up before starting.</strong> Choose Focus, Short break or Long break.
+            Initial defaults are 25, 5 and 15 minutes. Starting remembers that phase’s chosen
+            duration for next time. Use a preset or Custom minutes (5–180 for focus, 1–60 for
+            breaks), and optionally enter a private Session label. Setup is a draft until you start;
+            changing a field does not start or save a session.
+          </li>
+          <li>
+            <strong>Start deliberately.</strong> Choose Start focus or Start break and wait for
+            confirmation. The countdown and hourglass show time remaining. The accepted timer
+            continues through navigation, a hidden tab or signing out. Return online to check the
+            current saved time; an offline display is only an estimate.
+          </li>
+          <li>
+            <strong>Pause when you need to.</strong> Pause saves a frozen remaining time; Resume
+            continues that same session. Finish or reset the current session before changing its
+            phase, duration or label. The timer measures elapsed running time, not how much
+            attention you gave the task.
+          </li>
+          <li>
+            <strong>Choose what follows a full session.</strong> At the planned duration, choose
+            Start 5-minute break after focus or Start 25-minute focus after a break. This closes the
+            old session and starts the chosen next one. Done for now closes it without starting
+            anything. Breaks and focus sessions never start automatically.
+          </li>
+          <li>
+            <strong>Finish early or reset with care.</strong> Finish session asks for confirmation
+            and records only elapsed running time, separately from full-duration finishes. Reset
+            asks for confirmation and stops the timer as discarded, not a finished session. Its
+            history is kept. These actions do not have the removal countdown’s Undo.
+          </li>
+          <li>
+            <strong>Review your private history.</strong> Open Your last seven days for timed
+            focus/break minutes and recent sessions. Early finishes contribute timed minutes, but
+            only full-duration focus finishes count as full focus sessions. The figures describe
+            timer use, not productivity or measured attention.
+          </li>
+        </ol>
+        <p>
+          Start, Pause, Resume and finish actions save when selected; there is no separate Save
+          button. Wait for confirmation. If an action is uncertain, keep the page open and use Retry
+          same action before starting something else. Refresh checks saved state and does not save
+          unstarted setup. Review any changed-in-another-window notice before loading the latest
+          timer and discarding setup.
+        </p>
+        <p>
+          This timer stays quiet and cannot promise an alarm while the browser is closed or the
+          device sleeps. Remove Focus Timer asks for confirmation and offers 20 seconds of Undo. The
+          timer continues during that countdown; after removal it stops, private history is
+          retained, and reinstalling starts ready rather than resuming the removed timer.
+        </p>
+      </WidgetHelp>
       {!base.installed && (
         <p className="ft-notice">
           Your personal timer is ready to install. Your sessions and history will stay private.
@@ -538,27 +588,6 @@ function FocusDesk({
           </div>
         </aside>
       </div>
-      {help && (
-        <Modal title="How the timer works" onClose={() => setHelp(false)}>
-          <p>
-            Choose Focus, Short break or Long break and start it yourself. Pause freezes remaining
-            time; Resume continues the same session.
-          </p>
-          <p>
-            Your saved timer continues through navigation, hiding the tab or signing out. Return
-            online to reconcile with server time. It measures elapsed time, not your attention.
-          </p>
-          <p>
-            At time reached, choose the next phase or Done for now. Breaks never start
-            automatically. This timer stays quiet and cannot promise an alarm while your device
-            sleeps or browser is closed.
-          </p>
-          <p>
-            Early Finish records actual timer time separately from full finishes. Reset discards the
-            current session. Your private seven-day history is retained.
-          </p>
-        </Modal>
-      )}
       {(confirm === 'finish' || confirm === 'reset') && (
         <Modal
           title={confirm === 'finish' ? 'Finish this session early?' : 'Reset this session?'}

@@ -1,4 +1,5 @@
 import { ContentSurface } from '../../components/ui/ContentSurface'
+import { WidgetHelp } from '../../components/ui/WidgetHelp'
 import { useCollectionFilters } from '../../hooks/useCollectionFilters'
 import { useUrlFilters } from '../../hooks/useUrlFilters'
 import { pollStatuses, pollStatus, pollsView } from '../../features/polls/polls-view'
@@ -100,6 +101,44 @@ export default function PollsPage({ embedded = false }: { embedded?: boolean }) 
         />
       )}
       <ContentSurface>
+        <WidgetHelp>
+          <p>Ask the family a question, give everyone one vote and see the shared totals.</p>
+          <ol>
+            <li>
+              <strong>Create a question.</strong> Choose Create a poll, enter the question, optional
+              details and two to six distinct answer choices, then set a future closing time. Choose
+              Share poll to publish it to the family. An unfinished form is not a saved poll.
+            </li>
+            <li>
+              <strong>Cast your vote.</strong> In an open poll, choose one answer. Your vote saves
+              immediately and the selected option shows Your choice. Each person has one vote per
+              poll; choosing another answer moves that vote rather than adding a second one.
+            </li>
+            <li>
+              <strong>Change your mind while voting is open.</strong> Select another option or
+              choose Withdraw my vote. Once voting closes, the final totals remain visible but votes
+              cannot be changed. Voting closes at its scheduled cutoff or when its creator or an
+              administrator chooses Close voting.
+            </li>
+            <li>
+              <strong>Find earlier decisions.</strong> Use Show to select open, closed or all polls,
+              and search questions, details or who added/edited them. A poll may leave the current
+              filtered view after closing; change the filters to find its result.
+            </li>
+            <li>
+              <strong>Manage your question.</strong> The creator and administrators can Edit poll or
+              Remove poll. Reopen voting opens the edit form so you can choose a future cutoff and
+              save. Existing answer choices are kept when editing, protecting saved votes. Removal
+              asks for confirmation and offers 20 seconds of Undo before it takes effect.
+            </li>
+          </ol>
+          <p>
+            Polls and totals are shared. Administrators can see voting activity, including who voted
+            or changed a choice; voting is not anonymous. Wait for saving feedback and review any
+            error or changed-record warning before retrying. Refresh polls checks saved data; it
+            does not submit an unfinished form.
+          </p>
+        </WidgetHelp>
         {polls.length > 0 && (
           <ViewControls
             label="Poll filters"
