@@ -1,4 +1,4 @@
-import { useId, useState, type FormEvent } from 'react'
+import { useId, useRef, useState, type FormEvent } from 'react'
 import { MapPin, Search } from 'lucide-react'
 import { weekContextApi } from '../../services/week-context-query'
 import { shoppingError } from '../../services/shopping-query'
@@ -55,6 +55,7 @@ export function WeekPreferencesForm() {
 
 function PreferenceEditor({ preferences }: { preferences: WeekPreferences }) {
   const id = useId()
+  const townInput = useRef<HTMLInputElement>(null)
   const [baseline, setBaseline] = useState(preferences)
   const [region, setRegion] = useState(preferences.region)
   // undefined keeps the saved town; null deliberately turns the forecast off.
@@ -106,6 +107,7 @@ function PreferenceEditor({ preferences }: { preferences: WeekPreferences }) {
         <div className="week-preferences__search">
           <input
             id={id + '-town'}
+            ref={townInput}
             type="search"
             autoComplete="off"
             value={term}
@@ -159,7 +161,8 @@ function PreferenceEditor({ preferences }: { preferences: WeekPreferences }) {
                   onClick={() => {
                     setSelection(choice)
                     setTerm('')
-                    setFeedback('')
+                    setFeedback(`${choice.label} selected. Save preferences to apply.`)
+                    townInput.current?.focus()
                   }}
                 >
                   <Icon icon={MapPin} />
@@ -219,6 +222,7 @@ function PreferenceEditor({ preferences }: { preferences: WeekPreferences }) {
                 setRegion(preferences.region)
                 setSelection(undefined)
                 setTerm('')
+                setFeedback('')
                 mutation.reset()
               })
             }

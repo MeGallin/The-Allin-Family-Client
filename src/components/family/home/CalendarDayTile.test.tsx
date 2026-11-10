@@ -68,7 +68,9 @@ it('opens every saved plan in the shared modal without replacing the separate ad
   const add = screen.getByRole('link', { name: /\. Add a plan\.$/ })
   expect(add.getAttribute('href')).toBe('/calendar?compose=event&date=2026-10-25')
   expect(add.getAttribute('aria-label')).not.toContain('Same plan')
-  const trigger = screen.getByRole('button', { name: 'View 5 plans for Sunday 25 October' })
+  const trigger = screen.getByRole('button', {
+    name: 'Same plan. View all. 5 plans for Sunday 25 October',
+  })
   expect(trigger.textContent).toContain('5 plans · View all')
   expect(trigger.closest('a')).toBeNull()
   trigger.focus()
@@ -107,7 +109,9 @@ it('closes an unavailable day dialog without reopening it automatically after re
       <CalendarDayTile {...props} plansUnavailable={false} />
     </MemoryRouter>,
   )
-  fireEvent.click(screen.getByRole('button', { name: 'View 1 plan for Sunday 25 October' }))
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Saved plan. View plan. 1 plan for Sunday 25 October' }),
+  )
   expect(screen.getByRole('dialog')).toBeTruthy()
   view.rerender(
     <MemoryRouter>
@@ -121,5 +125,7 @@ it('closes an unavailable day dialog without reopening it automatically after re
     </MemoryRouter>,
   )
   expect(screen.queryByRole('dialog')).toBeNull()
-  expect(screen.getByRole('button', { name: 'View 1 plan for Sunday 25 October' })).toBeTruthy()
+  expect(
+    screen.getByRole('button', { name: 'Saved plan. View plan. 1 plan for Sunday 25 October' }),
+  ).toBeTruthy()
 })

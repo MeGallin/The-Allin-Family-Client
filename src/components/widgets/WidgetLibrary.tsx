@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { FOCUS_PATH } from '../../features/focus-timer/types'
 import { WORD_PATH } from '../../features/daily-word/types'
@@ -79,6 +79,7 @@ export function WidgetLibrary({
 }) {
   const [category, setCategory] = useState('all')
   const [query, setQuery] = useState('')
+  const [resultStatus, setResultStatus] = useState('')
   const [selected, setSelected] = useState<WidgetStoreApp | null>(null)
   const ready = !loading && !error
   const firstInstallation = installations.find((widget) => !widget.hidden) ?? installations[0]
@@ -101,6 +102,11 @@ export function WidgetLibrary({
   const builtins = filtered.filter((app) => app.availability === 'installed')
   const available = filtered.filter((app) => app.availability === 'available')
   const proposed = filtered.filter((app) => app.availability === 'proposed')
+  const resultSummary = `${filtered.length ? `${filtered.length} ${filtered.length === 1 ? 'widget' : 'widgets'} found` : 'No matching widgets'}${query.trim() ? ` for “${query.trim()}”` : ''}.`
+  useEffect(() => {
+    const timer = window.setTimeout(() => setResultStatus(resultSummary), 300)
+    return () => window.clearTimeout(timer)
+  }, [resultSummary])
   function install() {
     setSelected(null)
     onAdd()
@@ -230,6 +236,9 @@ export function WidgetLibrary({
           />
         </label>
       </div>
+      <p role="status" className="sr-only">
+        {resultStatus}
+      </p>
       {category === 'all' && !query.trim() && (
         <HorizontalScroll className="store-features" label="Featured widgets">
           <div className="feature-shelf">

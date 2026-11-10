@@ -65,12 +65,13 @@ export function CalendarDayTile({
       ? `${plans.length} ${plans.length === 1 ? 'plan' : 'plans'}`
       : 'no plans'
   const label = `${dayLabel}${isToday ? ', today' : ''}${holidayTitle ? ', ' + holidayTitle : ''}: ${summary}`
+  const planAction = plans.length > 1 ? 'View all' : 'View plan'
   const planSummary = (
     <>
       <span>
         <strong>{plansUnavailable ? 'Check calendar' : (plans[0]?.title ?? 'No plans yet')}</strong>
         {!plansUnavailable && plans.length > 0 && (
-          <small>{plans.length > 1 ? `${plans.length} plans · View all` : 'View plan'}</small>
+          <small>{plans.length > 1 ? `${plans.length} plans · ${planAction}` : planAction}</small>
         )}
       </span>
       <Icon icon={plans.length ? ArrowUpRight : Plus} />
@@ -111,7 +112,7 @@ export function CalendarDayTile({
             <button
               type="button"
               className="calendar-day-tile__plan has-plan"
-              aria-label={`View ${plans.length} ${plans.length === 1 ? 'plan' : 'plans'} for ${dayLabel}`}
+              aria-label={`${plans[0].title}. ${planAction}. ${summary} for ${dayLabel}`}
               onClick={() =>
                 setSearch(
                   (current) => {
