@@ -9,7 +9,8 @@ import {
   saveAccentPreference,
 } from '../../services/appearance-storage'
 import { accentChosen, appearanceLoaded } from './appearance-slice'
-import { DEFAULT_ACCENT, type AccentId } from './accent-options'
+import { DEFAULT_ACCENT, type AccentPreference } from './accent-options'
+import { customAccentTokens } from './custom-accent'
 /** Mount once at the app root, including sign-in and password settings. */
 export function useAppearanceTheme() {
   const store = useAppStore()
@@ -22,9 +23,14 @@ export function useAppearanceTheme() {
   useLayoutEffect(() => {
     const root = document.documentElement
     if (accent === DEFAULT_ACCENT) root.removeAttribute('data-accent')
-    else root.dataset.accent = accent
+    else root.dataset.accent = typeof accent === 'string' ? accent : 'custom'
+    const tokens = typeof accent === 'object' ? customAccentTokens(accent.hex) : {}
+    for (const [name, value] of Object.entries(tokens)) root.style.setProperty(name, value)
     saveBrowserAccent(accent)
-    return () => root.removeAttribute('data-accent')
+    return () => {
+      root.removeAttribute('data-accent')
+      for (const name of Object.keys(tokens)) root.style.removeProperty(name)
+    }
   }, [accent])
   useEffect(() => {
     function sync(event: StorageEvent) {
@@ -55,7 +61,7 @@ export function useAccentPreference() {
   const preference = useAppSelector((state) => state.appearance)
   return {
     ...preference,
-    choose(accent: AccentId) {
+    choose(accent: AccentPreference) {
       const ownerId = store.getState().auth.user?.id
       if (!ownerId || ownerId !== preference.ownerId) return
       const persisted = saveAccentPreference(ownerId, accent)

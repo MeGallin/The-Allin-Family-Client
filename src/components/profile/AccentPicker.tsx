@@ -1,13 +1,30 @@
-import { useId, type CSSProperties } from 'react'
+import { useId, useRef, useState, type CSSProperties } from 'react'
 import { Check } from 'lucide-react'
 import { Icon } from '../ui/Icon'
-import { ACCENT_CHOICES } from '../../features/appearance/accent-options'
+import { ACCENT_CHOICES, accentKey } from '../../features/appearance/accent-options'
 import { useAccentPreference } from '../../features/appearance/useAppearance'
+import { CustomAccentEditor } from './CustomAccentEditor'
 import './AccentPicker.css'
 export function AccentPicker() {
+  const preference = useAccentPreference()
+  return <AccentPickerChoices key={preference.ownerId ?? 'browser'} {...preference} />
+}
+function AccentPickerChoices({
+  accent,
+  persisted,
+  choose,
+}: ReturnType<typeof useAccentPreference>) {
   const id = useId()
-  const { accent, persisted, choose } = useAccentPreference()
-  const selected = ACCENT_CHOICES.find((choice) => choice.id === accent)!
+  const [editing, setEditing] = useState<{ initialHex: string; savedKey: string } | null>(null)
+  const trigger = useRef<HTMLButtonElement>(null)
+  const selected =
+    typeof accent === 'object'
+      ? `Custom ${accent.hex}`
+      : ACCENT_CHOICES.find((choice) => choice.id === accent)!.label
+  function close() {
+    setEditing(null)
+    trigger.current?.focus()
+  }
   return (
     <fieldset className="accent-picker" aria-describedby={id + '-help'}>
       <legend>Accent colour</legend>
@@ -26,7 +43,11 @@ export function AccentPicker() {
               name={id}
               value={choice.id}
               checked={choice.id === accent}
-              onChange={() => choose(choice.id)}
+              onClick={() => setEditing(null)}
+              onChange={() => {
+                setEditing(null)
+                choose(choice.id)
+              }}
             />
             <span className="accent-picker__swatch" aria-hidden="true">
               {choice.id === accent && (
@@ -39,10 +60,51 @@ export function AccentPicker() {
           </label>
         ))}
       </div>
+      <button
+        ref={trigger}
+        type="button"
+        className="secondary accent-picker__custom"
+        aria-expanded={editing !== null}
+        aria-controls={id + '-editor'}
+        onClick={() => {
+          if (!editing)
+            setEditing({
+              initialHex:
+                typeof accent === 'object'
+                  ? accent.hex
+                  : getComputedStyle(document.documentElement)
+                      .getPropertyValue(`--accent-${accent}`)
+                      .trim(),
+              savedKey: accentKey(accent),
+            })
+        }}
+      >
+        <span>
+          {typeof accent === 'object' ? 'Custom colour selected' : 'Choose a custom colour'}
+        </span>
+        {typeof accent === 'object' && (
+          <>
+            {' '}
+            <code>{accent.hex}</code>
+          </>
+        )}
+      </button>
+      {editing && (
+        <CustomAccentEditor
+          id={id + '-editor'}
+          initialHex={editing.initialHex}
+          savedChanged={editing.savedKey !== accentKey(accent)}
+          onApply={(hex) => {
+            choose({ version: 2, kind: 'custom', hex })
+            close()
+          }}
+          onCancel={close}
+        />
+      )}
       <p className="note accent-picker__feedback" role="status">
         {persisted
-          ? `${selected.label} selected.`
-          : `${selected.label} applied for this visit. Your browser couldn't save this choice.`}
+          ? `${selected} selected.`
+          : `${selected} applied for this visit. Your browser couldn't save this choice.`}
       </p>
     </fieldset>
   )

@@ -1,0 +1,136 @@
+.custom-accent {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-muted);
+  container-type: inline-size;
+}
+.custom-accent h4,
+.custom-accent p {
+  margin: 0;
+}
+.custom-accent h4 {
+  font-size: var(--text-lg);
+}
+.custom-accent__controls,
+.custom-accent__ranges {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.custom-accent__area {
+  position: relative;
+  height: 11rem;
+  margin-top: var(--space-2);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background:
+    linear-gradient(to top, #000, transparent),
+    linear-gradient(to right, #fff, hsl(var(--picker-hue) 100% 50%));
+  touch-action: none;
+  cursor: crosshair;
+}
+.custom-accent__area span {
+  position: absolute;
+  left: var(--picker-x);
+  top: var(--picker-y);
+  width: var(--space-4);
+  height: var(--space-4);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #000;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.custom-accent__range,
+.custom-accent__hex {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.custom-accent__range > span {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.custom-accent__range output {
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.custom-accent__range input {
+  margin: 0;
+  padding: 0;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+.custom-accent__hex input {
+  font-family: var(--font-mono);
+}
+.custom-accent__sample {
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+.custom-accent__sample-heading,
+.custom-accent__sample-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+.custom-accent__sample-heading code {
+  color: var(--color-text-muted);
+}
+.custom-accent__sample-controls {
+  margin-top: var(--space-3);
+}
+.custom-accent__sample-tab {
+  padding: var(--space-2);
+  border-bottom: 2px solid var(--color-accent);
+  color: var(--color-accent-highlight);
+}
+.custom-accent__sample-button {
+  padding: var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--color-accent);
+  color: var(--color-text-on-action);
+  font-weight: var(--weight-heading);
+}
+.custom-accent__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+.custom-accent__actions button {
+  padding-inline: var(--space-2);
+}
+@container (min-width: 30rem) {
+  .custom-accent__controls {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-5);
+  }
+  .custom-accent__area {
+    height: 100%;
+    min-height: 11rem;
+    max-height: 13rem;
+  }
+}
+@media (forced-colors: active) {
+  .custom-accent__area {
+    display: none;
+  }
+  .custom-accent__sample-tab {
+    border-color: Highlight;
+    color: Highlight;
+  }
+  .custom-accent__sample-button {
+    border: 1px solid ButtonText;
+  }
+}
