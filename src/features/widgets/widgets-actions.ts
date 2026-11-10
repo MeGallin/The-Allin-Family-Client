@@ -29,7 +29,7 @@ export const executeWidgetWrite =
               write.action === 'spin'
                 ? 'Your trial pick is saved privately.'
                 : write.action === 'add'
-                  ? 'Widget installed in My widgets.'
+                  ? 'Widget installed.'
                   : write.action === 'publish'
                     ? 'Dinner suggestion published to Home and Family widgets. The family can now respond.'
                     : write.action === 'eaten'

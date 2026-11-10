@@ -599,10 +599,14 @@ not production credentials; do not rename it unchanged. Existing database conten
 and private photos require a separate transfer plan. These are subsequent server
 setup steps, not actions performed by this packaging command.
 
-Upload the **contents** of the selected package folder into `public_html` using
-FileZilla, including `.htaccess` files. For API-only this means merging its `api/`
-folder into the existing `public_html/api/`, not uploading PHP files into the root.
-For client-only, retain the entire remote `api/` folder. For every mode, preserve
+Upload only the approved runtime contents of the selected package folder using
+FileZilla. A complete client upload copies the whole `assets/` folder into
+`public_html/assets/`, then root `index.html` last. Preserve production `.htaccess`:
+the package's generic routing file must not replace cPanel's existing PHP handler
+or hosting settings. For API-only, merge the approved API runtime into the existing
+`public_html/api/`, not PHP files into the root; changes to its existing `.htaccess`
+require separate review and approval. For client-only, retain the entire remote
+`api/` folder. For every mode, preserve
 server `api/.env` and private photo/session storage. Do not delete or mirror the
 remote site to match a partial package. FileZilla copying does not remove obsolete
 remote assets; review any stale-file cleanup separately with a server backup.
@@ -628,6 +632,29 @@ The production `.htaccess` redirects `theallinfamily.co.uk` to
 directory listings. Set the API's production `APP_ORIGIN` to that exact www
 origin. Clear cPanel's NGINX cache after uploading changed files; it can otherwise
 continue serving a pre-deployment page independently for the bare and www hosts.
+
+The `BEGIN SPA HTML revalidation` block in `public/.htaccess` sets HTTP
+`Cache-Control: no-cache, must-revalidate` for `index.html`, including SPA fallbacks,
+when Apache `mod_headers` is enabled. This lets browsers store HTML but requires
+validation before reuse; hashed assets retain their existing cache policy. There
+is no service worker registered by this client.
+
+On 10 November, plain Home reloads in an existing browser repeatedly used old
+`index-CnahqkPc.js`, while a fresh Store URL loaded current `index-DZ-gNgOe.js`.
+A public root GET returned the current entry with `Last-Modified` but no explicit
+`Cache-Control`, `Expires` or `ETag` header. Missing explicit revalidation permits
+heuristic HTML caching; this evidence does not identify which cache retained the
+old response or imply that the uploaded current files are missing.
+
+Applying this policy to existing hosting is a separate authorized operation:
+merge only the named cache block into the existing production `.htaccess`, keeping
+the cPanel PHP handler and all other hosting rules. Purge cPanel NGINX cache and
+verify actual HTTP headers on `/`, `/index.html` and a direct SPA route, because
+NGINX can override or cache origin responses. Check ordinary Home reloads in the
+existing browser against the released entry hash as well. Existing fresh browser
+responses may still need a one-off hard refresh after the policy is applied.
+The source block alone does not fix live caching, and this investigation did not
+change production hosting or purge its cache.
 
 Deployment regression checks use disposable temp folders, never the actual upload
 folders, server or database:

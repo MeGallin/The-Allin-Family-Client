@@ -135,6 +135,10 @@
   background: linear-gradient(145deg, #bfe9e7, #72bbc4);
   color: #205664;
 }
+.app-icon--where {
+  background: linear-gradient(145deg, #ffe3b0, #e8b66b);
+  color: #71451c;
+}
 .app-icon .icon-jobs {
   display: block;
   width: 78%;

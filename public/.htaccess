@@ -1,5 +1,13 @@
 # Production SPA routes. The PHP API keeps its own routing and access controls.
 Options -Indexes
+# BEGIN SPA HTML revalidation
+# Merge this block into existing hosting configuration; preserve its PHP handler.
+<IfModule mod_headers.c>
+  <FilesMatch "^index\.html$">
+    Header always set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+# END SPA HTML revalidation
 <IfModule mod_rewrite.c>
   RewriteEngine On
   # Keep the browser origin consistent with the production API's APP_ORIGIN.

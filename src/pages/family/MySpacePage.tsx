@@ -516,9 +516,13 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
           item={removing}
           noun="widget"
           history={
-            removing.visibility === 'family'
-              ? 'This removes the installation from Family widgets for everyone. Saved trials, suggestions and replies remain in database history.'
-              : 'Its saved trials remain in database history.'
+            removing.kind === 'where-is-it'
+              ? removing.visibility === 'family'
+                ? 'This removes the collection from Family widgets for everyone. Saved items and photos remain in database history.'
+                : 'Saved items and photos remain in database history.'
+              : removing.visibility === 'family'
+                ? 'This removes the installation from Family widgets for everyone. Saved trials, suggestions and replies remain in database history.'
+                : 'Its saved trials remain in database history.'
           }
           busy={pending}
           error={error}
