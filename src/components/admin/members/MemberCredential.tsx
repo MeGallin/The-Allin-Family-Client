@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import type { MemberResponse } from '../../../features/members/types'
 import './MemberCredential.css'
 export function MemberCredential({
@@ -9,9 +9,15 @@ export function MemberCredential({
   onDismiss: () => void
 }) {
   const id = useId()
+  const heading = useRef<HTMLHeadingElement>(null)
+  useEffect(() => {
+    heading.current?.focus()
+  }, [])
   return (
     <section className="surface-card member-credential" aria-labelledby={id + '-title'}>
-      <h3 id={id + '-title'}>Sign-in details for {result.member.familyName}</h3>
+      <h3 id={id + '-title'} ref={heading} tabIndex={-1}>
+        Sign-in details for {result.member.familyName}
+      </h3>
       <p className="note">
         Share these privately. The temporary password is shown here once and must be changed at
         sign-in.

@@ -6,6 +6,17 @@
   padding: 3px;
   scrollbar-width: none;
 }
+.widget-store .feature-choices {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.widget-store .feature-choices button {
+  font-size: var(--text-xs);
+}
 .widget-store .category-chips::-webkit-scrollbar {
   display: none;
 }

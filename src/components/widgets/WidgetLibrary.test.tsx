@@ -3,6 +3,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import type { FamilyWidget } from '../../features/widgets/types'
 import { WidgetLibrary } from './WidgetLibrary'
+import { widgetCatalogue } from '../../features/widgets/widget-catalogue'
 
 const installation = (id: string, overrides: Partial<FamilyWidget> = {}): FamilyWidget => ({
   id,
@@ -29,6 +30,7 @@ function mount(overrides: Partial<Parameters<typeof WidgetLibrary>[0]> = {}) {
           <WidgetLibrary
             onAdd={onAdd}
             onAddWhere={vi.fn()}
+            onShow={vi.fn()}
             installations={[]}
             loading={false}
             error={false}
@@ -76,6 +78,35 @@ function detail(name: string) {
 }
 
 describe('Widget Store catalogue and real action boundaries', () => {
+  it('resolves featured destinations by ID even after catalogue reordering', () => {
+    const catalogue = widgetCatalogue as Array<(typeof widgetCatalogue)[number]>
+    const original = [...catalogue]
+    catalogue.reverse()
+    try {
+      mount({ installations: [installation('dinner')] })
+      fireEvent.click(screen.getByRole('button', { name: /Give dinner/ }))
+      let dialog = within(screen.getByRole('dialog'))
+      expect(dialog.getByRole('heading', { name: 'Dinner Spinner' })).not.toBeNull()
+      expect(
+        dialog.getByRole('link', { name: 'Open Dinner Spinner' }).getAttribute('href'),
+      ).toContain('widget=dinner')
+      fireEvent.click(dialog.getByRole('button', { name: 'Close' }))
+      for (const [name, tool] of [
+        ['Shopping List', 'shopping'],
+        ['Polls', 'polls'],
+      ]) {
+        fireEvent.click(screen.getByRole('button', { name: 'Explore ' + name }))
+        dialog = within(screen.getByRole('dialog'))
+        expect(dialog.getByRole('heading', { name })).not.toBeNull()
+        expect(dialog.getByRole('link', { name: 'Open ' + name }).getAttribute('href')).toBe(
+          '/my-space?view=family&tool=' + tool,
+        )
+        fireEvent.click(dialog.getByRole('button', { name: 'Close' }))
+      }
+    } finally {
+      catalogue.splice(0, catalogue.length, ...original)
+    }
+  })
   it('keeps Nonograms personal, calls its installation flow and never offers saved spinner trials', () => {
     const onInstall = vi.fn()
     mount({
@@ -126,15 +157,34 @@ describe('Widget Store catalogue and real action boundaries', () => {
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(fetch).not.toHaveBeenCalled()
   })
-  it('keeps hidden family installations on an exact spinner route, never defaulting to Shopping', () => {
-    mount({ installations: [installation('hidden', { hidden: true })] })
-    expect(screen.getByRole('link', { name: 'Open Dinner Spinner' }).getAttribute('href')).toBe(
-      '/my-space?view=family&widget=hidden',
-    )
-    expect(
-      within(detail('Dinner Spinner')).getByText('Family · Hidden from your shelf'),
-    ).not.toBeNull()
-  })
+  it.each(['dinner-spinner', 'where-is-it'] as const)(
+    'prefers visible %s and restores hidden entries',
+    (kind) => {
+      const title = kind === 'dinner-spinner' ? 'Dinner Spinner' : 'Where Is It?'
+      const hidden = installation('hidden', { kind, hidden: true })
+      const onShow = vi.fn()
+      mount({ installations: [hidden, installation('visible', { kind })], onShow })
+      expect(screen.getByRole('link', { name: 'Open ' + title }).getAttribute('href')).toContain(
+        'widget=visible',
+      )
+      const dialog = within(detail(title))
+      expect(dialog.queryByRole('link', { name: hidden.title })).toBeNull()
+      fireEvent.click(dialog.getByRole('button', { name: 'Show ' + hidden.title + ' on shelf' }))
+      expect(onShow).toHaveBeenCalledWith(hidden)
+    },
+  )
+  it.each(['dinner-spinner', 'where-is-it'] as const)(
+    'offers restore for an all-hidden %s shelf',
+    (kind) => {
+      const title = kind === 'dinner-spinner' ? 'Dinner Spinner' : 'Where Is It?'
+      const hidden = installation('hidden', { kind, hidden: true })
+      const onShow = vi.fn()
+      mount({ installations: [hidden], onShow })
+      expect(screen.queryByRole('link', { name: 'Open ' + title })).toBeNull()
+      fireEvent.click(screen.getByRole('button', { name: 'Show ' + title + ' on shelf' }))
+      expect(onShow).toHaveBeenCalledWith(hidden)
+    },
+  )
   it.each([
     { loading: true, error: false, row: 'Checking installations…', meta: 'Checking status' },
     {

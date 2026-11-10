@@ -46,6 +46,8 @@ function StoreSection({
 export function WidgetLibrary({
   onAdd,
   onAddWhere,
+  onShow,
+  pending = false,
   installations,
   loading,
   error,
@@ -56,6 +58,8 @@ export function WidgetLibrary({
 }: {
   onAdd: () => void
   onAddWhere: () => void
+  onShow: (widget: FamilyWidget) => void
+  pending?: boolean
   installations: FamilyWidget[]
   loading: boolean
   error: boolean
@@ -94,8 +98,7 @@ export function WidgetLibrary({
   const [selected, setSelected] = useState<WidgetStoreApp | null>(null)
   const ready = !loading && !error
   const dinnerInstallations = installations.filter((widget) => widget.kind === 'dinner-spinner')
-  const firstInstallation =
-    dinnerInstallations.find((widget) => !widget.hidden) ?? dinnerInstallations[0]
+  const firstInstallation = dinnerInstallations.find((widget) => !widget.hidden)
   const personal = dinnerInstallations.filter((widget) => widget.visibility === 'private').length
   const family = dinnerInstallations.filter((widget) => widget.visibility === 'family').length
   const dinnerStatus = !ready
@@ -126,18 +129,37 @@ export function WidgetLibrary({
   }
   const personalFor = (id: string) =>
     id === 'nonograms' ? nonograms : id === 'focus' ? focus : id === 'word' ? word : sudoku
+  function selectApp(id: WidgetStoreApp['id']) {
+    setSelected(widgetCatalogue.find((app) => app.id === id) ?? null)
+  }
+  function showAction(widget: FamilyWidget, title: string) {
+    return (
+      <button
+        type="button"
+        className="pill-action"
+        disabled={!ready || pending}
+        aria-label={'Show ' + title + ' on shelf'}
+        onClick={() => onShow(widget)}
+      >
+        SHOW ON SHELF
+      </button>
+    )
+  }
   function action(app: WidgetStoreApp) {
     if (app.id === 'where') {
       const available = installations.filter((widget) => widget.kind === 'where-is-it')
-      return available.length ? (
+      const visible = available.find((widget) => !widget.hidden)
+      return visible ? (
         <Link
           className="pill-action"
-          to={widgetInstallationPath(available[0])}
+          to={widgetInstallationPath(visible)}
           onClick={() => setSelected(null)}
           aria-label="Open Where Is It?"
         >
           OPEN
         </Link>
+      ) : available.length ? (
+        showAction(available[0], app.title)
       ) : (
         <button
           type="button"
@@ -195,6 +217,8 @@ export function WidgetLibrary({
     }
     if (app.availability === 'proposed')
       return <span className="pill-action pill-action--proposed">PROPOSED</span>
+    if (app.id === 'dinner' && dinnerInstallations.length && !firstInstallation)
+      return showAction(dinnerInstallations[0], app.title)
     const path =
       app.id === 'shopping' || app.id === 'polls' || app.id === 'jobs'
         ? builtinWidgetPath(app.id)
@@ -297,11 +321,7 @@ export function WidgetLibrary({
       {category === 'all' && !query.trim() && (
         <HorizontalScroll className="store-features" label="Featured widgets">
           <div className="feature-shelf">
-            <button
-              type="button"
-              className="store-feature"
-              onClick={() => setSelected(widgetCatalogue[2])}
-            >
+            <button type="button" className="store-feature" onClick={() => selectApp('dinner')}>
               <span>
                 <span className="feature-kicker">Featured app</span>
                 <strong>
@@ -324,11 +344,7 @@ export function WidgetLibrary({
                 </span>
               </span>
             </button>
-            <button
-              type="button"
-              className="store-feature store-feature--everyday"
-              onClick={() => setSelected(widgetCatalogue[0])}
-            >
+            <article className="store-feature store-feature--everyday">
               <span>
                 <span className="feature-kicker">Everyday family essentials</span>
                 <strong>
@@ -349,7 +365,15 @@ export function WidgetLibrary({
                   <b>Built for sharing</b>2 installed family apps
                 </span>
               </span>
-            </button>
+              <div className="feature-choices" role="group" aria-label="Explore family essentials">
+                <button type="button" className="secondary" onClick={() => selectApp('shopping')}>
+                  Explore Shopping List
+                </button>
+                <button type="button" className="secondary" onClick={() => selectApp('polls')}>
+                  Explore Polls
+                </button>
+              </div>
+            </article>
           </div>
         </HorizontalScroll>
       )}
@@ -459,6 +483,8 @@ export function WidgetLibrary({
               : loading
           }
           action={action(selected)}
+          onShow={onShow}
+          pending={pending}
           onClose={() => setSelected(null)}
           onInstall={
             selected.id === 'where'

@@ -1,5 +1,5 @@
 import { useDraftProtection } from '../../features/drafts/DraftProtection'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { useAppDispatch, useAppSelector } from '../../app/store-hooks'
 import { membersApi } from '../../services/members-query'
@@ -26,12 +26,12 @@ export default function AdminMembers() {
   })
   const [selection, setSelection] = useState<number | 'new' | null>(null)
   // Only mounted component state holds a one-time temporary password.
-  const [credential, setCredential] = useState<MemberResponse | null>(null)
+  const credentialId = useRef(0)
+  const [credentials, setCredentials] = useState<{ id: number; result: MemberResponse }[]>([])
   const [feedback, setFeedback] = useState('')
   const member = query.data?.members.find((item) => item.id === selection)
   const changeSelection = (value: typeof selection) => {
     setSelection(value)
-    setCredential(null)
     setFeedback('')
     dispatch(membersUiReset())
   }
@@ -44,7 +44,13 @@ export default function AdminMembers() {
         ? `Password reset for ${result.member.familyName}.`
         : `Account ${write.action === 'add' ? 'created' : 'saved'} for ${result.member.familyName}.`,
     )
-    if (result.temporaryPassword) setCredential(result)
+    if (result.temporaryPassword) {
+      const entry = { id: ++credentialId.current, result }
+      setCredentials((current) => [
+        ...current.filter((item) => item.result.member.id !== result.member.id),
+        entry,
+      ])
+    }
   }
   if (!user) return null
   return (
@@ -65,7 +71,15 @@ export default function AdminMembers() {
         </button>
       </header>
       {feedback && <p role="status">{feedback}</p>}
-      {credential && <MemberCredential result={credential} onDismiss={() => setCredential(null)} />}
+      {credentials.map((entry) => (
+        <MemberCredential
+          key={entry.id}
+          result={entry.result}
+          onDismiss={() =>
+            setCredentials((current) => current.filter((item) => item.id !== entry.id))
+          }
+        />
+      ))}
       {(selection === 'new' || member) && (
         <MemberEditor
           key={selection}

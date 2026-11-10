@@ -57,6 +57,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     clearError,
     refresh,
     remove,
+    hide,
     mealRemoval,
     removals,
   } = useWidgets()
@@ -301,6 +302,8 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
               clearError()
               setInstallWhere(true)
             }}
+            onShow={(widget) => void hide(widget, false)}
+            pending={pending}
             installations={widgets.filter((widget) => !removals[widget.id])}
             loading={loading}
             error={!!error}

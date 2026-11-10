@@ -5,6 +5,7 @@ import type { FamilyWidget } from '../../features/widgets/types'
 import MySpacePage from './MySpacePage'
 const snapshot = vi.hoisted(() => ({
   widgets: [] as FamilyWidget[],
+  hide: vi.fn(),
   removals: {} as Record<string, unknown>,
 }))
 vi.mock('../../features/widgets/useWidgets', () => ({
@@ -18,7 +19,22 @@ vi.mock('../../features/widgets/useWidgets', () => ({
     clearError: vi.fn(),
     refresh: vi.fn(),
     remove: vi.fn(),
+    hide: snapshot.hide,
     mealRemoval: { remove: vi.fn() },
+  }),
+}))
+vi.mock('../../features/nonograms/useNonograms', () => ({
+  useNonograms: () => ({
+    game: null,
+    ui: {},
+    known: true,
+    pending: false,
+    loading: false,
+    error: '',
+    offline: false,
+    removals: {},
+    clearError: vi.fn(),
+    refresh: vi.fn(),
   }),
 }))
 vi.mock('../../features/sudoku/useSudoku', () => ({
@@ -135,8 +151,30 @@ describe('Widget Store integration with existing page routes', () => {
     ]
     snapshot.removals = { queued: { id: 'queued' } }
     mount()
-    expect(screen.getByText('Available · Personal or family')).not.toBeNull()
+    expect(screen.getAllByText('Available · Personal or family')).toHaveLength(2)
     expect(screen.queryByRole('link', { name: 'Open Dinner Spinner' })).toBeNull()
     expect(snapshot.widgets).toHaveLength(1)
+  })
+  it('restores a hidden installation through the existing per-user visibility write', () => {
+    const hidden: FamilyWidget = {
+      id: 'hidden',
+      kind: 'where-is-it',
+      title: 'Hidden fixture',
+      visibility: 'family',
+      owner: { id: 1, name: 'Dad' },
+      version: 1,
+      hidden: true,
+      createdAt: '',
+      updatedAt: '',
+      meals: [],
+      spins: [],
+      publications: [],
+    }
+    snapshot.widgets = [hidden]
+    mount()
+    expect(screen.queryByRole('link', { name: 'Open Where Is It?' })).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Show Where Is It? on shelf' }))
+    expect(snapshot.hide).toHaveBeenCalledWith(hidden, false)
+    expect(fetch).not.toHaveBeenCalled()
   })
 })

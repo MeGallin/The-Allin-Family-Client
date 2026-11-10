@@ -15,6 +15,8 @@ export function WidgetStoreDetails({
   ready,
   loading,
   action,
+  onShow,
+  pending,
   onClose,
   onInstall,
   visibility,
@@ -25,6 +27,8 @@ export function WidgetStoreDetails({
   ready: boolean
   loading: boolean
   action: ReactNode
+  onShow: (widget: FamilyWidget) => void
+  pending: boolean
   onClose: () => void
   onInstall: () => void
   visibility?: string
@@ -127,9 +131,24 @@ export function WidgetStoreDetails({
               <ul>
                 {installations.map((widget) => (
                   <li key={widget.id}>
-                    <Link to={widgetInstallationPath(widget)} onClick={onClose}>
-                      {widget.title}
-                    </Link>
+                    {widget.hidden ? (
+                      <>
+                        <strong>{widget.title}</strong>
+                        <button
+                          type="button"
+                          className="secondary"
+                          disabled={!ready || pending}
+                          onClick={() => onShow(widget)}
+                          aria-label={'Show ' + widget.title + ' on shelf'}
+                        >
+                          Show on shelf
+                        </button>
+                      </>
+                    ) : (
+                      <Link to={widgetInstallationPath(widget)} onClick={onClose}>
+                        {widget.title}
+                      </Link>
+                    )}
                     <span>
                       {widget.visibility === 'private' ? 'Personal' : 'Family'}
                       {widget.hidden ? ' · Hidden from your shelf' : ''}
