@@ -27,7 +27,7 @@ const icons = {
 export function WidgetGlyph({
   id,
 }: {
-  id: Exclude<WidgetStoreId, 'sudoku' | 'word' | 'countdown'>
+  id: Exclude<WidgetStoreId, 'nonograms' | 'sudoku' | 'word' | 'countdown'>
 }) {
   if (id === 'jobs') {
     return (

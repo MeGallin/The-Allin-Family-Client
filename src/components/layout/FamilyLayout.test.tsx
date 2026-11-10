@@ -6,7 +6,16 @@ import { createAppStore } from '../../app/store'
 import { testUser } from '../../test/fixtures'
 import { FamilyLayout } from './FamilyLayout'
 
-beforeEach(() => vi.stubGlobal('scrollTo', vi.fn()))
+beforeEach(() => {
+  vi.stubGlobal('scrollTo', vi.fn())
+  vi.stubGlobal(
+    'ResizeObserver',
+    class {
+      observe() {}
+      disconnect() {}
+    },
+  )
+})
 
 function mount() {
   render(

@@ -32,6 +32,13 @@ function mount(overrides: Partial<Parameters<typeof WidgetLibrary>[0]> = {}) {
             installations={[]}
             loading={false}
             error={false}
+            nonograms={{
+              installed: false,
+              ready: true,
+              loading: false,
+              removing: false,
+              onInstall: vi.fn(),
+            }}
             sudoku={{
               installed: false,
               ready: true,
@@ -69,6 +76,17 @@ function detail(name: string) {
 }
 
 describe('Widget Store catalogue and real action boundaries', () => {
+  it('keeps Nonograms personal, calls its installation flow and never offers saved spinner trials', () => {
+    const onInstall = vi.fn()
+    mount({
+      nonograms: { installed: false, ready: true, loading: false, removing: false, onInstall },
+    })
+    const dialog = within(detail('Nonograms'))
+    expect(dialog.getByText('Personal only')).not.toBeNull()
+    expect(dialog.queryByText('Your available installations')).toBeNull()
+    fireEvent.click(dialog.getByRole('button', { name: 'Install Nonograms' }))
+    expect(onInstall).toHaveBeenCalledOnce()
+  })
   it('opens installed built-ins at their canonical tools and offers real Dinner installation', () => {
     const { onAdd, router } = mount()
     expect(screen.getByRole('link', { name: 'Open Shopping List' }).getAttribute('href')).toBe(

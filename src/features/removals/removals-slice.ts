@@ -11,6 +11,7 @@ export type RemovalDomain =
   | 'polls'
   | 'widgets'
   | 'widgetMeals'
+  | 'nonograms'
   | 'sudoku'
   | 'dailyWord'
   | 'focusTimer'

@@ -3,6 +3,9 @@ import { Link, useSearchParams } from 'react-router'
 import { Grid2X2, Library, Plus, Users } from 'lucide-react'
 import { useFocusTimer } from '../../features/focus-timer/useFocusTimer'
 import { useDailyWord } from '../../features/daily-word/useDailyWord'
+import { NonogramArt } from '../../components/nonograms/NonogramArt'
+import { useNonograms } from '../../features/nonograms/useNonograms'
+import { nonogramDirty } from '../../features/nonograms/nonograms-ui-slice'
 import { useSudoku } from '../../features/sudoku/useSudoku'
 import { useWidgets } from '../../features/widgets/useWidgets'
 import { useEditingRecord } from '../../hooks/useEditingRecord'
@@ -25,6 +28,8 @@ const FocusTimerInstall = lazy(() => import('../../components/focus-timer/FocusT
 const DailyWordWorkspace = lazy(() => import('../../components/daily-word/DailyWordWorkspace'))
 const DailyWordInstall = lazy(() => import('../../components/daily-word/DailyWordInstall'))
 const DailyWordResults = lazy(() => import('../../components/daily-word/DailyWordResults'))
+const NonogramWorkspace = lazy(() => import('../../components/nonograms/NonogramWorkspace'))
+const NonogramInstall = lazy(() => import('../../components/nonograms/NonogramInstall'))
 const SudokuWorkspace = lazy(() => import('../../components/sudoku/SudokuWorkspace'))
 const SudokuInstall = lazy(() =>
   import('../../components/sudoku/SudokuInstall').then((module) => ({
@@ -56,26 +61,32 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     removals,
   } = useWidgets()
   const sudoku = useSudoku()
+  const nonograms = useNonograms()
+  const personalNonogram = nonograms.ui.draft?.base ?? nonograms.game
   const word = useDailyWord()
   const focus = useFocusTimer()
   const [installWhere, setInstallWhere] = useState(false)
   const [installFocus, setInstallFocus] = useState(false)
   const [installWord, setInstallWord] = useState(false)
+  const [installNonograms, setInstallNonograms] = useState(false)
   const [installSudoku, setInstallSudoku] = useState(false)
   const [search, setSearch] = useSearchParams()
   const view = ['widgets', 'family'].includes(search.get('view') ?? '')
     ? search.get('view')!
     : 'library'
+  const nonogramsSelected = view === 'widgets' && search.get('tool') === 'nonograms'
   const sudokuSelected = view === 'widgets' && search.get('tool') === 'sudoku'
   const focusSelected = view === 'widgets' && search.get('tool') === 'focus'
   const wordSelected = view === 'widgets' && search.get('tool') === 'word'
-  const personalTitle = focusSelected
-    ? 'Focus Timer'
-    : wordSelected
-      ? 'Daily Word'
-      : sudokuSelected
-        ? 'Sudoku'
-        : null
+  const personalTitle = nonogramsSelected
+    ? 'Nonograms'
+    : focusSelected
+      ? 'Focus Timer'
+      : wordSelected
+        ? 'Daily Word'
+        : sudokuSelected
+          ? 'Sudoku'
+          : null
   const wordResultsSelected = view === 'family' && search.get('tool') === 'word-results'
   const builtin = activeBuiltinWidget(search)
   const builtinRequested =
@@ -102,6 +113,8 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
           : null)))
   useEffect(() => {
     if (
+      nonograms.failure?.status === 401 ||
+      nonograms.failure?.code === 'password_change_required' ||
       failure?.status === 401 ||
       failure?.code === 'password_change_required' ||
       sudoku.failure?.status === 401 ||
@@ -113,6 +126,8 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     )
       onSessionExpired()
   }, [
+    nonograms.failure?.status,
+    nonograms.failure?.code,
     failure?.status,
     failure?.code,
     focus.failure?.status,
@@ -127,19 +142,26 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     widgets.filter(
       (widget) =>
         !builtinRequested &&
+        !nonogramsSelected &&
         !sudokuSelected &&
         !focusSelected &&
         !wordSelected &&
         !wordResultsSelected &&
         widget.owner.id === ownerId,
     ),
-    builtinRequested || sudokuSelected || focusSelected || wordSelected || wordResultsSelected
+    builtinRequested ||
+      nonogramsSelected ||
+      sudokuSelected ||
+      focusSelected ||
+      wordSelected ||
+      wordResultsSelected
       ? null
       : search.get('edit'),
   )
   const removing = widgets.find(
     (widget) =>
       !builtinRequested &&
+      !nonogramsSelected &&
       !sudokuSelected &&
       !focusSelected &&
       !wordSelected &&
@@ -150,6 +172,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
   const mealParent = widgets.find(
     (widget) =>
       !builtinRequested &&
+      !nonogramsSelected &&
       !sudokuSelected &&
       !focusSelected &&
       !wordSelected &&
@@ -160,6 +183,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
   const meal = mealParent?.meals.find((item) => item.id === search.get('removeMeal'))
   function change(values: Record<string, string>) {
     clearError()
+    nonograms.clearError()
     sudoku.clearError()
     word.clearError()
     focus.clearError()
@@ -187,6 +211,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
     !loading &&
     !error &&
     !builtinRequested &&
+    !nonogramsSelected &&
     !sudokuSelected &&
     !focusSelected &&
     !wordSelected &&
@@ -225,6 +250,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
               disabled={pending || sudoku.pending}
               onClick={() => {
                 refresh()
+                nonograms.refresh()
                 sudoku.refresh()
                 word.refresh()
                 focus.refresh()
@@ -292,6 +318,13 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
               removing: !!word.removals['daily-word'],
               onInstall: () => setInstallWord(true),
             }}
+            nonograms={{
+              installed: !!personalNonogram && !nonograms.removals.nonograms,
+              ready: nonograms.known && !nonograms.error,
+              loading: nonograms.loading,
+              removing: !!nonograms.removals.nonograms,
+              onInstall: () => setInstallNonograms(true),
+            }}
             sudoku={{
               installed: !!sudoku.game && !sudoku.removals[sudoku.game.id],
               ready: sudoku.known && !sudoku.error,
@@ -312,10 +345,12 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
         ) : (
           <>
             {view !== 'family' &&
+              !nonogramsSelected &&
               !sudokuSelected &&
               !focusSelected &&
               !wordSelected &&
               !wordResultsSelected &&
+              !personalNonogram &&
               !sudoku.game &&
               !word.installed &&
               !focus.installed &&
@@ -378,6 +413,24 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
                       </span>
                     </button>
                   )}
+                  {view === 'widgets' && personalNonogram && (
+                    <button
+                      type="button"
+                      className="secondary"
+                      aria-pressed={nonogramsSelected}
+                      disabled={!!nonograms.removals.nonograms}
+                      onClick={() => change({ view: 'widgets', tool: 'nonograms' })}
+                    >
+                      <NonogramArt />
+                      <span>
+                        <strong>Nonograms</strong>
+                        <small>
+                          Continue · {personalNonogram.size}×{personalNonogram.size} ·{' '}
+                          {nonogramDirty(nonograms.ui.draft) ? 'Unsaved marks' : 'Saved'}
+                        </small>
+                      </span>
+                    </button>
+                  )}
                   {view === 'widgets' && sudoku.game ? (
                     <button
                       type="button"
@@ -396,7 +449,14 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
                 </>
               }
               alternateContent={
-                focusSelected ? (
+                nonogramsSelected ? (
+                  <Suspense fallback={<LoadingState label="Opening Nonograms…" />}>
+                    <NonogramWorkspace
+                      key={nonograms.ownerId ?? 'signed-out'}
+                      onInstall={() => setInstallNonograms(true)}
+                    />
+                  </Suspense>
+                ) : focusSelected ? (
                   <Suspense fallback={<LoadingState label="Opening Focus Timer…" />}>
                     <FocusTimerWorkspace
                       key={focus.ownerId ?? 'signed-out'}
@@ -475,6 +535,18 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
           />
         </Suspense>
       )}
+      {installNonograms && (
+        <Suspense fallback={<LoadingState label="Opening Nonograms installation…" />}>
+          <NonogramInstall
+            key={nonograms.ownerId ?? 'signed-out'}
+            onClose={() => setInstallNonograms(false)}
+            onInstalled={() => {
+              setInstallNonograms(false)
+              change({ view: 'widgets', tool: 'nonograms' })
+            }}
+          />
+        </Suspense>
+      )}
       {installSudoku && (
         <Suspense fallback={<LoadingState label="Opening Sudoku installation…" />}>
           <SudokuInstall
@@ -496,6 +568,7 @@ export default function MySpacePage({ onSessionExpired }: { onSessionExpired: ()
         </p>
       )}
       {!builtinRequested &&
+        !nonogramsSelected &&
         !sudokuSelected &&
         !focusSelected &&
         !wordSelected &&

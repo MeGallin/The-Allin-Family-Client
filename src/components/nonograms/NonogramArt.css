@@ -1,0 +1,31 @@
+.nonogram-art {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
+  width: 3rem;
+  aspect-ratio: 1;
+  padding: 5px;
+  background: #f3e3c7;
+  border-radius: 9px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+.nonogram-art i {
+  background: #fff8ea;
+  border-radius: 1px;
+}
+.nonogram-art .is-filled {
+  background: #397d78;
+}
+.nonogram-art .is-filled:nth-child(3n) {
+  background: #df9a47;
+}
+.app-icon--nonograms {
+  background: linear-gradient(145deg, #f4e3c6, #b5d9cd);
+}
+.app-icon--nonograms .nonogram-art {
+  width: 72%;
+  padding: 4%;
+  border-radius: 10%;
+  background: transparent;
+}

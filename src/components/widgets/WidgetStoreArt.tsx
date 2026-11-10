@@ -1,3 +1,4 @@
+import { NonogramArt } from '../nonograms/NonogramArt'
 import { ShoppingBasket, Utensils, Vote } from 'lucide-react'
 import type { WidgetStoreId } from '../../features/widgets/widget-catalogue'
 import { Icon } from '../ui/Icon'
@@ -11,7 +12,9 @@ export function WidgetAppIcon({ id, compact = false }: { id: WidgetStoreId; comp
       className={'app-icon app-icon--' + id + (compact ? ' app-icon--compact' : '')}
       aria-hidden="true"
     >
-      {id === 'sudoku' ? (
+      {id === 'nonograms' ? (
+        <NonogramArt />
+      ) : id === 'sudoku' ? (
         <span className="icon-sudoku">
           {Array.from({ length: 9 }, (_, i) => (
             <i key={i} />

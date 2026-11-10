@@ -1,3 +1,7 @@
+import { NonogramSync } from '../nonograms/NonogramSync'
+import { nonogramPending, nonogramUiReset } from '../../features/nonograms/nonograms-ui-slice'
+import { useAppDispatch, useAppSelector } from '../../app/store-hooks'
+import { Modal } from '../ui/Modal'
 import { Suspense, useLayoutEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react'
@@ -22,6 +26,14 @@ type Props = {
 }
 
 export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, error }: Props) {
+  const nonogram = useAppSelector((state) => state.nonogramUi)
+  const dispatch = useAppDispatch()
+  const [accountTransition, setAccountTransition] = useState<'password' | 'logout' | null>(null)
+  function requestAccountTransition(kind: 'password' | 'logout') {
+    if (nonogramPending(nonogram)) setAccountTransition(kind)
+    else if (kind === 'password') onChangePassword()
+    else onLogout()
+  }
   const headerRef = useRef<HTMLElement>(null)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
   const location = useLocation()
@@ -64,6 +76,35 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
     <div
       className={'family-layout' + (sidebarCollapsed ? ' family-layout--sidebar-collapsed' : '')}
     >
+      {accountTransition && (
+        <Modal title="Unsaved puzzle marks" onClose={() => setAccountTransition(null)}>
+          <p>
+            {nonogram.busy
+              ? 'Wait for your Nonograms save to finish before continuing.'
+              : 'Your Nonograms marks have not all been saved. Keep your puzzle to retry saving, or discard any unsaved marks to continue.'}
+          </p>
+          <div className="actions">
+            <button type="button" onClick={() => setAccountTransition(null)}>
+              Keep puzzle
+            </button>
+            <button
+              type="button"
+              className="secondary"
+              disabled={nonogram.busy}
+              onClick={() => {
+                dispatch(nonogramUiReset())
+                setAccountTransition(null)
+                if (accountTransition === 'password') onChangePassword()
+                else onLogout()
+              }}
+            >
+              {accountTransition === 'password'
+                ? 'Discard and change password'
+                : 'Sign out and discard'}
+            </button>
+          </div>
+        </Modal>
+      )}
       <a className="skip-link" href="#family-content">
         Skip to content
       </a>
@@ -104,13 +145,14 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
           </div>
           <AccountMenu
             user={user}
-            onChangePassword={onChangePassword}
-            onLogout={onLogout}
+            onChangePassword={() => requestAccountTransition('password')}
+            onLogout={() => requestAccountTransition('logout')}
             loggingOut={loggingOut}
           />
         </header>
         <main id="family-content" className="family-layout__content" tabIndex={-1}>
           <PendingRemovals />
+          <NonogramSync />
           {error && (
             <p className="feedback feedback--error" role="alert">
               {error}

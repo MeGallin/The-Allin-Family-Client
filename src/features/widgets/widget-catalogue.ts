@@ -7,6 +7,7 @@ export type WidgetStoreId =
   | 'shopping'
   | 'polls'
   | 'dinner'
+  | 'nonograms'
   | 'sudoku'
   | 'focus'
   | 'word'
@@ -64,6 +65,16 @@ export const widgetCatalogue: readonly WidgetStoreApp[] = [
     description:
       'Find inspiration with a spin. Try ideas privately, then share a dinner choice with your family when you are ready. Each installation has its own meals and visibility.',
     previews: ['A little inspiration for tonight.', 'Your next dinner starts here.'],
+  },
+  {
+    id: 'nonograms',
+    title: 'Nonograms',
+    subtitle: 'A little picture, square by square.',
+    category: 'games',
+    availability: 'available',
+    description:
+      'A personal picture-logic puzzle with autosaved 5×5 and 10×10 boards. Six original puzzles, optional hints and honest replay labels. Your progress stays private in My widgets.',
+    previews: ['A picture hidden in the clues.', 'Fill a little room to think.'],
   },
   {
     id: 'sudoku',

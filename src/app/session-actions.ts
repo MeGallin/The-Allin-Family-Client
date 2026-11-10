@@ -12,6 +12,7 @@ import { memoriesUiReset } from '../features/memories/memories-ui-slice'
 import { notesUiReset } from '../features/notes/notes-ui-slice'
 import { focusTimerUiReset } from '../features/focus-timer/focus-timer-ui-slice'
 import { dailyWordUiReset } from '../features/daily-word/daily-word-ui-slice'
+import { nonogramUiReset } from '../features/nonograms/nonograms-ui-slice'
 import { sudokuUiReset } from '../features/sudoku/sudoku-ui-slice'
 import { widgetsUiReset } from '../features/widgets/widgets-ui-slice'
 import { membersUiReset } from '../features/members/members-ui-slice'
@@ -30,6 +31,7 @@ export function clearPrivateState(dispatch: AppDispatch) {
   dispatch(notesUiReset())
   dispatch(widgetsUiReset())
   dispatch(sudokuUiReset())
+  dispatch(nonogramUiReset())
   dispatch(dailyWordUiReset())
   dispatch(focusTimerUiReset())
   dispatch(membersUiReset())

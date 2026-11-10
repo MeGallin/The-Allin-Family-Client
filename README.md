@@ -1638,3 +1638,12 @@ No commit, push, package or deployment is included.
 ## Where Is It? — local implementation, 10 November 2026
 
 The approved mobile-first Quick Index is available in Widget Store with separate Family/Personal collections using the existing installation model. Family members manage shared items; installation management remains owner-only. Search/filter, details, optional authenticated photos, version conflict protection, exact uncertain-save retries and shared 20-second Undo are included. Home reuses its summary for family item counts. See [docs/where-is-it.md](docs/where-is-it.md) for the interaction, privacy, recovery and local-check contract. Requires API migration027; no production/release operation is included.
+
+## Nonograms — local implementation, 10 November 2026
+
+Personal Games installation with an autosaved Clue Rail 5×5/10×10 board, six original
+validated puzzles, optional Check/Hint, Undo/Redo and guarded replay/reset. Progress
+and played labels are owner-private, with no family count or admin-content leak.
+See [docs/nonograms.md](docs/nonograms.md) for controls, autosave/recovery, migration
+and focused local checks. Migration028 is required; this feature is local-only and
+has not been committed, packaged, pushed or deployed.

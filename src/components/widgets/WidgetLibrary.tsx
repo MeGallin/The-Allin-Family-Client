@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { FOCUS_PATH } from '../../features/focus-timer/types'
 import { WORD_PATH } from '../../features/daily-word/types'
+import { NONOGRAM_PATH } from '../../features/nonograms/types'
 import { SUDOKU_PATH } from '../../features/sudoku/types'
 import { Search } from 'lucide-react'
 import { builtinWidgetPath } from '../../features/widgets/builtin-widgets'
@@ -48,6 +49,7 @@ export function WidgetLibrary({
   installations,
   loading,
   error,
+  nonograms,
   sudoku,
   word,
   focus,
@@ -65,6 +67,13 @@ export function WidgetLibrary({
     onInstall: () => void
   }
   word?: {
+    installed: boolean
+    ready: boolean
+    loading: boolean
+    removing: boolean
+    onInstall: () => void
+  }
+  nonograms?: {
     installed: boolean
     ready: boolean
     loading: boolean
@@ -115,7 +124,8 @@ export function WidgetLibrary({
     setSelected(null)
     onAdd()
   }
-  const personalFor = (id: string) => (id === 'focus' ? focus : id === 'word' ? word : sudoku)
+  const personalFor = (id: string) =>
+    id === 'nonograms' ? nonograms : id === 'focus' ? focus : id === 'word' ? word : sudoku
   function action(app: WidgetStoreApp) {
     if (app.id === 'where') {
       const available = installations.filter((widget) => widget.kind === 'where-is-it')
@@ -143,12 +153,20 @@ export function WidgetLibrary({
         </button>
       )
     }
-    if (app.id === 'sudoku' || app.id === 'word' || app.id === 'focus') {
+    if (app.id === 'nonograms' || app.id === 'sudoku' || app.id === 'word' || app.id === 'focus') {
       const personal = personalFor(app.id)
       return personal?.installed ? (
         <Link
           className="pill-action"
-          to={app.id === 'focus' ? FOCUS_PATH : app.id === 'word' ? WORD_PATH : SUDOKU_PATH}
+          to={
+            app.id === 'nonograms'
+              ? NONOGRAM_PATH
+              : app.id === 'focus'
+                ? FOCUS_PATH
+                : app.id === 'word'
+                  ? WORD_PATH
+                  : SUDOKU_PATH
+          }
           onClick={() => setSelected(null)}
           aria-label={'Open ' + app.title}
         >
@@ -227,7 +245,10 @@ export function WidgetLibrary({
                 : 'Available · Personal or family'
               : app.id === 'dinner'
                 ? dinnerStatus
-                : app.id === 'sudoku' || app.id === 'word' || app.id === 'focus'
+                : app.id === 'nonograms' ||
+                    app.id === 'sudoku' ||
+                    app.id === 'word' ||
+                    app.id === 'focus'
                   ? personalFor(app.id)?.installed
                     ? 'Installed · Personal'
                     : personalFor(app.id)?.removing
@@ -398,17 +419,26 @@ export function WidgetLibrary({
               widget.kind === (selected.id === 'where' ? 'where-is-it' : 'dinner-spinner'),
           )}
           ready={
-            selected.id === 'sudoku' || selected.id === 'word' || selected.id === 'focus'
+            selected.id === 'nonograms' ||
+            selected.id === 'sudoku' ||
+            selected.id === 'word' ||
+            selected.id === 'focus'
               ? !!personalFor(selected.id)?.ready
               : ready
           }
           visibility={
-            selected.id === 'sudoku' || selected.id === 'word' || selected.id === 'focus'
+            selected.id === 'nonograms' ||
+            selected.id === 'sudoku' ||
+            selected.id === 'word' ||
+            selected.id === 'focus'
               ? 'Personal only'
               : undefined
           }
           availability={
-            selected.id === 'sudoku' || selected.id === 'word' || selected.id === 'focus'
+            selected.id === 'nonograms' ||
+            selected.id === 'sudoku' ||
+            selected.id === 'word' ||
+            selected.id === 'focus'
               ? !personalFor(selected.id)?.ready
                 ? personalFor(selected.id)?.loading
                   ? 'Checking status'
@@ -421,7 +451,10 @@ export function WidgetLibrary({
               : undefined
           }
           loading={
-            selected.id === 'sudoku' || selected.id === 'word' || selected.id === 'focus'
+            selected.id === 'nonograms' ||
+            selected.id === 'sudoku' ||
+            selected.id === 'word' ||
+            selected.id === 'focus'
               ? !!personalFor(selected.id)?.loading
               : loading
           }

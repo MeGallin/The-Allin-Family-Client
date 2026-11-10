@@ -52,6 +52,7 @@ export const shoppingApi = createApi({
     'TravelPreferences',
     'Widgets',
     'Sudoku',
+    'Nonograms',
     'DailyWord',
     'FocusTimer',
     'DailyWordResults',

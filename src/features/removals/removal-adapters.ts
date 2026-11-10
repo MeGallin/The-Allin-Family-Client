@@ -6,6 +6,9 @@ import { dailyWordApi } from '../../services/daily-word-query'
 import { focusTimerApi } from '../../services/focus-timer-query'
 import { executeFocusTimerWrite } from '../focus-timer/focus-timer-actions'
 import { executeDailyWordWrite } from '../daily-word/daily-word-actions'
+import { nonogramApi } from '../../services/nonograms-query'
+import { executeNonogramWrite } from '../nonograms/nonograms-actions'
+import { nonogramDirty } from '../nonograms/nonograms-ui-slice'
 import { sudokuApi } from '../../services/sudoku-query'
 import { executeSudokuWrite } from '../sudoku/sudoku-actions'
 import { pollsApi } from '../../services/polls-query'
@@ -104,6 +107,28 @@ export const removalAdapters: Record<RemovalDomain, Adapter> = {
           }),
         )
       ).receipt,
+  },
+  nonograms: {
+    busy: (state) =>
+      state.nonogramUi.busy ||
+      !!state.nonogramUi.uncertain ||
+      nonogramDirty(state.nonogramUi.draft),
+    latest: (state, ownerId) => {
+      const data = nonogramApi.endpoints.getNonogram.select(ownerId)(state).data
+      return data ? (data.game ? [data.game] : []) : undefined
+    },
+    remove: (dispatch, entry) =>
+      dispatch(async (send, getState) => {
+        const game = nonogramApi.endpoints.getNonogram.select(entry.ownerId)(getState()).data?.game
+        return game
+          ? send(
+              executeNonogramWrite({
+                action: 'remove',
+                body: { ...body(entry), puzzleId: game.puzzleId, requestKey: entry.token },
+              }),
+            )
+          : false
+      }),
   },
   sudoku: {
     busy: (state) => state.sudokuUi.busy,

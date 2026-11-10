@@ -1,0 +1,156 @@
+.nonogram-workspace {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.nonogram-heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+}
+.nonogram-heading > div {
+  min-width: 0;
+}
+.nonogram-heading h2,
+.nonogram-heading p {
+  margin: 0;
+}
+.nonogram-heading h2 {
+  font-size: var(--text-lg);
+}
+.nonogram-heading > .note {
+  grid-column: 1/-1;
+  margin-left: 0;
+  justify-self: start;
+}
+.nonogram-modes {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.nonogram-modes button {
+  flex: 1;
+  padding-inline: var(--space-2);
+  white-space: nowrap;
+}
+.nonogram-modes [aria-pressed='true'] {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  color: var(--color-text);
+}
+.nonogram-board-scroll {
+  max-width: 100%;
+  overflow: auto;
+  padding: 3px;
+  overscroll-behavior-x: contain;
+}
+.nonogram-board {
+  display: grid;
+  grid-template-columns: minmax(2.4rem, auto) repeat(var(--nonogram-size), minmax(0, 1fr));
+  width: 100%;
+  max-width: 36rem;
+  margin-inline: auto;
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.nonogram-board--enlarged {
+  min-width: calc(var(--nonogram-size) * 2.8rem + 5rem);
+  max-width: none;
+}
+.nonogram-corner {
+  align-self: end;
+  justify-self: center;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  padding: 4px;
+}
+.nonogram-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+  gap: 1px;
+  padding: 6px 0;
+  font-size: clamp(0.65rem, 2.5vw, 0.9rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  min-width: 0;
+}
+.nonogram-row {
+  display: contents;
+}
+.nonogram-row-clue {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  white-space: pre;
+  padding: 0 5px;
+  font-size: clamp(0.65rem, 2.5vw, 0.9rem);
+  font-variant-numeric: tabular-nums;
+}
+.nonogram-cell {
+  padding: 0 !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  aspect-ratio: 1;
+  border: 1px solid var(--color-border-strong) !important;
+  border-radius: 0 !important;
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  font-size: clamp(0.8rem, 3vw, 1.4rem);
+  line-height: 1;
+  box-shadow: none !important;
+  touch-action: manipulation;
+}
+.nonogram-cell--1 {
+  background: var(--color-accent) !important;
+  box-shadow: inset 0 0 0 2px var(--color-accent-highlight) !important;
+}
+.nonogram-cell--divider-right {
+  border-right: 2px solid var(--color-border-strong) !important;
+}
+.nonogram-cell--divider-bottom {
+  border-bottom: 2px solid var(--color-border-strong) !important;
+}
+.nonogram-cell:focus-visible {
+  outline: 3px solid var(--color-text) !important;
+  outline-offset: -4px;
+  z-index: 1;
+}
+.nonogram-cell[aria-disabled='true'] {
+  cursor: default;
+  opacity: 0.8;
+}
+.nonogram-column.is-current,
+.nonogram-row-clue.is-current {
+  background: var(--color-accent-soft);
+  color: var(--color-text);
+}
+.nonogram-next {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+}
+.nonogram-next select {
+  width: auto;
+}
+.nonogram-complete {
+  padding: var(--space-3);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+}
+.nonogram-tools {
+  justify-content: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nonogram-workspace * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
