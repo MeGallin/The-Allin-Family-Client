@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
-import { useState } from 'react'
+import { lazy, useState } from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -52,7 +52,11 @@ beforeEach(() => {
 })
 afterEach(() => stores.splice(0).forEach((s) => clearPrivateState(s.dispatch)))
 
-async function mount(kind: 'clean' | 'dirty' | 'failed' | 'uncertain' | 'busy') {
+async function mount(
+  kind: 'clean' | 'dirty' | 'failed' | 'uncertain' | 'busy',
+  failedRoute = false,
+) {
+  const FailedPage = lazy(() => Promise.reject(new Error('Synthetic lazy page download failure')))
   const store = createAppStore()
   stores.push(store)
   store.dispatch(userReceived(testUser))
@@ -90,7 +94,7 @@ async function mount(kind: 'clean' | 'dirty' | 'failed' | 'uncertain' | 'busy') 
         <PasswordForm required={false} onCancel={() => setPassword(false)} onSession={vi.fn()} />
       </>
     ) : (
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[failedRoute ? '/broken' : '/']}>
         <Routes>
           <Route
             element={
@@ -104,6 +108,7 @@ async function mount(kind: 'clean' | 'dirty' | 'failed' | 'uncertain' | 'busy') 
             }
           >
             <Route index element={<p>Family page</p>} />
+            <Route path="broken" element={<FailedPage />} />
           </Route>
         </Routes>
       </MemoryRouter>
@@ -125,6 +130,18 @@ const unload = () => {
 }
 
 describe('Nonograms account lifetime boundary', () => {
+  it('retains uncertain puzzle recovery and unload protection through a failed page and SPA Home', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const { store } = await mount('uncertain', true)
+    const before = store.getState().nonogramUi
+    await screen.findByRole('heading', { name: 'Let’s try that again.' })
+    expect(screen.getByText(/Nonograms has unsaved marks/)).toBeTruthy()
+    expect(unload()).toBe(true)
+    fireEvent.click(within(screen.getByRole('main')).getByRole('link', { name: 'Home' }))
+    expect(await screen.findByText('Family page')).toBeTruthy()
+    expect(store.getState().nonogramUi).toEqual(before)
+    expect(unload()).toBe(true)
+  })
   it.each(['dirty', 'failed', 'uncertain'] as const)(
     'keeps %s marks or explicitly discards before password settings',
     async (kind) => {

@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
+import { PasswordInput } from '../ui/PasswordInput'
 import { changePassword } from '../../services/auth-api'
 import type { FamilySession } from '../../types/auth'
 import { messageFor } from '../../lib/errors'
@@ -16,12 +17,17 @@ export function PasswordForm({ required, onSession, onCancel }: PasswordFormProp
   const [confirmation, setConfirmation] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [mismatch, setMismatch] = useState(false)
+  const confirmationInput = useRef<HTMLInputElement>(null)
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError('')
+    setMismatch(false)
     if (newPassword !== confirmation) {
       setError('The new passwords do not match.')
+      setMismatch(true)
+      confirmationInput.current?.focus()
       return
     }
     setBusy(true)
@@ -51,9 +57,9 @@ export function PasswordForm({ required, onSession, onCancel }: PasswordFormProp
         <label htmlFor="current-password">
           {required ? 'Temporary password' : 'Current password'}
         </label>
-        <input
+        <PasswordInput
           id="current-password"
-          type="password"
+          passwordLabel={required ? 'temporary password' : 'current password'}
           autoComplete="current-password"
           required
           maxLength={128}
@@ -61,9 +67,9 @@ export function PasswordForm({ required, onSession, onCancel }: PasswordFormProp
           onChange={(event) => setCurrentPassword(event.target.value)}
         />
         <label htmlFor="new-password">New password</label>
-        <input
+        <PasswordInput
           id="new-password"
-          type="password"
+          passwordLabel="new password"
           autoComplete="new-password"
           required
           minLength={15}
@@ -76,18 +82,27 @@ export function PasswordForm({ required, onSession, onCancel }: PasswordFormProp
           Use a unique passphrase of at least 15 characters.
         </p>
         <label htmlFor="confirm-password">Confirm new password</label>
-        <input
+        <PasswordInput
           id="confirm-password"
-          type="password"
+          ref={confirmationInput}
+          passwordLabel="password confirmation"
+          aria-invalid={mismatch || undefined}
+          aria-describedby={mismatch ? 'password-error' : undefined}
           autoComplete="new-password"
           required
           minLength={15}
           maxLength={128}
           value={confirmation}
-          onChange={(event) => setConfirmation(event.target.value)}
+          onChange={(event) => {
+            setConfirmation(event.target.value)
+            if (mismatch) {
+              setMismatch(false)
+              setError('')
+            }
+          }}
         />
         {error && (
-          <p className="error form-error" role="alert">
+          <p id="password-error" className="error form-error" role="alert">
             {error}
           </p>
         )}

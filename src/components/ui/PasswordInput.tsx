@@ -1,13 +1,17 @@
-import { useState, type InputHTMLAttributes } from 'react'
+import { useState, type InputHTMLAttributes, type Ref } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { Icon } from './Icon'
 import './PasswordInput.css'
 
-type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & { id: string }
+type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
+  id: string
+  passwordLabel?: string
+  ref?: Ref<HTMLInputElement>
+}
 
-export function PasswordInput({ id, disabled, ...props }: Props) {
+export function PasswordInput({ id, disabled, passwordLabel = 'password', ...props }: Props) {
   const [visible, setVisible] = useState(false)
-  const action = visible ? 'Hide password' : 'Show password'
+  const action = `${visible ? 'Hide' : 'Show'} ${passwordLabel}`
 
   return (
     <div className="password-input">

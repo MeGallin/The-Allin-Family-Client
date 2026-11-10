@@ -24,7 +24,8 @@ import './CalendarPage.css'
 
 const EventComposer = lazy(() => import('../../components/family/calendar/EventComposer'))
 export default function CalendarPage() {
-  const { events, loading, pending, error, feedback, refresh, removals } = useCalendar()
+  const { events, loading, refreshing, pending, error, readError, feedback, refresh, removals } =
+    useCalendar()
   const [editing, setEditing] = useState<FamilyEvent | null>(null)
   const [search, setSearch] = useSearchParams()
   const initialDay = validDateInput(search.get('date'))
@@ -177,11 +178,14 @@ export default function CalendarPage() {
           </Panel>
         </aside>
       </div>
-      {search.has('event') && !loading && !editing && search.get('compose') !== 'event' && (
+      {search.has('event') && !editing && search.get('compose') !== 'event' && (
         <CalendarEventSelection
-          event={error ? null : selected.event}
+          event={readError ? null : selected.event}
           reason={selected.reason}
-          unavailable={!!error}
+          unavailable={!!readError}
+          loading={loading || refreshing}
+          retryDisabled={pending}
+          onRetry={refresh}
           outsideResults={!!selected.event && !selectedInResults}
           editDisabled={pending || !!(selected.event && removals[selected.event.id])}
           removal={selected.event ? removals[selected.event.id] : undefined}

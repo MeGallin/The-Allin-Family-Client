@@ -1,5 +1,6 @@
 import { lazy, Suspense, useState, type ReactNode } from 'react'
-import { EyeOff, Settings2, Trash2, Utensils } from 'lucide-react'
+import { EyeOff, Settings2, Trash2 } from 'lucide-react'
+import { WidgetGlyph } from './WidgetGlyph'
 import type { FamilyWidget } from '../../features/widgets/types'
 import { useWidgets } from '../../features/widgets/useWidgets'
 import { ContentSurface } from '../ui/ContentSurface'
@@ -81,7 +82,7 @@ export function WidgetShelf({
                     aria-pressed={builtin?.id === widget.id}
                     onClick={() => onBuiltinSelect(widget.id)}
                   >
-                    <Icon icon={widget.icon} />
+                    <WidgetGlyph id={widget.id} />
                     <span>
                       <strong>{widget.title}</strong>
                       <small>Installed · Family</small>
@@ -96,7 +97,7 @@ export function WidgetShelf({
                   aria-pressed={widget.id === selected?.id}
                   onClick={() => onSelect(widget.id)}
                 >
-                  <Icon icon={Utensils} />
+                  <WidgetGlyph id={widget.kind === 'where-is-it' ? 'where' : 'dinner'} />
                   <span>
                     <strong>{widget.title}</strong>
                     <small>

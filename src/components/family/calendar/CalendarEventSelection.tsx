@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 import { Link } from 'react-router'
 import { Modal } from '../../ui/Modal'
+import { LoadingState } from '../../ui/LoadingState'
 import type { FamilyEvent } from '../../../features/calendar/types'
 import { eventDate } from '../../../lib/dates'
 import './CalendarEventSelection.css'
@@ -11,6 +12,9 @@ export function CalendarEventSelection({
   event,
   reason,
   unavailable,
+  loading,
+  retryDisabled,
+  onRetry,
   onClose,
   onEdit,
   onCalendar,
@@ -21,6 +25,9 @@ export function CalendarEventSelection({
   event: FamilyEvent | null
   reason: string
   unavailable: boolean
+  loading: boolean
+  retryDisabled: boolean
+  onRetry: () => void
   onClose: () => void
   onEdit: (event: FamilyEvent) => void
   onCalendar: () => void
@@ -35,8 +42,15 @@ export function CalendarEventSelection({
       scrollable
       className="calendar-selection"
     >
-      {unavailable ? (
-        <p role="alert">Calendar details are unavailable. Refresh the calendar to try again.</p>
+      {loading ? (
+        <LoadingState label="Loading the selected calendar event…" />
+      ) : unavailable ? (
+        <>
+          <p role="alert">Calendar details are unavailable. Try again to load this event.</p>
+          <button type="button" disabled={retryDisabled} onClick={onRetry}>
+            Try again
+          </button>
+        </>
       ) : (
         <>
           {reason && (

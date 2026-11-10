@@ -70,7 +70,7 @@ export function HomeRecap({ ownerId }: { ownerId: number }) {
         ? 'Offline'
         : query.isLoading || !query.currentData
           ? 'Checking updates…'
-          : 'You’re all caught up'
+          : 'No new calendar or shopping updates'
   return (
     <section
       ref={rootRef}
@@ -132,7 +132,9 @@ export function HomeRecap({ ownerId }: { ownerId: number }) {
             {!online && (
               <p className="note">You’re offline. Reconnect to check and review updates.</p>
             )}
-            {caughtUp && <p className="home-recap__caught-up">You’re all caught up.</p>}
+            {caughtUp && (
+              <p className="home-recap__caught-up">No new calendar or shopping updates.</p>
+            )}
             {!!items.length && (
               <>
                 <p className="home-recap__categories">

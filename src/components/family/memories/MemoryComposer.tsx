@@ -191,6 +191,19 @@ export default function MemoryComposer({
               alt={photoAlt.trim() || title.trim() || 'Selected photo preview'}
             />
           )}
+          {image && (
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => {
+                setImage(null)
+                if (photoInput.current) photoInput.current.value = ''
+                photoInput.current?.focus()
+              }}
+            >
+              Clear selected photo
+            </button>
+          )}
           {(image || original?.photoKey) && !removePhoto && (
             <>
               <label htmlFor={id + '-alt'}>

@@ -210,9 +210,8 @@ export function SudokuBoard({
         </div>
       )}
       <p id={help} className="note">
-        Bold numbers are fixed clues. Arrow keys move; Home/End move within a row, Ctrl+Home/End
-        across the board. Type 1–9; Delete clears; P toggles pencil marks. Undo/Redo lasts until
-        refresh.
+        Bold numbers are fixed clues. Select a square, then choose a number. Keyboard controls are
+        in How to play.
       </p>
       <details className="sudoku-help">
         <summary>How to play</summary>
@@ -393,6 +392,16 @@ export function SudokuBoard({
         </div>
       ) : (
         <>
+          <p className="sudoku-board__selected-notes" role="status">
+            Row {Math.floor(cell / 9) + 1}, column {(cell % 9) + 1} ·{' '}
+            {progress.entries[cell] !== '0'
+              ? `Number ${progress.entries[cell]}`
+              : `Pencil marks: ${
+                  Array.from({ length: 9 }, (_, i) => i + 1)
+                    .filter((digit) => progress.notes[cell] & (1 << (digit - 1)))
+                    .join(', ') || 'none'
+                }`}
+          </p>
           <div
             className="sudoku-grid"
             role="grid"

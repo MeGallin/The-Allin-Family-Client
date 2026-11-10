@@ -91,6 +91,18 @@ export function WeekPlanner() {
   const annual = upcoming.find((event) => event.annually && event.id !== next?.id)
   return (
     <div className="home-diary content-surface">
+      <a className="home-quick-summary" href="#family-overview">
+        <strong>Family at a glance</strong>
+        <span>
+          {overview
+            .filter((entry) => ['shopping', 'jobs', 'polls'].includes(entry.kind))
+            .map(
+              (entry) =>
+                `${entry.count ?? '—'} ${entry.kind === 'shopping' ? 'to pick up' : entry.kind}${entry.status ? ' (' + entry.status + ')' : ''}`,
+            )
+            .join(' · ')}
+        </span>
+      </a>
       <Panel
         variant="plain"
         title="Days ahead"

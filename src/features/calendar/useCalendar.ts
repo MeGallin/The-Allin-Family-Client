@@ -19,6 +19,8 @@ export function useCalendar() {
     events: query.data?.events ?? [],
     activity: query.data?.activity ?? [],
     loading: !query.data && (query.isUninitialized || query.isLoading),
+    refreshing: query.isFetching,
+    readError: shoppingError(query.error)?.message ?? '',
     pending: ui.busy,
     feedback: ui.feedback,
     error: shoppingError(mutation.error)?.message ?? shoppingError(query.error)?.message ?? '',

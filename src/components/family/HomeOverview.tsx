@@ -8,7 +8,12 @@ import './HomeOverview.css'
 /** Reusable summary presentation; callers supply data and source destinations. */
 export function HomeOverview({ entries }: { entries: HomeOverviewEntry[] }) {
   return (
-    <nav className="home-overview" aria-label="Family at a glance">
+    <nav
+      id="family-overview"
+      tabIndex={-1}
+      className="home-overview"
+      aria-label="Family at a glance"
+    >
       <p className="home-overview__heading">Family at a glance</p>
       <ul className="home-overview__list">
         {entries.map((entry) => (

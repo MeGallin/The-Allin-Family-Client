@@ -15,6 +15,8 @@ export function useMemories() {
     memories: query.data?.memories ?? [],
     activity: query.data?.activity ?? [],
     loading: !query.data && (query.isLoading || query.isUninitialized),
+    refreshing: query.isFetching,
+    readError: shoppingError(query.error)?.message ?? '',
     pending: ui.busy,
     feedback: ui.feedback,
     failure,

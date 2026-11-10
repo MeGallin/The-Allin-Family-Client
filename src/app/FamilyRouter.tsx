@@ -9,6 +9,7 @@ import { ShoppingSync } from '../features/shopping/ShoppingSync'
 import { CalendarSync } from '../features/calendar/CalendarSync'
 import { MemoriesSync } from '../features/memories/MemoriesSync'
 import { LegacyWidgetRedirect } from '../components/widgets/LegacyWidgetRedirect'
+import { ErrorRecovery } from '../components/ui/ErrorBoundary'
 const FamilyHomePage = lazy(() => import('../pages/family/FamilyHomePage'))
 const CalendarPage = lazy(() => import('../pages/family/CalendarPage'))
 const MemoriesPage = lazy(() => import('../pages/family/MemoriesPage'))
@@ -27,7 +28,9 @@ export type FamilyRouterProps = {
   error: string
 }
 const RoutingContext = createContext<FamilyRouterProps | null>(null)
-const router = createBrowserRouter([{ path: '*', element: <FamilyRoutes /> }])
+const router = createBrowserRouter([
+  { path: '*', element: <FamilyRoutes />, errorElement: <ErrorRecovery /> },
+])
 export function FamilyRouter(props: FamilyRouterProps) {
   return (
     <RoutingContext.Provider value={props}>

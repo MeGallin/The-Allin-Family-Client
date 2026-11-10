@@ -53,7 +53,7 @@
   width: 100%;
   max-width: 32rem;
   justify-self: center;
-  border: 2px solid var(--color-border-strong);
+  border: 3px solid var(--color-text-muted);
   background: var(--color-surface-muted);
 }
 .sudoku-row {
@@ -62,17 +62,17 @@
 }
 .sudoku-position {
   min-width: 0;
-  border-right: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border-strong);
 }
 .sudoku-position:nth-child(3n) {
-  border-right: 2px solid var(--color-border-strong);
+  border-right: 3px solid var(--color-text-muted);
 }
 .sudoku-position:last-child {
   border-right: 0;
 }
 .sudoku-row:nth-child(3n) .sudoku-position {
-  border-bottom: 2px solid var(--color-border-strong);
+  border-bottom: 3px solid var(--color-text-muted);
 }
 .sudoku-row:last-child .sudoku-position {
   border-bottom: 0;
@@ -186,6 +186,13 @@
 .sudoku-help {
   min-width: 0;
 }
+.sudoku-help > :not(summary) {
+  max-width: 70ch;
+}
+.sudoku-board__selected-notes {
+  margin: 0;
+  font-size: var(--text-sm);
+}
 .sudoku-help ol,
 .sudoku-help ul {
   padding-inline-start: var(--space-5);
@@ -206,11 +213,15 @@
     padding: var(--space-3);
   }
   .sudoku-board__heading > button {
-    width: 100%;
+    width: auto;
   }
   .sudoku-board__toolbar {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .sudoku-board__toolbar button {
+    flex-direction: column;
+    gap: var(--space-1);
   }
   .sudoku-keypad {
     gap: var(--space-1);

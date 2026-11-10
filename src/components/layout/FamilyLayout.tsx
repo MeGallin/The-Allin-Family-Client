@@ -10,6 +10,7 @@ import { Icon } from '../ui/Icon'
 import { AccountMenu } from './AccountMenu'
 import { FamilyNavigation } from './FamilyNavigation'
 import { LoadingState } from '../ui/LoadingState'
+import { PageErrorBoundary } from '../ui/PageErrorBoundary'
 import { PendingRemovals } from '../removals/PendingRemovals'
 import { FamilyBrand } from '../brand/FamilyBrand'
 import { FamilyFooter } from '../brand/FamilyFooter'
@@ -158,9 +159,11 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
               {error}
             </p>
           )}
-          <Suspense fallback={<LoadingState label="Opening this page…" />}>
-            <Outlet />
-          </Suspense>
+          <PageErrorBoundary>
+            <Suspense fallback={<LoadingState label="Opening this page…" />}>
+              <Outlet />
+            </Suspense>
+          </PageErrorBoundary>
         </main>
         <div className="family-layout__footer">
           <FamilyFooter />

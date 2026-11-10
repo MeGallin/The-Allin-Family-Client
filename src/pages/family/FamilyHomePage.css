@@ -2,10 +2,23 @@
   display: grid;
   gap: var(--space-6);
 }
+.home-quick-summary {
+  display: none;
+}
 .family-home-grid > * {
   min-width: 0;
 }
 @media (max-width: 599px) {
+  .home-quick-summary {
+    display: grid;
+    gap: var(--space-1);
+    grid-column: 1 / -1;
+    min-height: var(--control-min-height);
+    padding-block-end: var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--text-sm);
+    overflow-wrap: anywhere;
+  }
   .home-page {
     gap: var(--space-4);
   }

@@ -4,6 +4,7 @@
   font-size: var(--text-sm);
 }
 .widget-help__content {
+  max-width: 70ch;
   padding-block-start: var(--space-2);
   line-height: 1.6;
   overflow-wrap: anywhere;

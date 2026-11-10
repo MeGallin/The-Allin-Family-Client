@@ -69,6 +69,14 @@ const type = (value: string, target = cell()) => {
   fireEvent.keyDown(target, { key: value })
 }
 describe('Sudoku board editing, saving and guarded navigation', () => {
+  it('shows selected pencil marks at readable text size independently of miniature grid notes', () => {
+    mount()
+    fireEvent.click(screen.getByRole('button', { name: 'Pencil' }))
+    for (const digit of ['1', '5', '9']) type(digit)
+    expect(screen.getByText('Row 1, column 1 · Pencil marks: 1, 5, 9')).toBeTruthy()
+    type('ArrowRight')
+    expect(screen.getByText('Row 1, column 2 · Pencil marks: none')).toBeTruthy()
+  })
   it('has one grid Tab stop, immutable clues and roving keyboard navigation', () => {
     mount()
     const buttons = within(screen.getByRole('grid')).getAllByRole('button')

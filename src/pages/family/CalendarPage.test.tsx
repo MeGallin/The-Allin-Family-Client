@@ -10,11 +10,15 @@ const state = vi.hoisted(() => ({
   events: [] as FamilyEvent[],
   now: Date.parse('2026-10-25T13:00:00Z'),
   pending: false,
+  loading: false,
+  refreshing: false,
+  readError: '',
+  refresh: vi.fn(),
   error: '',
   removals: {} as Record<string, PendingRemoval>,
 }))
 vi.mock('../../features/calendar/useCalendar', () => ({
-  useCalendar: () => ({ ...state, loading: false, activity: [], feedback: '', refresh: vi.fn() }),
+  useCalendar: () => ({ ...state, activity: [], feedback: '' }),
 }))
 vi.mock('../../hooks/useNow', () => ({ useNow: () => state.now }))
 vi.mock('../../features/removals/useRemovals', () => ({
@@ -69,7 +73,14 @@ function mount(url = '/calendar') {
     { initialEntries: [url] },
   )
   render(<RouterProvider router={router} />)
-  return router
+  return Object.assign(router, {
+    rerenderPage: () =>
+      act(() =>
+        router.navigate(router.state.location.pathname + router.state.location.search, {
+          replace: true,
+        }),
+      ),
+  })
 }
 beforeEach(() => {
   state.events = [
@@ -79,10 +90,59 @@ beforeEach(() => {
     event('40', '2026-10-26T12:00:00Z', 'Future'),
   ]
   state.pending = false
+  state.loading = false
+  state.refreshing = false
+  state.readError = ''
+  state.refresh.mockReset()
   state.error = ''
   state.removals = {}
 })
 describe('Calendar successful groups and exact read-only event selection', () => {
+  it('keeps the same dialog and linked annual occurrence through failure, retry and recovery', async () => {
+    const saved = event('9', '2020-10-25T00:00:00Z', 'Annual date', true)
+    state.events = []
+    state.error = state.readError = 'Synthetic failed read'
+    const router = mount('/calendar?q=Future&event=9&occurrence=2025-10-25')
+    const originalSearch = router.state.location.search
+    const dialog = screen.getByRole('dialog')
+    expect(within(dialog).getByRole('alert').textContent).toContain('unavailable')
+    expect(within(dialog).queryByText(/no longer available/)).toBeNull()
+    state.refresh.mockImplementation(() => {
+      state.loading = true
+      state.refreshing = true
+    })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Try again' }))
+    expect(state.refresh).toHaveBeenCalledOnce()
+    await router.rerenderPage()
+    expect(screen.getByRole('dialog')).toBe(dialog)
+    expect(within(dialog).getByText('Loading the selected calendar event…')).toBeTruthy()
+    expect(within(dialog).queryByRole('button', { name: 'Try again' })).toBeNull()
+    expect(router.state.location.search).toBe(originalSearch)
+    // A second failed read remains retryable without clearing the target.
+    state.loading = state.refreshing = false
+    await router.rerenderPage()
+    expect(within(dialog).getByRole('button', { name: 'Try again' })).toBeTruthy()
+    state.events = [saved]
+    state.error = state.readError = ''
+    await router.rerenderPage()
+    expect(screen.getByRole('dialog', { name: 'Annual date' })).toBe(dialog)
+    expect(within(dialog).getByText(/Saturday 25 October 2025/)).toBeTruthy()
+    expect(router.state.location.search).toBe(originalSearch)
+  })
+  it('only reports a removed event after a successful empty read', async () => {
+    state.events = []
+    state.loading = true
+    const router = mount('/calendar?event=99&occurrence=2026-10-25')
+    expect(within(screen.getByRole('dialog')).queryByText(/no longer available/)).toBeNull()
+    state.loading = false
+    await router.rerenderPage()
+    expect(within(screen.getByRole('dialog')).getByText(/no longer available/)).toBeTruthy()
+  })
+  it('does not hide readable event details for an unrelated write failure', () => {
+    state.error = 'Synthetic failed write'
+    mount('/calendar?event=31&occurrence=2026-10-25')
+    expect(within(screen.getByRole('dialog')).getByText('Note 31')).toBeTruthy()
+  })
   it('explains an off-filter exact selection and clears back to normal results', () => {
     const router = mount('/calendar?q=Future&event=31&occurrence=2026-10-25')
     const dialog = screen.getByRole('dialog', { name: 'Same title' })
@@ -128,7 +188,9 @@ describe('Calendar successful groups and exact read-only event selection', () =>
   })
   it('restores Home range and original day dialog on Back from the selected event', async () => {
     const router = mount('/?days=14')
-    fireEvent.click(screen.getByRole('button', { name: 'View 2 plans for Sunday 25 October' }))
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Same title. View all. 2 plans for Sunday 25 October' }),
+    )
     expect(router.state.location.search).toBe('?days=14&plans=2026-10-25')
     const home = screen.getByRole('dialog', { name: 'Plans for Sunday 25 October' })
     fireEvent.click(within(home).getAllByRole('link', { name: 'Open Same title in calendar' })[1])

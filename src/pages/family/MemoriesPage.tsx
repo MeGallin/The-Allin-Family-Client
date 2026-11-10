@@ -19,14 +19,30 @@ import './MemoriesPage.css'
 const MemoryComposer = lazy(() => import('../../components/family/memories/MemoryComposer'))
 const MemoryRemoval = lazy(() => import('../../components/family/memories/MemoryRemoval'))
 export default function MemoriesPage() {
-  const { memories, loading, error, feedback, pending, refresh, clearError } = useMemories()
+  const {
+    memories,
+    loading,
+    refreshing,
+    readError,
+    error,
+    feedback,
+    pending,
+    refresh,
+    clearError,
+  } = useMemories()
   const [search, setSearch] = useSearchParams()
   const targetId = /^#memory-(\d+)$/.exec(useLocation().hash)?.[1]
   const collection = useCollectionWindow(memories, { targetId })
   useHashTarget(!loading && (!targetId || collection.items.some((item) => item.id === targetId)))
   const editing = useEditingRecord(memories, search.get('edit'))
   const removing = memories.find((memory) => memory.id === search.get('remove'))
-  const missing = !loading && (search.has('edit') || search.has('remove')) && !editing && !removing
+  const missing =
+    !loading &&
+    !refreshing &&
+    !readError &&
+    (search.has('edit') || search.has('remove')) &&
+    !editing &&
+    !removing
   function closeComposer() {
     setSearch(
       (current) => {
@@ -66,6 +82,16 @@ export default function MemoriesPage() {
           {error && (
             <p role="alert" className="error">
               {error}
+              {readError && (
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={refresh}
+                  disabled={pending || refreshing}
+                >
+                  Try again
+                </button>
+              )}
             </p>
           )}
           {loading ? (
