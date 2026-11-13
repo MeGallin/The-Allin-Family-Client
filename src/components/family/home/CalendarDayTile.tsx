@@ -34,6 +34,10 @@ export function CalendarDayTile({
   indicators,
 }: CalendarDayTileProps) {
   const weekend = isWeekend(date)
+  const holiday =
+    !!holidayTitle ||
+    (!plansUnavailable &&
+      plans.some((plan) => plan.allDay && plan.detail.startsWith('Bank holiday: ')))
   const [search, setSearch] = useSearchParams()
   const dayKey = dateInputValue(date)
   const showPlans = search.get('plans') === dayKey
@@ -84,7 +88,8 @@ export function CalendarDayTile({
           'calendar-day-tile week-planner__day' +
           (!plansUnavailable && plans.length ? ' has-plans' : '') +
           (isToday ? ' is-today' : '') +
-          (weekend ? ' is-weekend' : '')
+          (weekend ? ' is-weekend' : '') +
+          (holiday ? ' is-holiday' : '')
         }
       >
         <div className="calendar-day-tile__calendar week-planner__day-main">

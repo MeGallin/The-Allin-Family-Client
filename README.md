@@ -158,6 +158,13 @@ only; deployed runtime/package above is unchanged and needs no rebuild/upload.
 
 ## Home day-plan retention
 
+Home day cards share the same subtle diagonal background on weekends and bank
+holidays. Holidays come from the existing GOV.UK feed for the viewer's chosen
+region, or an available saved all-day plan whose notes start exactly with
+`Bank holiday: ` (including the space). This saved-plan convention also covers
+explicitly entered holidays for other UK regions without guessing from titles.
+Weekday holidays retain their weekday label; the Weekend label remains weekend-only.
+
 Home calendar tiles now use whole viewer-local calendar-day membership instead of
 discarding timed events as soon as their start passes. A saved12:00plan stays on
 today's tile through the day. The future-only Next in your diary and Calendar's
