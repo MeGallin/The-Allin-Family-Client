@@ -1,3 +1,9 @@
+body:has(.home-page) {
+  background: var(--color-home-page);
+}
+.home-page .home-diary {
+  background: var(--color-home-diary);
+}
 .family-home-grid {
   display: grid;
   gap: var(--space-6);

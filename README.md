@@ -99,6 +99,15 @@ requested. Proof is in workspace work/focus-timer-release-20261025. This follow-
 changes documentation only; deployed runtime commits/packages above are unchanged
 and require no new build/upload.
 
+## Home backgrounds
+
+Home uses the Nimbus `--color-home-page` neutral navy page background (`#0b111b`)
+and `--color-home-diary` flat calendar-panel background (`#101a29`). The page
+background applies only while `.home-page` is present; its shorthand also removes
+the global radial glows. The diary override is scoped beneath that same Home
+class. Other routes retain their original backgrounds, and existing accent,
+header, sidebar, widget and weekend/bank-holiday stripe styles remain unchanged.
+
 ## Home current clock
 
 `components/ui/current-clock/CurrentClock` is a reusable display-only component in
