@@ -5,6 +5,7 @@ import { ArrowUpRight, Plus } from 'lucide-react'
 import { Icon } from '../../ui/Icon'
 import { IndicatorStrip, type CalendarIndicator } from '../../ui/IndicatorStrip'
 import { Modal } from '../../ui/Modal'
+import { CalendarZodiac } from './CalendarZodiac'
 import { dateInputValue, formatEventTime } from '../../../lib/dates'
 import { calendarEventPath } from '../../../features/calendar/calendar-selection'
 import './CalendarDayTile.css'
@@ -142,7 +143,11 @@ export function CalendarDayTile({
           )}
         </div>
         <div className="calendar-day-tile__forecast">{forecast}</div>
-        <IndicatorStrip indicators={indicators} dayLabel={dayLabel} />
+        <div className="calendar-day-tile__footer">
+          <CalendarZodiac date={date} />
+          <span className="calendar-day-tile__footer-separator" aria-hidden="true" />
+          <IndicatorStrip indicators={indicators} dayLabel={dayLabel} />
+        </div>
       </div>
       {showPlans && !plansUnavailable && (
         <Modal

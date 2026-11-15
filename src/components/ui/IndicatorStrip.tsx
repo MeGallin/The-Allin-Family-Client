@@ -69,6 +69,7 @@ export function IndicatorStrip({
           title={`View all ${ordered.length} indicators for ${dayLabel}`}
           aria-label={`View all ${ordered.length} indicators for ${dayLabel}; ${remaining} more`}
           aria-haspopup="dialog"
+          data-more-count={'+' + remaining}
           onClick={() => setView('all')}
         >
           +{remaining} more

@@ -214,9 +214,33 @@
   color: var(--color-text-muted);
   margin: 0;
 }
-.calendar-day-tile > .indicator-strip {
+.calendar-day-tile__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-1);
   grid-column: 1;
   grid-row: 3;
+}
+.calendar-day-tile__footer-separator {
+  height: var(--space-4);
+  border-left: 1px solid var(--color-border);
+}
+.calendar-day-tile__footer > .indicator-strip {
+  flex: 1;
+  border-top: 0;
+  padding-top: 0;
+}
+/* Keep the service icons/counts and full-list action alongside the separate zodiac. */
+.calendar-day-tile__footer .indicator-strip__more {
+  padding-inline: var(--space-1);
+  font-size: 0;
+}
+.calendar-day-tile__footer .indicator-strip__more::after {
+  content: attr(data-more-count);
+  font-size: var(--text-caption);
 }
 .calendar-day-tile button {
   box-shadow: none;

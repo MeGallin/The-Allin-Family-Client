@@ -42,6 +42,21 @@ Only the notice area scrolls, keeping the dialog title and Close control visible
 
 ## Run locally
 
+Home calendar footers include a separate, reusable `CalendarZodiac` component that
+accepts a `Date`. It calculates the conventional Western sign from the card's local
+month/day using `lib/zodiac.ts`, with original 20px pictorial SVGs in `ZodiacIcon`.
+These are calendar ranges, not exact astronomical ingress calculations; the range
+source is [The Royal Mint](https://production.royalmint.com/gifts/zodiac/a-guide-to-the-zodiac/).
+The accent-coloured symbol has a 44px button target and an accessible sign/date
+label. Activation opens a compact native top-layer popover above the footer (below
+when the top edge has insufficient room), avoiding horizontal-scroller clipping.
+Escape, outside activation, leaving the button, scrolling and resizing dismiss it.
+The native Popover API uses supported current-browser features, documented by
+[MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/popover).
+The zodiac is separate from service priority/counts; Home abbreviates the existing
+full-list action to `+N` visually while retaining its full accessible label.
+No new feed, API request, dependency or saved preference is involved.
+
 The existing checkout has dependencies and a local environment file. Start the
 API and database using the API README, then run:
 
