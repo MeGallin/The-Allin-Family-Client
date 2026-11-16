@@ -1,14 +1,26 @@
 .account-menu {
   position: relative;
+  min-width: 0;
 }
 .account-menu summary {
   list-style: none;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  justify-content: flex-end;
+  gap: var(--space-1);
+  width: fit-content;
+  max-width: min(9.5rem, 34vw);
+  min-width: 4.7rem;
   min-height: var(--control-min-height);
+  padding: var(--space-2) var(--space-1);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
   cursor: pointer;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-control);
+  transition: color var(--control-transition);
 }
 .account-menu summary::-webkit-details-marker {
   display: none;
@@ -17,16 +29,38 @@
   outline: 2px solid var(--color-focus);
   outline-offset: 3px;
 }
-.account-menu__avatar {
-  display: grid;
-  place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-control);
-  background: var(--color-surface-raised);
-  color: var(--color-text);
-  font-weight: 600;
+.account-menu summary:hover,
+.account-menu[open] summary {
+  color: var(--color-accent-highlight);
+}
+.account-menu__name {
+  display: block;
+  min-width: 0;
+  max-width: 6rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--color-border-strong);
+  line-height: 1.9;
+}
+.account-menu summary:hover .account-menu__name,
+.account-menu[open] .account-menu__name {
+  border-bottom-color: currentColor;
+}
+.account-menu__person.ui-icon,
+.account-menu__chevron.ui-icon {
+  width: var(--text-md);
+  height: var(--text-md);
+  flex-shrink: 0;
+}
+.account-menu__person {
+  color: var(--color-accent-highlight);
+}
+.account-menu__chevron {
+  transition: transform var(--control-transition);
+}
+.account-menu[open] .account-menu__chevron {
+  transform: rotate(180deg);
 }
 .account-menu__popover {
   position: absolute;
@@ -34,20 +68,26 @@
   right: 0;
   top: calc(100% + var(--space-2));
   width: min(18rem, calc(100vw - 2.5rem));
-  padding: var(--space-2);
+  max-height: min(27rem, calc(100dvh - 7rem));
+  overflow-y: auto;
+  padding: var(--space-1);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-card);
   background: var(--color-surface);
   box-shadow: var(--shadow-raised);
 }
 .account-menu__identity {
+  margin: 0;
   padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
   font-size: var(--text-sm);
+  line-height: 1.45;
   color: var(--color-text-muted);
   overflow-wrap: anywhere;
 }
 .account-menu__identity strong {
   display: block;
+  margin-top: var(--space-1);
   color: var(--color-text);
 }
 .account-menu__popover a,
@@ -56,7 +96,7 @@
   align-items: center;
   gap: var(--space-3);
   width: 100%;
-  padding: var(--space-3);
+  padding: var(--space-2) var(--space-3);
   min-height: var(--control-min-height);
   border: 0;
   border-radius: var(--radius-control);
@@ -66,9 +106,23 @@
   text-decoration: none;
   font-size: var(--text-sm);
   text-align: left;
-  font-weight: 500;
+  font-weight: 550;
+}
+.account-menu__identity + a {
+  margin-top: var(--space-1);
+}
+.account-menu__popover .account-menu__signout {
+  margin-top: var(--space-1);
+  border-top: 1px solid var(--color-border);
+  border-radius: 0 0 var(--radius-control) var(--radius-control);
 }
 .account-menu__popover a:hover,
 .account-menu__popover button:hover:not(:disabled) {
   background: var(--color-accent-soft);
+}
+@media (max-width: 23rem) {
+  .account-menu summary {
+    max-width: 7.1rem;
+    font-size: var(--text-xs);
+  }
 }

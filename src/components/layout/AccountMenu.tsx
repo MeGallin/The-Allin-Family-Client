@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Grid2X2, KeyRound, LogOut, ShieldCheck, UserRound } from 'lucide-react'
+import { ChevronDown, Grid2X2, KeyRound, LogOut, ShieldCheck, UserRound } from 'lucide-react'
 import { Link } from 'react-router'
 import type { FamilyUser } from '../../types/auth'
 import { Icon } from '../ui/Icon'
@@ -38,9 +38,9 @@ export function AccountMenu({ user, onChangePassword, onLogout, loggingOut }: Pr
   return (
     <details className="account-menu" ref={ref}>
       <summary aria-label={'Account options for ' + user.familyName}>
-        <span className="account-menu__avatar">
-          {Array.from(user.familyName)[0]?.toUpperCase() || 'A'}
-        </span>
+        <Icon icon={UserRound} className="account-menu__person" />
+        <span className="account-menu__name">{user.familyName}</span>
+        <Icon icon={ChevronDown} className="account-menu__chevron" />
       </summary>
       <div className="account-menu__popover">
         <p className="account-menu__identity">
@@ -72,6 +72,7 @@ export function AccountMenu({ user, onChangePassword, onLogout, loggingOut }: Pr
         </button>
         <button
           type="button"
+          className="account-menu__signout"
           disabled={loggingOut}
           onClick={() => {
             close()
