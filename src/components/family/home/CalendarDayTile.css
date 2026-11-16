@@ -242,15 +242,6 @@
   content: attr(data-more-count);
   font-size: var(--text-caption);
 }
-.calendar-day-tile button {
-  box-shadow: none;
-}
-.calendar-day-tile button:hover:not(:disabled),
-.calendar-day-tile button:active:not(:disabled) {
-  background: transparent;
-  box-shadow: none;
-  transform: none;
-}
 @media (hover: hover) and (pointer: fine) {
   .calendar-day-tile__identity:hover,
   .calendar-day-tile__plan:hover {

@@ -136,30 +136,15 @@
   min-width: 0;
   scroll-snap-align: start;
 }
-.week-planner__scroll .horizontal-scroll__toolbar {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  flex-wrap: nowrap;
-}
 .week-planner__range {
   grid-column: 1;
   grid-row: 1;
-}
-.week-planner__scroll .horizontal-scroll__controls {
-  grid-column: 2;
-  grid-row: 1;
-  justify-self: end;
 }
 .week-planner__range-status {
   grid-column: 1 / -1;
   grid-row: 2;
 }
 @container (max-width: 36rem) {
-  .home-page .week-planner .week-planner__scroll .horizontal-scroll__toolbar {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--space-2);
-  }
   .week-planner__range {
     grid-column: 1 / -1;
     grid-row: 1;
@@ -174,14 +159,35 @@
   .week-planner__range .week-planner__apply {
     padding-inline: var(--space-2);
   }
-  .week-planner__scroll .horizontal-scroll__controls {
-    grid-column: 2;
-    grid-row: 2;
-    justify-self: end;
-  }
   .week-planner__range-status {
     grid-column: 1;
     grid-row: 2;
+  }
+}
+@media (max-width: 599px) {
+  .home-page .week-planner > .panel__header {
+    padding-block: var(--space-1);
+  }
+  .home-page .week-planner__range-caption {
+    margin-top: var(--space-1);
+    min-height: 2.7em;
+  }
+  .home-page .week-planner__scroll {
+    margin-top: var(--space-1);
+  }
+  .home-page .week-planner__range {
+    gap: var(--space-1);
+  }
+  .home-page .week-planner__range > label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .home-page .week-planner__range input {
+    width: 3.5rem;
+    padding-inline: var(--space-2);
   }
 }
 .weather-warnings-status {

@@ -16,4 +16,19 @@ describe('Wheel display safeguards', () => {
       'no meal choices available',
     )
   })
+  it('updates wheel rotation and retains the palette through a scoped stylesheet rule', () => {
+    const meals = [{ title: 'Soup' }, { title: 'Pasta' }]
+    const view = render(<DinnerWheel meals={meals} rotation={0} />)
+    const disc = view.container.querySelector('.dinner-wheel__disc')!
+    const selector = Array.from(disc.classList).find((name) => name.startsWith('nimbus-runtime-'))!
+    const rule = (document.adoptedStyleSheets ?? [])
+      .flatMap((sheet) => Array.from(sheet.cssRules))
+      .find((rule) => (rule as CSSStyleRule).selectorText.includes(selector)) as CSSStyleRule
+    expect(disc.hasAttribute('style')).toBe(false)
+    expect(rule.style.getPropertyValue('background')).toContain('--wheel-tone-1')
+    expect(rule.style.getPropertyValue('transform')).toBe('rotate(0deg)')
+    view.rerender(<DinnerWheel meals={meals} rotation={1080} />)
+    expect(rule.style.getPropertyValue('transform')).toBe('rotate(1080deg)')
+    expect(rule.style.getPropertyValue('background')).toContain('--wheel-tone-2')
+  })
 })

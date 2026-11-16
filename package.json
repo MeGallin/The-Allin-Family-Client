@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
-    "release:version": "node scripts/release-version.mjs",
+    "build": "node scripts/build-client.mjs",
     "build:deploy": "scripts\\build-deploy.cmd",
     "build:deploy:client": "scripts\\build-deploy.cmd -Mode Client",
     "build:deploy:api": "scripts\\build-deploy.cmd -Mode Api",

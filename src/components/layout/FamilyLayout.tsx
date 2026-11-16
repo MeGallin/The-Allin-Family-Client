@@ -15,6 +15,7 @@ import { PendingRemovals } from '../removals/PendingRemovals'
 import { FamilyBrand } from '../brand/FamilyBrand'
 import { FamilyFooter } from '../brand/FamilyFooter'
 import { CockatielMascot } from '../mascot/CockatielMascot'
+import { useRuntimeRule } from '../../styles/runtime-styles'
 import { activeBuiltinWidget } from '../../features/widgets/builtin-widgets'
 import './FamilyLayout.css'
 
@@ -36,6 +37,7 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
     else onLogout()
   }
   const headerRef = useRef<HTMLElement>(null)
+  const headerStyles = useRuntimeRule()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
   const location = useLocation()
   const tool =
@@ -56,22 +58,21 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
     // Keep the bird centered where possible, inside the controls' actual free gap.
     const measureSides = () => {
       const headerBounds = header.getBoundingClientRect()
-      header.style.setProperty(
-        '--family-header-mascot-start',
-        `${brand.getBoundingClientRect().right - headerBounds.left}px`,
-      )
-      header.style.setProperty(
-        '--family-header-mascot-end',
-        `${account.getBoundingClientRect().left - headerBounds.left}px`,
-      )
+      headerStyles.update({
+        '--family-header-mascot-start': `${brand.getBoundingClientRect().right - headerBounds.left}px`,
+        '--family-header-mascot-end': `${account.getBoundingClientRect().left - headerBounds.left}px`,
+      })
     }
     const observer = new ResizeObserver(measureSides)
     observer.observe(brand)
     observer.observe(account)
     observer.observe(header)
     measureSides()
-    return () => observer.disconnect()
-  }, [])
+    return () => {
+      observer.disconnect()
+      headerStyles.remove()
+    }
+  }, [headerStyles])
 
   return (
     <div
@@ -137,7 +138,7 @@ export function FamilyLayout({ user, onChangePassword, onLogout, loggingOut, err
         </div>
       </aside>
       <div className="family-layout__workspace">
-        <header ref={headerRef} className="family-layout__header">
+        <header ref={headerRef} className={'family-layout__header ' + headerStyles.className}>
           <Link to="/" className="family-brand" aria-label="The Allin Family home">
             <FamilyBrand />
           </Link>

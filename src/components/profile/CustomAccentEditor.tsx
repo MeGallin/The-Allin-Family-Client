@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type PointerEvent } from 'react'
+import { useRuntimeStyles } from '../../styles/runtime-styles'
 import { normalizeHex } from '../../features/appearance/accent-options'
+import { readAccentPalette } from '../../features/appearance/accent-palette'
 import {
   customAccentTokens,
   hexToHsv,
@@ -24,7 +26,14 @@ export function CustomAccentEditor({ id, initialHex, savedChanged, onApply, onCa
   const input = useRef<HTMLInputElement>(null)
   const hex = normalizeHex(hexInput)
   const previewHex = hex ?? hsvToHex(hsv)
-  const tokens = customAccentTokens(previewHex)
+  const [palette] = useState(readAccentPalette)
+  const tokens = customAccentTokens(previewHex, palette)
+  const areaClass = useRuntimeStyles({
+    '--picker-hue': String(hsv.h),
+    '--picker-x': `${hsv.s}%`,
+    '--picker-y': `${100 - hsv.v}%`,
+  })
+  const sampleClass = useRuntimeStyles(tokens)
   const guard = useDraftGuard((hex ?? hexInput) !== initial)
   useEffect(() => {
     input.current?.focus()
@@ -66,15 +75,8 @@ export function CustomAccentEditor({ id, initialHex, savedChanged, onApply, onCa
         <div>
           <p className="note">Colour area · drag or touch to tune</p>
           <div
-            className="custom-accent__area"
+            className={'custom-accent__area ' + areaClass}
             aria-hidden="true"
-            style={
-              {
-                '--picker-hue': hsv.h,
-                '--picker-x': `${hsv.s}%`,
-                '--picker-y': `${100 - hsv.v}%`,
-              } as CSSProperties
-            }
             onPointerDown={(event) => {
               if (!event.isPrimary || event.button !== 0) return
               event.currentTarget.setPointerCapture(event.pointerId)
@@ -151,8 +153,7 @@ export function CustomAccentEditor({ id, initialHex, savedChanged, onApply, onCa
           : 'Enter a valid HEX colour, such as #345678.'}
       </p>
       <div
-        className="custom-accent__sample"
-        style={tokens as CSSProperties}
+        className={'custom-accent__sample ' + sampleClass}
         role="img"
         aria-label={`Draft preview ${previewHex}: Allin mark, selected Profile tab and example action button`}
       >

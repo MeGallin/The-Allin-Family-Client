@@ -25,9 +25,11 @@ export type CalendarIndicator = {
 export function IndicatorStrip({
   indicators,
   dayLabel,
+  quiet = false,
 }: {
   indicators: readonly CalendarIndicator[]
   dayLabel: string
+  quiet?: boolean
 }) {
   const [view, setView] = useState<{ id: string } | 'all' | null>(null)
   const ordered = [...indicators].sort(
@@ -38,7 +40,10 @@ export function IndicatorStrip({
   const selected =
     typeof view === 'object' && view ? ordered.find((item) => item.id === view.id) : undefined
   return (
-    <div className="indicator-strip" aria-label={'Indicators for ' + dayLabel}>
+    <div
+      className={'indicator-strip' + (quiet ? ' button-quiet-scope' : '')}
+      aria-label={'Indicators for ' + dayLabel}
+    >
       {visible.map((item) => (
         <button
           key={item.id}

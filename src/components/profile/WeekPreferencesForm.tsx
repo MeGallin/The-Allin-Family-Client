@@ -93,7 +93,7 @@ function PreferenceEditor({ preferences }: { preferences: WeekPreferences }) {
     }
   }
   return (
-    <form className="week-preferences" onSubmit={submit}>
+    <form className="week-preferences profile-form" onSubmit={submit}>
       <fieldset className="preference-group" disabled={mutation.isLoading}>
         <legend>Weather forecast</legend>
         <div className="week-preferences__current">

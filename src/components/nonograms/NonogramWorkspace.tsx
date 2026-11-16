@@ -289,7 +289,7 @@ function Board({ initial, game }: { initial: NonogramGame; game: Controller }) {
       >
         <div
           className={'nonogram-board' + (enlarged ? ' nonogram-board--enlarged' : '')}
-          style={{ '--nonogram-size': n } as React.CSSProperties}
+          data-size={n}
           role="group"
           aria-label={`${n} by ${n} Nonograms. Arrow keys move; Space applies mode, X marks empty, Delete clears.`}
         >
@@ -327,7 +327,7 @@ function Board({ initial, game }: { initial: NonogramGame; game: Controller }) {
                       else controls.current.delete(i)
                     }}
                     className={
-                      'nonogram-cell nonogram-cell--' +
+                      'button-quiet nonogram-cell nonogram-cell--' +
                       v +
                       (c === 4 && n === 10 ? ' nonogram-cell--divider-right' : '') +
                       (r === 4 && n === 10 ? ' nonogram-cell--divider-bottom' : '')

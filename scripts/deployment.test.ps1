@@ -19,6 +19,7 @@ function Fixture([string] $Name) {
         Set-Content -LiteralPath (Join-Path $root $relative) -Value $relative -Encoding ASCII
     }
     Set-Content -LiteralPath (Join-Path $root 'client/src/app-version.json') -Value '{"version":"0.20"}' -Encoding ASCII
+    Set-Content -LiteralPath (Join-Path $root 'client/dist/client-version.json') -Value '{"version":"0.20"}' -Encoding ASCII
     return @{
         ClientRoot = Join-Path $root 'client'
         ApiRoot = Join-Path $root 'api'

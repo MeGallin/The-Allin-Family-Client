@@ -9,6 +9,7 @@ type Props = {
   className?: string
   toolbar?: ReactNode
   toolbarStatus?: ReactNode
+  toolbarLayout?: 'default' | 'calendar'
 }
 
 /** Native touch/trackpad scrolling with optional controls, independent of its content. */
@@ -18,6 +19,7 @@ export function HorizontalScroll({
   className = '',
   toolbar,
   toolbarStatus,
+  toolbarLayout = 'default',
 }: Props) {
   const id = useId()
   const viewport = useRef<HTMLDivElement>(null)
@@ -49,7 +51,13 @@ export function HorizontalScroll({
   }
   const overflowing = edges.previous || edges.next
   return (
-    <div className={'horizontal-scroll ' + className}>
+    <div
+      className={
+        'horizontal-scroll ' +
+        className +
+        (toolbarLayout === 'calendar' ? ' horizontal-scroll--calendar' : '')
+      }
+    >
       {(toolbar || toolbarStatus || overflowing) && (
         <div className="horizontal-scroll__toolbar">
           {toolbar}

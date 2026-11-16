@@ -5,7 +5,8 @@
   padding: var(--space-3);
 }
 .memory-photo-viewer .modal__header h2 {
-  font-size: var(--text-base);
+  /* The former unresolved variable inherited the dialog's body size. */
+  font-size: inherit;
   overflow-wrap: anywhere;
 }
 .memory-photo-viewer .modal__header > button {

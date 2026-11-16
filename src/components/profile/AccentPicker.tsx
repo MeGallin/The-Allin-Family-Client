@@ -1,19 +1,22 @@
-import { useId, useRef, useState, type CSSProperties } from 'react'
+import { useId, useRef, useState } from 'react'
 import { Check } from 'lucide-react'
 import { Icon } from '../ui/Icon'
 import { ACCENT_CHOICES, accentKey } from '../../features/appearance/accent-options'
 import { useAccentPreference } from '../../features/appearance/useAppearance'
 import { CustomAccentEditor } from './CustomAccentEditor'
 import './AccentPicker.css'
-export function AccentPicker() {
+export function AccentPicker({ compact = false }: { compact?: boolean }) {
   const preference = useAccentPreference()
-  return <AccentPickerChoices key={preference.ownerId ?? 'browser'} {...preference} />
+  return (
+    <AccentPickerChoices key={preference.ownerId ?? 'browser'} {...preference} compact={compact} />
+  )
 }
 function AccentPickerChoices({
   accent,
   persisted,
   choose,
-}: ReturnType<typeof useAccentPreference>) {
+  compact,
+}: ReturnType<typeof useAccentPreference> & { compact: boolean }) {
   const id = useId()
   const [editing, setEditing] = useState<{ initialHex: string; savedKey: string } | null>(null)
   const trigger = useRef<HTMLButtonElement>(null)
@@ -26,7 +29,10 @@ function AccentPickerChoices({
     trigger.current?.focus()
   }
   return (
-    <fieldset className="accent-picker" aria-describedby={id + '-help'}>
+    <fieldset
+      className={'accent-picker' + (compact ? ' accent-picker--compact' : '')}
+      aria-describedby={id + '-help'}
+    >
       <legend>Accent colour</legend>
       <p className="note" id={id + '-help'}>
         A little more you. Choose a highlight colour, remembered for your account in this browser.
@@ -36,7 +42,7 @@ function AccentPickerChoices({
           <label
             key={choice.id}
             className={'accent-picker__choice' + (choice.id === accent ? ' is-selected' : '')}
-            style={{ '--choice-colour': `var(--accent-${choice.id})` } as CSSProperties}
+            data-choice={choice.id}
           >
             <input
               type="radio"

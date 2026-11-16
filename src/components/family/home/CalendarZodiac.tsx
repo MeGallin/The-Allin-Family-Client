@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { format } from 'date-fns'
 import { zodiacForDate } from '../../../lib/zodiac'
 import { ZodiacIcon } from './ZodiacIcon'
+import { useRuntimeRule } from '../../../styles/runtime-styles'
 import './CalendarZodiac.css'
 
 /** Native top-layer disclosure stays outside the calendar scroller's clipping. */
@@ -11,6 +12,7 @@ export function CalendarZodiac({ date }: { date: Date }) {
   const id = useId()
   const trigger = useRef<HTMLButtonElement>(null)
   const popup = useRef<HTMLDivElement>(null)
+  const popupStyle = useRuntimeRule()
   const openedAt = useRef<{ left: number; top: number } | null>(null)
   const [open, setOpen] = useState(false)
   useEffect(() => {
@@ -35,7 +37,7 @@ export function CalendarZodiac({ date }: { date: Date }) {
       <button
         ref={trigger}
         type="button"
-        className="calendar-zodiac"
+        className="button-quiet calendar-zodiac"
         aria-label={`${sign.name}, ${sign.range}, for ${dayLabel}`}
         aria-expanded={open}
         aria-controls={id}
@@ -44,11 +46,12 @@ export function CalendarZodiac({ date }: { date: Date }) {
         onClick={() => {
           const rect = trigger.current!.getBoundingClientRect()
           openedAt.current = { left: rect.left, top: rect.top }
-          const element = popup.current!
-          element.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - 248))}px`
           const above = rect.top >= 96
-          element.style.top = above ? 'auto' : `${rect.bottom + 8}px`
-          element.style.bottom = above ? `${window.innerHeight - rect.top + 8}px` : 'auto'
+          popupStyle.update({
+            left: `${Math.max(8, Math.min(rect.left, window.innerWidth - 248))}px`,
+            top: above ? 'auto' : `${rect.bottom + 8}px`,
+            bottom: above ? `${window.innerHeight - rect.top + 8}px` : 'auto',
+          })
         }}
       >
         <ZodiacIcon sign={sign.id} />
@@ -57,7 +60,7 @@ export function CalendarZodiac({ date }: { date: Date }) {
         ref={popup}
         id={id}
         popover="auto"
-        className="calendar-zodiac__popover"
+        className={'calendar-zodiac__popover ' + popupStyle.className}
         onToggle={(event) => setOpen(event.newState === 'open')}
       >
         <strong>{sign.name}</strong>

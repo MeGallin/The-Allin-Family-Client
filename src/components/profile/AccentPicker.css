@@ -161,3 +161,42 @@
     color: Highlight;
   }
 }
+.accent-picker.accent-picker--compact {
+  --swatch-size: 2.5rem;
+}
+.accent-picker--compact.accent-picker legend {
+  font-size: var(--text-xs);
+  font-weight: 550;
+  color: var(--color-text-muted);
+}
+.accent-picker--compact.accent-picker .note {
+  font-size: var(--text-xs);
+}
+.accent-picker--compact .accent-picker__label {
+  font-size: var(--text-caption);
+}
+.accent-picker--compact .accent-picker__choices {
+  padding-top: var(--space-5);
+}
+.accent-picker--compact .accent-picker__feedback {
+  border: 0;
+  padding: 0;
+}
+.accent-picker__choice[data-choice='cyan'] {
+  --choice-colour: var(--accent-cyan);
+}
+.accent-picker__choice[data-choice='orange'] {
+  --choice-colour: var(--accent-orange);
+}
+.accent-picker__choice[data-choice='gold'] {
+  --choice-colour: var(--accent-gold);
+}
+.accent-picker__choice[data-choice='purple'] {
+  --choice-colour: var(--accent-purple);
+}
+.accent-picker__choice[data-choice='pink'] {
+  --choice-colour: var(--accent-pink);
+}
+.accent-picker__choice[data-choice='green'] {
+  --choice-colour: var(--accent-green);
+}

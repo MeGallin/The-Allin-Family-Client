@@ -31,13 +31,10 @@ export function FamilyBrand({ variant = 'wordmark', size = 'medium' }: Props) {
             y="21"
             width="150"
             height="165"
-            style={{ maskType: 'luminance' }}
+            className="family-logo__crossbar-mask"
           >
             <rect x="25" y="21" width="150" height="165" fill="white" />
-            <path
-              d="M72 114c18-7 39-9 57-4l7 16c-21-6-43-3-69 8l5-20Z"
-              fill="black"
-            />
+            <path d="M72 114c18-7 39-9 57-4l7 16c-21-6-43-3-69 8l5-20Z" fill="black" />
           </mask>
         </defs>
         <path

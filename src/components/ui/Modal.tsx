@@ -3,10 +3,6 @@ import { X } from 'lucide-react'
 import { Icon } from './Icon'
 import './Modal.css'
 
-// Nested confirmations share a scroll lock, independent of unmount order.
-let openDialogs = 0
-let savedOverflow = ''
-
 export function Modal({
   title,
   onClose,
@@ -38,13 +34,8 @@ export function Modal({
     )
     dialog.showModal()
     dialog.querySelector<HTMLElement>('[data-modal-autofocus], input, textarea')?.focus()
-    if (openDialogs++ === 0) {
-      savedOverflow = document.body.style.overflow
-      document.body.style.overflow = 'hidden'
-    }
     return () => {
       dialog.close()
-      if (--openDialogs === 0) document.body.style.overflow = savedOverflow
       // A newly scheduled removal replaces its trigger with the shared Undo control.
       const newUndo = Array.from(
         document.querySelectorAll<HTMLButtonElement>('button[data-removal]'),

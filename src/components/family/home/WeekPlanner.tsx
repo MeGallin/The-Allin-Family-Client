@@ -129,6 +129,7 @@ export function WeekPlanner() {
         ) : (
           <>
             <HorizontalScroll
+              toolbarLayout="calendar"
               label="Week Ahead calendar"
               className="week-planner__scroll"
               toolbar={

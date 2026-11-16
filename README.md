@@ -507,47 +507,39 @@ is not included in a production build.
 
 ### Prepare the Windows upload folder
 
-#### App release version (client, API or both)
+#### Automatic client build version
 
-The single canonical release label is `src/app-version.json`, initially `0.1`.
-Labels increase by exactly 0.05: `0.1` → `0.15` → `0.20` → `0.25`.
-They are decimal strings, not semantic versions; trailing zeroes are retained.
-The npm package version is separate tooling metadata.
+`src/app-version.json` records the latest successful **client build**. Every
+successful `npm run build` advances it by exactly 0.05, using integer hundredths:
+`0.15` → `0.20` → `0.25`. Rebuilding successfully advances again; a failed typecheck
+or Vite build does not advance it. The npm package version is separate metadata.
+Dev-server runs do not increment. Do not manually pre-bump; `release:version` and
+its old setter have been retired.
 
-Before the first release of this feature, retain `0.1` and release both the client
-and API so the footer and public version endpoint are installed. For each later
-production release, explicitly set the next target **once before committing and
-packaging**, from this client checkout:
+`scripts/build-client.mjs` locks the build, calculates the candidate, typechecks,
+and passes that candidate to Vite. Vite embeds it in the client and writes a matching
+`dist/client-version.json` validation manifest. Only after successful output checks
+does the wrapper atomically update the source JSON, retaining other metadata fields.
+Direct `vite build` is guarded: use `npm run build`, optionally with `-- --base=/`.
+Alternate config/output/define CLI overrides are rejected to preserve output identity.
+An interrupted process may leave `.client-build.lock`; confirm the process is stopped
+before manually removing that lock. Do not reset the version.
 
-```powershell
-npm run release:version -- 0.15
-```
+Client-only and full package commands call this same build once. API-only packaging
+never builds the client or increments its version. A successful client build keeps
+its increment even if later package validation fails. Packaging checks the post-build
+metadata against the built manifest and verifies neither changes while copying.
+API/full packages may still carry existing `api/release.json` compatibility metadata;
+it no longer controls the frontend footer and requires no client bump on API-only work.
 
-The command accepts the current label again (no write) or exactly the next +0.05
-label; use `0.20` for the following release. Retrying the same command and rebuilding
-any package never advances it again. Ordinary dev/build commands never increment.
-Version changes are release work and require the usual explicit authorization.
-Do not bump for a failed build/upload retry or an ordinary development build.
-
-These are separate repositories: every release, including API-only, must include
-the canonical client metadata change in an approved client-repository commit as
-well as any API/runtime commit. Keep both sibling checkouts at the approved release
-revisions when packaging. Client-only releases need no API metadata commit/upload;
-API-only releases need no client build/upload. The client imports the source label;
-API/full packaging copies that same JSON to generated `api/release.json` without
-changing the API source checkout. Upload `api/release.json`
-with the approved API runtime (after dependencies, before `api/index.php`); preserve
-the production environment and private data as usual.
-
-The shared footer shows the newer of its bundled label and public `GET /api/version`.
-It checks on mount, window focus and every five minutes, using a bounded read with
-no cache. Thus a new API-only release advances an already-installed footer, and a
-client-only release still displays its newer bundled label against an older API.
-Offline/unavailable/older APIs retain the bundled or last successfully read label.
-This is the latest known app release label, not a claim that client/API bytes are
-identical versions. It does not detect FileZilla completion. Reverting a release
-needs a separately approved plan; the footer intentionally never goes backwards
-during a mounted visit. Manually confirm the label after the authorized upload.
+The footer displays only its **bundled frontend version**, with no API/version fetch,
+timer or focus refresh. The dev server displays the last successful source label.
+The validation manifest is local build/package metadata, not a runtime dependency:
+client upload remains the complete `assets/` folder followed by `index.html` last.
+No extra manifest upload is required. Existing production `.htaccess`, API files and
+private data remain untouched during client-only uploads. Refresh the actual site
+after an authorised upload to verify the new bundle's label; the label identifies
+the loaded frontend, not completion of FileZilla or an API-only update.
 
 All three commands below prepare the same local upload folder:
 `C:\xampp\htdocs\WebSitesDesigns\live\theallinfamily`. The mode selects its
@@ -1131,6 +1123,77 @@ Home leads with the existing horizontal calendar. Its next-event/birthday column
 - `components/ui/Panel.tsx` provides a labelled section with a header/action. Its default `surface` variant uses the shared recipe. Use `variant="plain"` only inside an existing surface, as Home does, to avoid duplicate framing.
 - `components/ui/ContentSurface.tsx` wraps collections that already have their own headings/controls. It uses the same recipe and adds stacked spacing; it has no data or business logic.
 - Domain components retain their own rendering and behaviour. Sticky notes, photos and charts keep their specialised styles. History follows primary content on mobile. A lone photo memory pairs its image and story only on wide screens.
+
+Style ownership refinements preserve the current design and breakpoints:
+
+- `styles/patterns.css` provides opt-in `button-quiet` interactions, with an explicit
+  `button-quiet-scope` for composed provider content. Owners retain their own base
+  colours, geometry and focus rules. Calendar controls opt in directly; its forecast
+  slot and quiet IndicatorStrip preserve existing nested dialog controls. Nonogram
+  cells use the recipe without normal-state `!important` overrides, retaining their
+  square cells, filled shadows, focus and existing active movement.
+- `WeekPlanner.css` owns the Home calendar's internal mobile rules;
+  `HorizontalScroll` owns its `toolbarLayout="calendar"` toolbar variant. The
+  `max-width: 599px` viewport and `36rem` container rules keep their separate jobs.
+  Home's approved flat backgrounds and full desktop width remain unchanged.
+- `AccentPicker compact` owns the Profile swatch/label presentation. Tabs owns its
+  `presentation="profile"` and optional item emphasis instead of an ID-suffix
+  selector. `profile-form` is the shared settings form layout recipe; each form
+  owns its feedback and internal spacing. ProfileSection retains generic section
+  composition and contextual typography, without naming its child forms.
+- Daily Word uses `--radius-control` in place of equal literal fallbacks.
+  Nonogram board/completion corners intentionally stay square (`0`), matching the
+  former unresolved radius declarations. Photo-viewer title size explicitly
+  inherits the dialog body size, matching its former unresolved type declaration.
+- Base contrast colours have one source in `styles/tokens.css`: `--color-surface`,
+  `--color-surface-raised` and immutable `--color-action-ink`. The single DOM boundary
+  `features/appearance/accent-palette.ts` samples these roles for both theme application
+  and draft preview. `customAccentTokens` remains pure and requires this palette as
+  input; it no longer embeds duplicate navy colours. The generated action-text role
+  never feeds back into palette sampling. Base roles accept opaque HEX/RGB/RGBA
+  syntax; missing/translucent/unsupported colours fail explicitly rather than using
+  stale fallback assumptions. Presets, custom-choice storage, anonymous sign-in
+  branding and the draft-only preview/apply flow retain their existing behavior.
+
+### No inline styles — first-party production rule
+
+Do not create first-party style attributes: no JSX `style` props, `HTMLElement.style`
+mutations, `cssText`, `setAttribute('style', ...)`, style objects passed through
+vendor `wrapperStyle`/`contentStyle`-type props, or embedded/injected `<style>` tags.
+Static and finite presentation belongs in colocated CSS, classes and data attributes.
+SVG presentation/geometry attributes such as `fill`, `transform` and `viewBox` remain
+appropriate for artwork; this rule concerns CSS style attributes, not inline SVG.
+
+Genuinely continuous values use **only** `styles/runtime-styles.ts`: one constructed
+CSS stylesheet adopted by the document, with per-instance rules and explicit cleanup.
+This audited boundary writes `CSSStyleRule.style` declarations, never element styles
+or style tags. It validates an explicit property allowlist and values before writes,
+generates selectors from encoded React IDs, updates existing rules without rebuilding
+the sheet, and releases rules on unmount. React-scoped rules install before layout;
+measured header/popup geometry updates synchronously through their owned rule.
+Custom root accents use the same boundary and immutable palette sampling. Current
+dynamic consumers are wheel rotation/segments, picker HSV/preview, header free space,
+chart height, zodiac popup position and custom theme roles.
+
+The [constructed stylesheet API](https://developer.mozilla.org/en-US/docs/Web/API/Document/adoptedStyleSheets)
+is supported across current browsers (Baseline March 2023); declarations use the
+[CSSOM rule API](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/insertRule).
+No fallback writes inline attributes or injects style tags. Modal page-scroll locking
+uses `body:has(dialog.modal[open])`, preserving nested dialogs without DOM style writes.
+
+`styles/no-inline-styles.test.ts` scans first-party production TS/TSX/JS, source/public
+HTML/SVG and the root HTML entry. Its conservative source-pattern checks reject JSX
+and spread style objects, element-style access, style attributes/tags, vendor style
+props and extra stylesheet writers. Negative examples/test-only CSS fixtures are
+excluded as tests, not production exceptions. The sole CSSOM allowance is the typed
+`rule.style` writer in `runtime-styles.ts`; even that file may not write element styles.
+This is a regression guard, not a complete JavaScript taint analyser.
+
+Recharts generates its own runtime wrapper/tooltip styles inside the dependency.
+Those third-party internals remain a documented limitation; first-party style props
+were removed, but this is **not** a claim that every rendered DOM node has no style
+attribute. Do not edit `node_modules` or generated bundles to hide vendor behavior.
+Evaluate a library replacement separately if a future requirement bans vendor styles.
 
 This styling release changes no API, database schema, permissions or saved family content. Deploy with `npm run build:deploy:client`; upload only that package into the site root, preserving remote `api/` and private server storage. Shared Panel regression coverage includes both surface and plain variants.
 

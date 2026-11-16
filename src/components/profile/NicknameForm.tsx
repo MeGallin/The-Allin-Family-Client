@@ -42,7 +42,7 @@ export function NicknameForm({ profile, admin = false }: { profile: FamilyUser; 
     }
   }
   return (
-    <form className="nickname-form" onSubmit={submit}>
+    <form className="nickname-form profile-form" onSubmit={submit}>
       <label htmlFor={id}>Nickname</label>
       <input
         id={id}

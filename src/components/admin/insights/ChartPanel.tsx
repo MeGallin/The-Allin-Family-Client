@@ -34,7 +34,7 @@ export function ActivityLegend({ showSignins = false }: { showSignins?: boolean 
     <ul className="chart-legend" aria-label="Chart legend">
       {activitySeries.map((series) => (
         <li key={series.key}>
-          <span style={{ background: series.color }} />
+          <span data-series={series.key} />
           {series.label}
         </li>
       ))}

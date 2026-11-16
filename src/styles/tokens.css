@@ -16,7 +16,9 @@
   --color-text: #f4f9ff;
   --color-text-muted: #b2c4da;
   --color-text-on-dark: #f4f9ff;
-  --color-text-on-action: #041925;
+  /* Immutable base ink is sampled by the custom-accent contrast boundary. */
+  --color-action-ink: #041925;
+  --color-text-on-action: var(--color-action-ink);
   --color-border: #293c56;
   --color-border-strong: #5b7595;
   --color-accent: var(--accent-cyan);

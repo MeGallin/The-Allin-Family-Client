@@ -10,6 +10,7 @@ import {
 import type { InsightCounts } from '../../../features/insights/types'
 import { activitySeries } from '../../../features/insights/chart-config'
 import { ChartTooltip } from './ChartTooltip'
+import { useRuntimeStyles } from '../../../styles/runtime-styles'
 
 export function StackedActivityChart({
   data,
@@ -24,8 +25,9 @@ export function StackedActivityChart({
   height?: number
   fullLabels?: boolean
 }) {
+  const frameClass = useRuntimeStyles({ height: `${height}px` })
   return (
-    <div className="chart-frame" style={{ height }}>
+    <div className={'chart-frame ' + frameClass}>
       <ResponsiveContainer width="100%" height="100%" minWidth={0}>
         <BarChart
           aria-label={label}

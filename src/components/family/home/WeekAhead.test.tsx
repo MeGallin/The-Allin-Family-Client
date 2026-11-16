@@ -171,20 +171,18 @@ beforeEach(() => {
 describe('Week Ahead dashboard', () => {
   it('requires explicit valid Apply or Enter, clears reverted pending and disables after URL acceptance', async () => {
     show(<WeekPlanner />)
-    const input = screen.getByLabelText(/Days to show/)
+    const input = screen.getByLabelText(/day view — number of days/)
     expect((screen.getByRole('button', { name: 'Apply days' }) as HTMLButtonElement).disabled).toBe(
       true,
     )
     fireEvent.change(input, { target: { value: '14' } })
     expect(screen.getByRole('list', { name: 'Next 7 days' })).toBeTruthy()
-    expect(screen.getByText('14 days selected · Apply to update')).toBeTruthy()
+    expect(screen.getByText('Preview range')).toBeTruthy()
     expect(
-      screen
-        .getByRole('button', { name: 'Apply 14 days' })
-        .classList.contains('week-planner__apply--pending'),
-    ).toBe(true)
+      (screen.getByRole('button', { name: 'Apply 14 days' }) as HTMLButtonElement).disabled,
+    ).toBe(false)
     fireEvent.change(input, { target: { value: '7' } })
-    expect(screen.queryByText(/selected · Apply/)).toBeNull()
+    expect(screen.queryByText('Preview range')).toBeNull()
     expect((screen.getByRole('button', { name: 'Apply days' }) as HTMLButtonElement).disabled).toBe(
       true,
     )
@@ -200,7 +198,7 @@ describe('Week Ahead dashboard', () => {
     fireEvent.change(input, { target: { value: '14' } })
     await act(async () => fireEvent.submit(input.closest('form')!))
     expect(screen.getByRole('list', { name: 'Next 14 days' })).toBeTruthy()
-    expect(screen.getByText(/Range applied/)).toBeTruthy()
+    expect(screen.getByText('Calendar window')).toBeTruthy()
     expect((screen.getByRole('button', { name: 'Apply days' }) as HTMLButtonElement).disabled).toBe(
       true,
     )
@@ -215,11 +213,14 @@ describe('Week Ahead dashboard', () => {
     state.events = [today, event('30', 'Yesterday', '2026-10-24T00:00:00Z')]
     show(<WeekPlanner />)
     expect(
-      screen.getByRole('button', { name: 'View 1 plan for Sunday 25 October' }).textContent,
+      screen.getByRole('button', { name: 'Andie at con. View plan. 1 plan for Sunday 25 October' })
+        .textContent,
     ).toContain('Andie at con')
     expectCalendarSummary(1, 0)
     expect(screen.getByText('A little breathing room.')).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'View 1 plan for Sunday 25 October' }))
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Andie at con. View plan. 1 plan for Sunday 25 October' }),
+    )
     const dialog = screen.getByRole('dialog', { name: 'Plans for Sunday 25 October' })
     expect(within(dialog).getByText('After lunch')).toBeTruthy()
     expect(within(dialog).getByText('12:00')).toBeTruthy()
@@ -267,7 +268,7 @@ describe('Week Ahead dashboard', () => {
   })
   it('changes to four days from today, then 360 days across the year boundary', async () => {
     show(<WeekPlanner />)
-    const input = screen.getByLabelText(/Days to show/)
+    const input = screen.getByLabelText(/day view — number of days/)
     fireEvent.change(input, { target: { value: '4' } })
     await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Apply 4 days' })))
     expect(
@@ -275,7 +276,9 @@ describe('Week Ahead dashboard', () => {
         name: /\. Add a plan\.$/,
       }),
     ).toHaveLength(4)
-    fireEvent.change(screen.getByLabelText(/Days to show/), { target: { value: '360' } })
+    fireEvent.change(screen.getByLabelText(/day view — number of days/), {
+      target: { value: '360' },
+    })
     await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Apply 360 days' })))
     const links = within(screen.getByRole('list', { name: 'Next 360 days' })).getAllByRole('link', {
       name: /\. Add a plan\.$/,
@@ -353,7 +356,7 @@ describe('Week Ahead dashboard', () => {
     })
     expect(saturday.getAttribute('href')).toBe('/calendar?compose=event&date=2026-10-24')
     const planSummary = within(days).getByRole('button', {
-      name: 'View 2 plans for Saturday 24 October',
+      name: 'Andie at con. View all. 2 plans for Saturday 24 October',
     })
     expect(planSummary.textContent).toContain('Andie at con')
     expect(planSummary.textContent).toContain('2 plans · View all')

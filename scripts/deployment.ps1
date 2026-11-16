@@ -100,14 +100,9 @@ function Invoke-FamilyDeployment {
         }
     }
     Assert-OrdinaryPath $target
-    # Every mode uses one release source, even when no client build is needed.
+    # API-only reads this source; a client build advances it before packaging.
     $releasePath = Join-Path $client 'src/app-version.json'
     Assert-OrdinaryPath $releasePath
-    $releaseHash = Get-DeployHash $releasePath
-    $release = Get-Content -LiteralPath $releasePath -Raw | ConvertFrom-Json
-    if ($release.version -isnot [string] -or $release.version -cnotmatch '^(0|[1-9]\d*)\.\d{1,2}$') {
-        throw 'Invalid app release version in client/src/app-version.json.'
-    }
     if ($includeClient) { Assert-OrdinaryPath $client }
     if ($includeApi) { Assert-OrdinaryPath $api }
     if (-not (Test-Path -LiteralPath $parent -PathType Container)) { throw "Live parent folder does not exist: $parent" }
@@ -129,12 +124,26 @@ function Invoke-FamilyDeployment {
         if ($includeClient) {
             & $Build
             $dist = Join-Path $client 'dist'
-            foreach ($required in @('index.html', '.htaccess')) {
+            foreach ($required in @('index.html', '.htaccess', 'client-version.json')) {
                 if (-not (Test-Path -LiteralPath (Join-Path $dist $required) -PathType Leaf)) { throw "Build output missing $required" }
             }
             if (-not (Test-Path -LiteralPath (Join-Path $dist 'assets') -PathType Container)) { throw 'Build assets are missing.' }
             if (Test-Path -LiteralPath (Join-Path $dist 'api')) { throw 'Client build must not contain an api entry.' }
             $runtimeRoots += $dist
+        }
+        $releaseHash = Get-DeployHash $releasePath
+        $release = Get-Content -LiteralPath $releasePath -Raw | ConvertFrom-Json
+        if ($release.version -isnot [string] -or $release.version -cnotmatch '^(0|[1-9]\d*)\.\d{1,2}$') {
+            throw 'Invalid app release version in client/src/app-version.json.'
+        }
+        if ($includeClient) {
+            $builtReleasePath = Join-Path $dist 'client-version.json'
+            Assert-OrdinaryPath $builtReleasePath
+            $builtReleaseHash = Get-DeployHash $builtReleasePath
+            $builtRelease = Get-Content -LiteralPath $builtReleasePath -Raw | ConvertFrom-Json
+            if ($builtRelease.version -isnot [string] -or $builtRelease.version -cne $release.version) {
+                throw 'Built client version does not match src/app-version.json. Rebuild the client.'
+            }
         }
         if ($includeApi) {
             foreach ($required in @('index.php', '.htaccess', '.env.example', 'src/bootstrap.php')) {
@@ -157,6 +166,8 @@ function Invoke-FamilyDeployment {
         if ($includeClient) {
             foreach ($file in Get-ChildItem -LiteralPath $dist -Recurse -Force -File) {
                 $relative = $file.FullName.Substring($dist.Length + 1)
+                # Local validation metadata is not part of the client upload payload.
+                if ($relative -ceq 'client-version.json') { continue }
                 if ($relative -match '(^|[\\/])(\.env[^\\/]*|\.git|node_modules)([\\/]|$)' -or $file.Extension -eq '.map') {
                     throw "Unexpected development file in build: $relative"
                 }
@@ -185,6 +196,9 @@ function Invoke-FamilyDeployment {
         }
         if ((Get-DeployHash $releasePath) -ne $releaseHash) {
             throw 'App release changed during packaging. Retry with the approved release source.'
+        }
+        if ($includeClient -and (Get-DeployHash $builtReleasePath) -ne $builtReleaseHash) {
+            throw 'Built client version changed during packaging. Rebuild the client.'
         }
         Write-Host "App release: $($release.version)"
         # The destination is disposable. No previous-package copy or rollback.

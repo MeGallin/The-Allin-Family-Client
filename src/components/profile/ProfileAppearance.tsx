@@ -16,7 +16,7 @@ export function ProfileAppearance({ name }: { name: string }) {
         </span>
       </div>
       <h3>Make it yours.</h3>
-      <AccentPicker />
+      <AccentPicker compact />
       <p className="profile-appearance__scope">
         <Icon icon={Palette} />
         Your highlight is personal to this account in this browser.

@@ -104,3 +104,15 @@
     grid-column: 1 / -1;
   }
 }
+.chart-legend [data-series='created'] {
+  background: var(--chart-created);
+}
+.chart-legend [data-series='updated'] {
+  background: var(--chart-updated);
+}
+.chart-legend [data-series='responded'] {
+  background: var(--chart-responded);
+}
+.chart-legend [data-series='removed'] {
+  background: var(--chart-removed);
+}

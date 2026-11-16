@@ -22,6 +22,7 @@ const sections = [
   },
   {
     id: 'appearance',
+    emphasis: true,
     label: 'Appearance',
     icon: Palette,
     title: 'Your finishing touch',
@@ -54,6 +55,7 @@ export default function ProfilePage() {
       <div className="profile-studio">
         <ProfileIdentity user={user} />
         <Tabs
+          presentation="profile"
           items={sections}
           value={section.id}
           label="Profile sections"

@@ -1,6 +1,7 @@
 import { Utensils } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { Icon } from '../ui/Icon'
+import { useRuntimeStyles } from '../../styles/runtime-styles'
 import './DinnerWheel.css'
 
 export function DinnerWheel({
@@ -44,6 +45,10 @@ export function DinnerWheel({
       )
       .join(',') +
     ')'
+  const discClass = useRuntimeStyles({
+    background: meals.length ? background : 'var(--color-surface-muted)',
+    transform: `rotate(${rotation}deg)`,
+  })
   return (
     <div
       className={'dinner-wheel' + (compact ? ' dinner-wheel--compact' : '')}
@@ -55,13 +60,7 @@ export function DinnerWheel({
       }
     >
       <span className="dinner-wheel__pointer" />
-      <div
-        className="dinner-wheel__disc"
-        style={{
-          background: meals.length ? background : 'var(--color-surface-muted)',
-          transform: `rotate(${rotation}deg)`,
-        }}
-      >
+      <div className={'dinner-wheel__disc ' + discClass}>
         {!compact && (
           <svg
             ref={labels}

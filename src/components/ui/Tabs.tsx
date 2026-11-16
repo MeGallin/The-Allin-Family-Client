@@ -3,7 +3,7 @@ import type { LucideIcon } from 'lucide-react'
 import { Icon } from './Icon'
 import './Tabs.css'
 
-export type TabItem = { id: string; label: string; icon?: LucideIcon }
+export type TabItem = { id: string; label: string; icon?: LucideIcon; emphasis?: boolean }
 
 /** Manual activation separates arrow-key navigation from leaving an unsaved form. */
 export function Tabs({
@@ -12,12 +12,14 @@ export function Tabs({
   onChange,
   label,
   children,
+  presentation = 'default',
 }: {
   items: readonly TabItem[]
   value: string
   onChange: (value: string) => void
   label: string
   children: ReactNode
+  presentation?: 'default' | 'profile'
 }) {
   const id = useId()
   const [focused, setFocused] = useState(value)
@@ -47,11 +49,12 @@ export function Tabs({
     buttons.current.get(item.id)?.focus()
   }
   return (
-    <div className="tabs">
+    <div className={'tabs' + (presentation === 'profile' ? ' tabs--profile' : '')}>
       <div className="tabs__list" role="tablist" aria-label={label}>
         {items.map((item, index) => (
           <button
             key={item.id}
+            className={item.emphasis ? 'tabs__tab--emphasized' : undefined}
             ref={(button) => {
               if (button) buttons.current.set(item.id, button)
               else buttons.current.delete(item.id)

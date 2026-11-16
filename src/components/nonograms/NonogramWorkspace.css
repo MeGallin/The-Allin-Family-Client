@@ -54,7 +54,8 @@
   color: var(--color-text);
   background: var(--color-surface-muted);
   border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-sm);
+  /* Preserve the puzzle's existing square geometry. */
+  border-radius: 0;
   overflow: hidden;
 }
 .nonogram-board--enlarged {
@@ -93,31 +94,33 @@
   font-variant-numeric: tabular-nums;
 }
 .nonogram-cell {
-  padding: 0 !important;
-  min-height: 0 !important;
-  min-width: 0 !important;
+  --button-quiet-hover-background: var(--color-surface);
+  --button-quiet-active-transform: translateY(1px);
+  padding: 0;
+  min-height: 0;
+  min-width: 0;
   aspect-ratio: 1;
-  border: 1px solid var(--color-border-strong) !important;
-  border-radius: 0 !important;
-  background: var(--color-surface) !important;
-  color: var(--color-text) !important;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0;
+  background: var(--color-surface);
+  color: var(--color-text);
   font-size: clamp(0.8rem, 3vw, 1.4rem);
   line-height: 1;
-  box-shadow: none !important;
   touch-action: manipulation;
 }
 .nonogram-cell--1 {
-  background: var(--color-accent) !important;
-  box-shadow: inset 0 0 0 2px var(--color-accent-highlight) !important;
+  --button-quiet-hover-background: var(--color-accent);
+  --button-quiet-shadow: inset 0 0 0 2px var(--color-accent-highlight);
+  background: var(--color-accent);
 }
 .nonogram-cell--divider-right {
-  border-right: 2px solid var(--color-border-strong) !important;
+  border-right: 2px solid var(--color-border-strong);
 }
 .nonogram-cell--divider-bottom {
-  border-bottom: 2px solid var(--color-border-strong) !important;
+  border-bottom: 2px solid var(--color-border-strong);
 }
 .nonogram-cell:focus-visible {
-  outline: 3px solid var(--color-text) !important;
+  outline: 3px solid var(--color-text);
   outline-offset: -4px;
   z-index: 1;
 }
@@ -142,7 +145,7 @@
 .nonogram-complete {
   padding: var(--space-3);
   border: 1px solid var(--color-accent);
-  border-radius: var(--radius-md);
+  border-radius: 0;
   background: var(--color-accent-soft);
 }
 .nonogram-tools {
@@ -195,4 +198,10 @@
     transition: none !important;
     animation: none !important;
   }
+}
+.nonogram-board[data-size='5'] {
+  --nonogram-size: 5;
+}
+.nonogram-board[data-size='10'] {
+  --nonogram-size: 10;
 }

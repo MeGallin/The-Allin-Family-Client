@@ -117,7 +117,7 @@ export function CalendarDayTile({
           {!plansUnavailable && plans.length ? (
             <button
               type="button"
-              className="calendar-day-tile__plan has-plan"
+              className="button-quiet calendar-day-tile__plan has-plan"
               aria-label={`${plans[0].title}. ${planAction}. ${summary} for ${dayLabel}`}
               onClick={() =>
                 setSearch(
@@ -142,11 +142,11 @@ export function CalendarDayTile({
             </Link>
           )}
         </div>
-        <div className="calendar-day-tile__forecast">{forecast}</div>
+        <div className="calendar-day-tile__forecast button-quiet-scope">{forecast}</div>
         <div className="calendar-day-tile__footer">
           <CalendarZodiac date={date} />
           <span className="calendar-day-tile__footer-separator" aria-hidden="true" />
-          <IndicatorStrip indicators={indicators} dayLabel={dayLabel} />
+          <IndicatorStrip indicators={indicators} dayLabel={dayLabel} quiet />
         </div>
       </div>
       {showPlans && !plansUnavailable && (

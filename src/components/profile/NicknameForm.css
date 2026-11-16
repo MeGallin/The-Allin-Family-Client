@@ -3,6 +3,14 @@
   gap: var(--space-3);
   min-width: 0;
 }
+.nickname-form.profile-form {
+  max-width: var(--content-width);
+  gap: var(--space-4);
+}
+.nickname-form .nickname-form__feedback {
+  font-size: var(--text-xs);
+  line-height: var(--line-compact);
+}
 .nickname-form input {
   min-width: 0;
   width: 100%;

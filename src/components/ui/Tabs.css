@@ -66,3 +66,12 @@
     font-size: var(--text-xs);
   }
 }
+.tabs--profile .tabs__list > button {
+  font-size: var(--text-xs);
+  white-space: normal;
+  line-height: 1.35;
+  padding-inline: var(--space-1);
+}
+.tabs--profile .tabs__list > button.tabs__tab--emphasized {
+  flex-grow: 1.4;
+}

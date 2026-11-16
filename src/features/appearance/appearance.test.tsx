@@ -9,6 +9,7 @@ import { testUser } from '../../test/fixtures'
 import { AccentPicker } from '../../components/profile/AccentPicker'
 import { useAppearanceTheme } from './useAppearance'
 import { ACCENT_CHOICES } from './accent-options'
+import { readFileSync } from 'node:fs'
 import {
   accentStorageKey,
   browserAccentStorageKey,
@@ -16,10 +17,25 @@ import {
   saveAccentPreference,
 } from '../../services/appearance-storage'
 
-beforeEach(() => localStorage.clear())
+let paletteStyle: HTMLStyleElement
+const baseTokens = readFileSync('src/styles/tokens.css', 'utf8')
+function rootAccentValue() {
+  for (const sheet of document.adoptedStyleSheets ?? [])
+    for (const rule of Array.from(sheet.cssRules))
+      if (rule instanceof CSSStyleRule && rule.selectorText === ':root[data-accent="custom"]')
+        return rule.style.getPropertyValue('--color-accent')
+  return ''
+}
+beforeEach(() => {
+  localStorage.clear()
+  paletteStyle = document.createElement('style')
+  paletteStyle.textContent = baseTokens
+  document.head.append(paletteStyle)
+})
 afterEach(() => {
   localStorage.clear()
   document.documentElement.removeAttribute('data-accent')
+  paletteStyle.remove()
 })
 
 function mount(signedIn = true) {
@@ -53,12 +69,13 @@ describe('personal accent preferences', () => {
     )
     const { store } = mount(false)
     expect(document.documentElement.dataset.accent).toBe('custom')
-    expect(document.documentElement.style.getPropertyValue('--color-accent')).toBe('#FFFFFF')
+    expect(rootAccentValue()).toBe('#FFFFFF')
+    expect(document.documentElement.hasAttribute('style')).toBe(false)
     act(() => {
       store.dispatch(userReceived(testUser))
     })
     expect(document.documentElement.hasAttribute('data-accent')).toBe(false)
-    expect(document.documentElement.style.getPropertyValue('--color-accent')).toBe('')
+    expect(rootAccentValue()).toBe('')
   })
 
   it('applies custom for this visit when storage is blocked and survives a profile refresh', () => {
@@ -135,12 +152,12 @@ describe('personal accent preferences', () => {
       hex: '#345678',
     })
     expect(document.documentElement.dataset.accent).toBe('custom')
-    expect(document.documentElement.style.getPropertyValue('--color-accent')).not.toBe('#345678')
+    expect(rootAccentValue()).not.toBe('#345678')
     view.unmount()
     mount()
     expect(screen.getByRole('button', { name: /Custom colour selected #345678/ })).toBeTruthy()
     fireEvent.click(screen.getByRole('radio', { name: 'Pink' }))
-    expect(document.documentElement.style.getPropertyValue('--color-accent')).toBe('')
+    expect(rootAccentValue()).toBe('')
   })
 
   it('discards on Cancel/Escape/preset and resets an open draft when the account changes', () => {
@@ -200,7 +217,7 @@ describe('personal accent preferences', () => {
       store.dispatch(userReceived({ ...testUser, id: 202 }))
     })
     expect(document.documentElement.hasAttribute('data-accent')).toBe(false)
-    expect(document.documentElement.style.getPropertyValue('--color-accent')).toBe('')
+    expect(rootAccentValue()).toBe('')
   })
 
   it('applies every palette immediately and restores the saved choice in a fresh session', () => {

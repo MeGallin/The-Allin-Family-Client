@@ -66,3 +66,7 @@
     padding: var(--space-5) var(--space-6);
   }
 }
+/* Any remaining open nested modal keeps the page locked; closing restores CSS. */
+body:has(dialog.modal[open]) {
+  overflow: hidden;
+}

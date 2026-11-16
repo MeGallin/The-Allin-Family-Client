@@ -7,6 +7,8 @@ import {
   saveAccentPreference,
 } from '../../services/appearance-storage'
 
+const palette = { surface: '#101C30', raised: '#16263D', actionInk: '#041925' }
+
 describe('custom accent boundary and palette', () => {
   it('accepts only supported versioned HEX and preserves legacy preset IDs', () => {
     expect(normalizeHex(' #ab34ef ')).toBe('#AB34EF')
@@ -36,7 +38,7 @@ describe('custom accent boundary and palette', () => {
         for (let b = 0; b <= 255; b += 51)
           samples.push('#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join(''))
     for (const hex of samples) {
-      const tokens = customAccentTokens(hex)
+      const tokens = customAccentTokens(hex, palette)
       for (const role of ['--color-accent', '--color-accent-highlight']) {
         for (const background of ['#16263D', tokens['--color-accent-soft'], '#041925'])
           expect(
@@ -48,10 +50,18 @@ describe('custom accent boundary and palette', () => {
         expect(contrastRatio(text, tokens['--color-accent-soft'])).toBeGreaterThanOrEqual(4.5)
       expect(hsvToHex(hexToHsv(hex))).toBe(hex.toUpperCase())
     }
-    expect(customAccentTokens('invalid')).toEqual({})
-    expect(customAccentTokens('#22D3EE')['--color-accent']).toBe('#22D3EE')
+    expect(customAccentTokens('invalid', palette)).toEqual({})
+    expect(customAccentTokens('#22D3EE', palette)['--color-accent']).toBe('#22D3EE')
     expect(hsvToHex({ h: 0, s: 100, v: 100 })).toBe('#FF0000')
     expect(hsvToHex({ h: 0, s: 0, v: 100 })).toBe('#FFFFFF')
     expect(hsvToHex({ h: 0, s: 100, v: 0 })).toBe('#000000')
+  })
+  it('uses the supplied base palette rather than fixed navy assumptions', () => {
+    const changed = { surface: '#081020', raised: '#121820', actionInk: '#000000' }
+    const tokens = customAccentTokens('#345678', changed)
+    expect(tokens).not.toEqual(customAccentTokens('#345678', palette))
+    expect(tokens['--color-text-on-action']).toBe(changed.actionInk)
+    for (const background of [changed.raised, changed.actionInk, tokens['--color-accent-soft']])
+      expect(contrastRatio(tokens['--color-accent'], background)).toBeGreaterThanOrEqual(4.5)
   })
 })

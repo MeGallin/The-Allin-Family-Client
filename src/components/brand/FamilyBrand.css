@@ -69,3 +69,6 @@
   transform: rotate(71.6deg);
   transform-origin: left bottom;
 }
+.family-logo__crossbar-mask {
+  mask-type: luminance;
+}

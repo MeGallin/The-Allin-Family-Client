@@ -93,6 +93,23 @@
   background: var(--color-surface-raised);
   color: var(--color-text);
 }
+/* Opt-in quiet interaction; owners retain geometry, colours and focus treatment.
+   A scope is explicit for composed provider content that shares this treatment. */
+button.button-quiet,
+.button-quiet-scope button {
+  box-shadow: var(--button-quiet-shadow, none);
+}
+button.button-quiet:hover:not(:disabled),
+.button-quiet-scope button:hover:not(:disabled),
+button.button-quiet:active:not(:disabled),
+.button-quiet-scope button:active:not(:disabled) {
+  background: var(--button-quiet-hover-background, transparent);
+  box-shadow: var(--button-quiet-shadow, none);
+  transform: none;
+}
+button.button-quiet:active:not(:disabled) {
+  transform: var(--button-quiet-active-transform, none);
+}
 .feedback {
   padding: var(--space-4);
   border: 1px solid var(--color-border);

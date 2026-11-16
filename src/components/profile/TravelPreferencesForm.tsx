@@ -71,7 +71,7 @@ function TravelEditor({ preferences }: { preferences: TravelPreferences }) {
     }
   }
   return (
-    <form className="travel-preferences" onSubmit={submit}>
+    <form className="travel-preferences profile-form" onSubmit={submit}>
       <div className="travel-preferences__summary">
         <Icon icon={TrainFront} />
         <span>

@@ -52,27 +52,6 @@
   font-size: var(--text-2xl);
   letter-spacing: -0.04em;
 }
-.profile-appearance .accent-picker legend {
-  font-size: var(--text-xs);
-  font-weight: 550;
-  color: var(--color-text-muted);
-}
-.profile-appearance .accent-picker .note {
-  font-size: var(--text-xs);
-}
-.profile-appearance .accent-picker {
-  --swatch-size: 2.5rem;
-}
-.profile-appearance .accent-picker__label {
-  font-size: var(--text-caption);
-}
-.profile-appearance .accent-picker__choices {
-  padding-top: var(--space-5);
-}
-.profile-appearance .accent-picker__feedback {
-  border: 0;
-  padding: 0;
-}
 .profile-appearance__scope {
   display: flex;
   align-items: start;

@@ -1,4 +1,5 @@
 import { normalizeHex } from './accent-options'
+import type { AccentPalette } from './accent-palette'
 
 const rgb = (hex: string) => [1, 3, 5].map((start) => parseInt(hex.slice(start, start + 2), 16))
 const toHex = (channels: number[]) =>
@@ -25,23 +26,27 @@ export function contrastRatio(a: string, b: string): number {
 }
 
 /** Keep the chosen HEX intact; lift only theme roles that need contrast on navy. */
-export function customAccentTokens(input: string): Record<string, string> {
+export function customAccentTokens(input: string, palette: AccentPalette): Record<string, string> {
   const hex = normalizeHex(input)
   if (!hex) return {}
-  const soft = mix(hex, '#101C30', 0.88)
+  const soft = mix(hex, palette.surface, 0.88)
   let accent = hex
   // Raised is Nimbus's lightest base surface; soft can be slightly lighter for white inputs.
   // Small sRGB steps are deterministic and retain the original hue direction.
   for (let step = 0; step <= 100; step++) {
     accent = mix(hex, '#FFFFFF', step / 100)
-    if ([soft, '#16263D', '#041925'].every((surface) => contrastRatio(accent, surface) >= 4.5))
+    if (
+      [soft, palette.raised, palette.actionInk].every(
+        (surface) => contrastRatio(accent, surface) >= 4.5,
+      )
+    )
       break
   }
   return {
     '--color-accent': accent,
     '--color-accent-highlight': mix(accent, '#FFFFFF', 0.22),
     '--color-accent-soft': soft,
-    '--color-text-on-action': '#041925',
+    '--color-text-on-action': palette.actionInk,
   }
 }
 

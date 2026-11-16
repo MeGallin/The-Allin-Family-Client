@@ -1,4 +1,5 @@
 # Windows PowerShell; synthetic files only, never connects to a database/server.
+param([switch] $VersionOnly)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 . "$PSScriptRoot/deployment.ps1"
@@ -26,6 +27,7 @@ function Fixture([string] $Mode, [string] $Name) {
         Set-Content -LiteralPath (Join-Path $root $relative) -Value "synthetic $relative" -Encoding ASCII
     }
     Set-Content -LiteralPath (Join-Path $root 'client/src/app-version.json') -Value '{"version":"0.20"}' -Encoding ASCII
+    Set-Content -LiteralPath (Join-Path $root 'client/dist/client-version.json') -Value '{"version":"0.20"}' -Encoding ASCII
     foreach ($folder in @('theallinfamily', 'unrelated')) {
         $old = Join-Path $root ('live/' + $folder + '/old')
         $null = New-Item -ItemType Directory -Path $old -Force
@@ -67,6 +69,7 @@ function Assert-CleanLive($Options, [switch] $Locked, [switch] $MissingDestinati
     Assert ((($names | Sort-Object) -join ',') -eq (($expected | Sort-Object) -join ',')) 'Temporary deployment artifacts remain.'
 }
 try {
+    if (-not $VersionOnly) {
     foreach ($mode in @('All', 'Client', 'Api')) {
         $options = Fixture $mode 'success with spaces'
         $peersBefore = Peers $options
@@ -122,6 +125,12 @@ try {
         $script:passed++
 
         if ($mode -ne 'Api') {
+            $options = Fixture $mode 'version mismatch'
+            Set-Content -LiteralPath (Join-Path $options.ClientRoot 'dist/client-version.json') -Value '{"version":"0.15"}' -Encoding ASCII
+            Expect-Failure $options 'Built client version does not match'
+            $options = Fixture $mode 'missing version manifest'
+            Rename-Item -LiteralPath (Join-Path $options.ClientRoot 'dist/client-version.json') -NewName 'missing-version.json'
+            Expect-Failure $options 'Build output missing client-version.json'
             $options = Fixture $mode 'build failure'
             $options.Build = { throw 'Simulated build failure' }
             Expect-Failure $options 'Simulated build failure'
@@ -274,11 +283,70 @@ try {
     Assert-CleanLive $options
     $script:passed++
 
+    }
+    if ($VersionOnly) {
+        foreach ($mode in @('Client', 'All')) {
+            $options = Fixture $mode 'version mismatch'
+            Set-Content -LiteralPath (Join-Path $options.ClientRoot 'dist/client-version.json') -Value '{"version":"0.15"}' -Encoding ASCII
+            Expect-Failure $options 'Built client version does not match'
+            $options = Fixture $mode 'missing manifest'
+            Rename-Item -LiteralPath (Join-Path $options.ClientRoot 'dist/client-version.json') -NewName 'missing-version.json'
+            Expect-Failure $options 'Build output missing client-version.json'
+        }
+        $options = Fixture 'Api' 'no client build'
+        $versionBefore = Get-DeployHash (Join-Path $options.ClientRoot 'src/app-version.json')
+        $options.Build = { throw 'API-only called the client build' }
+        Invoke-FamilyDeployment @options
+        Assert ((Get-DeployHash (Join-Path $options.ClientRoot 'src/app-version.json')) -eq $versionBefore) 'API-only packaging changed the client version.'
+        Assert (-not (Test-Path -LiteralPath (Join-Path $options.Destination 'index.html'))) 'API-only packaging included client files.'
+        $script:passed++
+    }
+    foreach ($mode in @('Client', 'All')) {
+        $options = Fixture $mode 'build version'
+        $script:versionBuilds = 0
+        $options.Build = {
+            $script:versionBuilds++
+            Set-Content -LiteralPath (Join-Path $options.ClientRoot 'src/app-version.json') -Value '{"version":"0.25"}' -Encoding ASCII
+            Set-Content -LiteralPath (Join-Path $options.ClientRoot 'dist/client-version.json') -Value '{"version":"0.25"}' -Encoding ASCII
+        }
+        Invoke-FamilyDeployment @options
+        Assert ($script:versionBuilds -eq 1) 'Nested package build advanced more than once.'
+        Assert ((Get-Content -LiteralPath (Join-Path $options.ClientRoot 'src/app-version.json') -Raw | ConvertFrom-Json).version -eq '0.25') 'Packaging changed the successful client version.'
+        Assert (-not (Test-Path -LiteralPath (Join-Path $options.Destination 'client-version.json'))) 'Local validation metadata leaked into upload payload.'
+        $script:passed++
+    }
+    $options = Fixture 'All' 'build then failure'
+    $before = Snapshot $options.Destination
+    $options.Build = {
+        Set-Content -LiteralPath (Join-Path $options.ClientRoot 'src/app-version.json') -Value '{"version":"0.25"}' -Encoding ASCII
+        Set-Content -LiteralPath (Join-Path $options.ClientRoot 'dist/client-version.json') -Value '{"version":"0.25"}' -Encoding ASCII
+    }
+    $options.ValidatePhp = { param($file) throw 'Synthetic package validation failure' }
+    $message = ''
+    try { Invoke-FamilyDeployment @options } catch { $message = $_.Exception.Message }
+    Assert ($message -match 'Synthetic package validation failure') "Expected package validation failure; got: $message"
+    Assert ((Snapshot $options.Destination) -eq $before) 'Failed validation promoted a package.'
+    Assert ((Get-Content -LiteralPath (Join-Path $options.ClientRoot 'src/app-version.json') -Raw | ConvertFrom-Json).version -eq '0.25') 'Packaging failure rolled back a successful client build.'
+    $script:passed++
+    $options = Fixture 'All' 'late manifest'
+    $before = Snapshot $options.Destination
+    $options.ValidatePhp = {
+        param($file)
+        Set-Content -LiteralPath (Join-Path $options.ClientRoot 'dist/client-version.json') -Value '{"version":"0.30"}' -Encoding ASCII
+    }
+    $message = ''
+    try { Invoke-FamilyDeployment @options } catch { $message = $_.Exception.Message }
+    Assert ($message -match 'Built client version changed during packaging') 'Late manifest change was accepted.'
+    Assert ((Snapshot $options.Destination) -eq $before) 'A changed manifest package was promoted.'
+    $script:passed++
+
+    if (-not $VersionOnly) {
     $options = Fixture 'All' 'cross mode lock'
     $nested = $options.Clone()
     $nested.Mode = 'Client'
     $options.Build = { Invoke-FamilyDeployment @nested }
     Expect-Failure $options 'being used|another process|sharing violation'
+    }
     Write-Host "PASS: $passed mode-specific deployment checks. No real package, live server or database used."
 } finally {
     $resolved = [IO.Path]::GetFullPath($scratch)
