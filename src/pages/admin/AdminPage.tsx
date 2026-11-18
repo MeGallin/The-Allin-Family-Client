@@ -10,11 +10,13 @@ const AdminActivity = lazy(() => import('../../components/admin/activity/AdminAc
 const AdminUsage = lazy(() => import('../../components/admin/usage/AdminUsage'))
 const AdminOverview = lazy(() => import('../../components/admin/insights/AdminOverview'))
 const AdminMembers = lazy(() => import('../../components/admin/AdminMembers'))
+const AdminAdvertising = lazy(() => import('../../components/admin/advertising/AdminAdvertising'))
 const views = [
   ['overview', 'Overview'],
   ['usage', 'Usage details'],
   ['activity', 'Shared activity'],
   ['members', 'Family members'],
+  ['advertising', 'Advertising'],
 ] as const
 
 export default function AdminPage() {
@@ -49,6 +51,7 @@ export default function AdminPage() {
         {view === 'usage' && <AdminUsage />}
         {view === 'activity' && <AdminActivity />}
         {view === 'members' && <AdminMembers />}
+        {view === 'advertising' && <AdminAdvertising />}
       </Suspense>
     </div>
   )

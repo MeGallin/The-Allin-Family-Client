@@ -27,6 +27,10 @@
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
+.home-diary__next .home-spotlight {
+  min-width: 0;
+  margin-block-start: var(--space-5);
+}
 @container family-content (min-width: 54rem) {
   .home-diary {
     grid-template-columns: minmax(0, 1fr) minmax(14rem, 17rem);

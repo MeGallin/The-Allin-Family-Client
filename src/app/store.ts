@@ -2,6 +2,8 @@ import { configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
 import jobsUi from '../features/household-jobs/jobs-ui-slice'
 import auth from '../features/auth/auth-slice'
+import advertising from '../features/advertising/advertising-slice'
+import { advertImageLifecycle } from '../features/advertising/image-cache'
 import appearance from '../features/appearance/appearance-slice'
 import { appearanceListener } from '../features/appearance/appearance-listener'
 import pollsUi from '../features/polls/polls-ui-slice'
@@ -23,6 +25,7 @@ export const createAppStore = () =>
   configureStore({
     reducer: {
       auth,
+      advertising,
       jobsUi,
       appearance,
       pollsUi,
@@ -41,7 +44,7 @@ export const createAppStore = () =>
     },
     middleware: (getDefault) =>
       getDefault()
-        .prepend(appearanceListener.middleware, removalListener.middleware)
+        .prepend(advertImageLifecycle, appearanceListener.middleware, removalListener.middleware)
         .concat(shoppingApi.middleware),
     devTools: import.meta.env.DEV,
   })

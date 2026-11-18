@@ -39,6 +39,7 @@ export async function request<T>(
   path: string,
   body?: object | FormData,
   signal?: AbortSignal,
+  responseType: 'json' | 'blob' = 'json',
 ): Promise<T> {
   const multipart = body instanceof FormData
   const conditional = !body && snapshotPaths.has(path)
@@ -57,17 +58,24 @@ export async function request<T>(
             'X-CSRF-Token': csrfToken,
             Accept: 'application/json',
           }
-        : { Accept: 'application/json', ...(cached ? { 'If-None-Match': cached.etag } : {}) },
+        : {
+            Accept: responseType === 'blob' ? 'image/jpeg' : 'application/json',
+            ...(cached ? { 'If-None-Match': cached.etag } : {}),
+          },
       body: multipart ? body : body ? JSON.stringify(body) : undefined,
     })
   } catch (error) {
+    if (signal?.aborted) throw new DOMException('Request cancelled', 'AbortError')
     if (error instanceof Error && error.name === 'AbortError') throw error
     throw new ApiError('Unable to connect. Please try again.', 0, 'network_error')
   }
   if (generation !== responseGeneration || signal?.aborted)
     throw new DOMException('Request cancelled', 'AbortError')
   if (response.status === 304 && cached) return cached.data as T
-  const data = await response.json().catch(() => null)
+  const data =
+    response.ok && responseType === 'blob'
+      ? await response.blob()
+      : await response.json().catch(() => null)
   if (generation !== responseGeneration || signal?.aborted)
     throw new DOMException('Request cancelled', 'AbortError')
   if (!response.ok) {

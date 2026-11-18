@@ -1,6 +1,6 @@
 import { addDays, format, startOfDay } from 'date-fns'
 import { Link, useSearchParams } from 'react-router'
-import { useEffect, useId, useRef, useState, useTransition } from 'react'
+import { useEffect, useId, useRef, useState, useTransition, type ReactNode } from 'react'
 import { ArrowUpRight, CalendarDays, Cake, Minus, Plus } from 'lucide-react'
 import { useCalendar } from '../../../features/calendar/useCalendar'
 import { useNow } from '../../../hooks/useNow'
@@ -30,7 +30,7 @@ import { HomeOverview } from '../HomeOverview'
 import './WeekPlanner.css'
 import './WeekPlannerLayout.css'
 
-export function WeekPlanner() {
+export function WeekPlanner({ diarySpotlight }: { diarySpotlight?: ReactNode }) {
   const [search, setSearch] = useSearchParams()
   const rangeId = useId()
   const requestedDays = Number(search.get('days'))
@@ -391,6 +391,7 @@ export function WeekPlanner() {
             )}
           </>
         )}
+        {diarySpotlight}
       </aside>
     </div>
   )

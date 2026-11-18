@@ -7,6 +7,7 @@ import { HomePriorities } from '../../components/family/home/HomePriorities'
 import { HomeRecap } from '../../components/family/home/HomeRecap'
 import { HomeJobsSummary } from '../../components/family/home/HomeJobsSummary'
 import { HomeDestinations } from '../../components/family/home/HomeDestinations'
+import { HomeSpotlight } from '../../components/advertising/HomeSpotlight'
 import './FamilyHomePage.css'
 
 export default function FamilyHomePage() {
@@ -22,7 +23,7 @@ export default function FamilyHomePage() {
       />
       <HomeRecap key={user.id} ownerId={user.id} />
       <div className="family-home-grid">
-        <WeekPlanner />
+        <WeekPlanner diarySpotlight={<HomeSpotlight />} />
         <HomePriorities>
           <HomeJobsSummary />
           <HomeDestinations name={firstName} />

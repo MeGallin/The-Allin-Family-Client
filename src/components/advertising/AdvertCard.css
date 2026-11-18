@@ -1,0 +1,285 @@
+.advert-card {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  overflow-wrap: anywhere;
+}
+.advert-card h2,
+.advert-card h3,
+.advert-card p {
+  margin: 0;
+}
+.advert-card__intro {
+  display: grid;
+  gap: var(--space-2);
+}
+.advert-card__message {
+  max-width: 65ch;
+  font-size: var(--text-lg);
+}
+.advert-card__scenario {
+  display: grid;
+  gap: var(--space-2);
+  max-width: 65ch;
+}
+.advert-card__steps,
+.advert-card__checklist {
+  display: grid;
+  gap: var(--space-3);
+  padding-inline-start: var(--space-5);
+  margin: 0;
+}
+.advert-card__steps li::marker {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+.advert-card__checklist li::marker {
+  color: var(--color-accent);
+}
+.advert-card__comparison {
+  display: grid;
+  gap: var(--space-3);
+  margin-block-start: var(--space-3);
+}
+.advert-card__comparison p {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+.advert-card__action {
+  min-width: 0;
+}
+.advert-card__action button {
+  max-width: 100%;
+  white-space: normal;
+}
+.advert-card--compact {
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-muted);
+  font-size: var(--text-sm);
+}
+.advert-card--compact h3 {
+  font-size: var(--text-md);
+  line-height: var(--line-compact);
+  letter-spacing: -0.02em;
+}
+.advert-card--compact .advert-card__intro {
+  gap: var(--space-1);
+}
+.advert-card--compact .eyebrow {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+}
+.advert-card--compact .advert-card__message {
+  font-size: var(--text-sm);
+}
+.advert-card__details summary {
+  display: list-item;
+  min-height: var(--control-min-height);
+  padding-block: var(--space-2);
+  color: var(--color-link);
+  cursor: pointer;
+  font-size: var(--text-xs);
+}
+.advert-card__extra {
+  display: grid;
+  gap: var(--space-3);
+  padding-block-start: var(--space-2);
+}
+.advert-card--compact .advert-card__comparison {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+}
+.advert-card--compact .advert-card__comparison p {
+  padding: var(--space-2);
+}
+.advert-card--compact .advert-card__action button {
+  width: 100%;
+  padding-inline: var(--space-2);
+  font-size: var(--text-xs);
+}
+@media (min-width: 42rem) {
+  .advert-card__comparison {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* All compositions share one bounded campaign canvas. Model output selects only
+   these finite layouts; it never supplies presentation code. */
+.advert-campaign-shell {
+  min-width: 0;
+}
+.advert-campaign {
+  position: relative;
+  isolation: isolate;
+  container-type: inline-size;
+  display: block;
+  width: min(100%, 15.4375rem);
+  min-height: 14.4375rem;
+  margin-inline: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--color-warning) 22%, var(--color-text-on-dark));
+  color: var(--color-action-ink);
+}
+.advert-card__artwork {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  background: var(--color-surface-muted);
+}
+.advert-card__artwork img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.advert-card__artwork-fallback {
+  padding: var(--space-3);
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+.advert-campaign__type {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  padding: var(--space-3);
+}
+.advert-campaign__service {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-caption);
+  font-weight: 650;
+  line-height: 1.15;
+}
+.advert-campaign__type h2,
+.advert-campaign__type h3 {
+  margin: 0;
+  color: var(--color-action-ink);
+  font-size: 1.625rem;
+  font-size: clamp(1.5rem, 10.6cqi, 1.75rem);
+  font-weight: 850;
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.advert-campaign__action {
+  position: absolute;
+  z-index: 2;
+  left: var(--space-3);
+  bottom: var(--space-3);
+  max-width: calc(100% - var(--space-5));
+}
+.advert-campaign__action button,
+.advert-campaign__cta-preview {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-action-ink);
+  border-radius: var(--radius-pill);
+  background: var(--color-text-on-dark);
+  color: var(--color-action-ink);
+  box-shadow: none;
+  font-size: var(--text-xs);
+  font-weight: 750;
+  line-height: 1;
+  white-space: nowrap;
+}
+.advert-campaign__action button:hover:not(:disabled) {
+  background: var(--color-warning);
+  color: var(--color-action-ink);
+}
+.advert-campaign__action button:focus-visible {
+  outline-color: var(--color-action-ink);
+  box-shadow: 0 0 0 3px var(--color-text-on-dark);
+}
+
+.advert-campaign > .advert-card__artwork {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-card);
+}
+.advert-campaign--poster {
+  padding-bottom: 7.75rem;
+}
+.advert-campaign--poster .advert-campaign__type {
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  background: color-mix(in srgb, var(--color-warning) 22%, var(--color-text-on-dark));
+}
+.advert-campaign--split .advert-campaign__type {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 53%;
+  min-height: 14.4375rem;
+  padding: var(--space-3) var(--space-1) 3.75rem var(--space-3);
+  border-radius: var(--radius-card) 0 0 var(--radius-card);
+  background: color-mix(in srgb, var(--color-warning) 22%, var(--color-text-on-dark));
+}
+.advert-campaign--split .advert-campaign__type h2,
+.advert-campaign--split .advert-campaign__type h3 {
+  font-size: 1.25rem;
+  text-wrap: pretty;
+}
+.advert-campaign--split .advert-campaign__action {
+  bottom: var(--space-2);
+}
+.advert-campaign--image-led {
+  display: flex;
+  flex-direction: column;
+  padding-top: 4rem;
+  padding-bottom: var(--space-2);
+}
+.advert-campaign--image-led .advert-campaign__type {
+  margin: auto var(--space-2) 0;
+  padding: var(--space-2);
+  background: var(--color-text-on-dark);
+}
+.advert-campaign--image-led .advert-campaign__type h2,
+.advert-campaign--image-led .advert-campaign__type h3 {
+  font-size: 1.5rem;
+}
+.advert-campaign--image-led .advert-campaign__action {
+  top: var(--space-3);
+  bottom: auto;
+}
+.advert-campaign__accessible-message {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.advert-campaign__review {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.advert-campaign__review p {
+  margin: 0;
+}
+
+.advert-campaign__details {
+  margin-top: var(--space-3);
+}

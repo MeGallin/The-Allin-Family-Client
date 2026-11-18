@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { FOCUS_PATH } from '../../features/focus-timer/types'
 import { WORD_PATH } from '../../features/daily-word/types'
 import { NONOGRAM_PATH } from '../../features/nonograms/types'
@@ -96,6 +96,15 @@ export function WidgetLibrary({
   const [query, setQuery] = useState('')
   const [resultStatus, setResultStatus] = useState('')
   const [selected, setSelected] = useState<WidgetStoreApp | null>(null)
+  const [searchParams] = useSearchParams()
+  const requestedDetails = searchParams.get('details')
+  useEffect(() => {
+    if (!requestedDetails) return
+    const app = widgetCatalogue.find(
+      (item) => item.id === requestedDetails && item.availability !== 'proposed',
+    )
+    if (app) setSelected(app)
+  }, [requestedDetails])
   const ready = !loading && !error
   const dinnerInstallations = installations.filter((widget) => widget.kind === 'dinner-spinner')
   const firstInstallation = dinnerInstallations.find((widget) => !widget.hidden)
